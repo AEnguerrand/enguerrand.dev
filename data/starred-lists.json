@@ -35,6 +35,7 @@
         "aquasecurity/trivy",
         "aws/karpenter-provider-aws",
         "bloomberg/goldpinger",
+        "CanineHQ/canine",
         "cilium/cilium",
         "cilium/hubble",
         "cilium/tetragon",
@@ -62,6 +63,7 @@
         "jcmoraisjr/haproxy-ingress",
         "k8s-sec/cloud-native-security-tutorial",
         "kaito-project/kaito",
+        "keel-hq/keel",
         "kubepug/kubepug",
         "kubernetes-retired/cluster-api-provider-nested",
         "kubernetes-sigs/cluster-api",
@@ -225,6 +227,7 @@
         "liatrio/backstage-github-autogov-plugin",
         "liatrio/demo-ootb-backstage",
         "LlamaEdge/LlamaEdge",
+        "mlflow/mlflow",
         "notaryproject/ratify",
         "numberly/vault-db-injector",
         "opea-project/GenAIInfra",
@@ -282,6 +285,7 @@
         "kaito-project/kaito",
         "mindee/doctr",
         "qanastek/DrBERT",
+        "sachaa/openbrowserclaw",
         "WasmEdge/WasmEdge"
       ]
     },
@@ -353,6 +357,7 @@
         "pyenv/pyenv",
         "PyGithub/PyGithub",
         "rancher/client-python",
+        "redis/redis",
         "russross/blackfriday",
         "serverless/serverless-python-requirements",
         "stefan-jansen/machine-learning-for-trading",
@@ -581,6 +586,7 @@
         "stacklok/toolhive",
         "stacklok/toolhive-registry-server",
         "steveyegge/gastown",
+        "trailofbits/claude-code-config",
         "upstash/context7"
       ]
     },
@@ -634,6 +640,7 @@
         "slidevjs/slidev",
         "splitwise/api-docs",
         "tailscale/tailscale",
+        "teslamate-org/teslamate",
         "tw93/Mole",
         "virattt/dexter",
         "VirtusLab/besom",
