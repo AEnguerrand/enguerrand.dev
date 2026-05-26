@@ -7,12 +7,29 @@ import { Separator } from "@/components/ui/separator";
 
 const experience = [
   {
+    company: "Procurify",
+    period: "Apr 2026 - Present",
+    roles: [
+      {
+        title: "Senior Platform Security Engineer",
+        period: "Apr 2026 - Present",
+        bullets: [
+          "Lead platform security initiatives across cloud and developer infrastructure with a focus on practical, secure-by-default controls.",
+          "Design guardrails for AI-first development workflows, including agentic tooling, LLM-assisted engineering, and internal developer platforms.",
+          "Automate security checks across CI/CD pipelines, AWS environments, and Kubernetes platforms to improve coverage without adding friction.",
+          "Strengthen detection and response through SIEM improvements, incident review, and cloud-native monitoring patterns.",
+          "Drive architecture reviews, threat modeling, and security enablement so engineering teams can ship faster with clearer risk boundaries.",
+        ],
+      },
+    ],
+  },
+  {
     company: "Ledger",
-    period: "Apr 2022 - Present",
+    period: "Apr 2022 - Apr 2026",
     roles: [
       {
         title: "Staff Cloud Security Engineer",
-        period: "Sep 2024 - Present",
+        period: "Sep 2024 - Apr 2026",
         bullets: [
           "Act as security owner and technical advisor for infrastructure and engineering teams across cloud, products, and Kubernetes platforms.",
           "Design and lead cloud security initiatives on AWS, from posture hardening to detection and response.",
@@ -99,16 +116,16 @@ const education = [
 const skills = [
   ["Cloud & Platform", "Kubernetes, AWS, EKS, GitOps, Helm"],
   ["Infrastructure as Code", "Terraform, Ansible"],
-  ["Security", "Cloud security architecture, IAM, Wiz, software supply chain security (SLSA, Sigstore, OIDC)"],
+  ["Security", "Platform security architecture, threat modeling, IAM, Wiz, software supply chain security (SLSA, Sigstore, OIDC), AI development guardrails"],
   ["Observability", "Grafana, Prometheus, Datadog"],
-  ["CI/CD", "GitHub Actions, ArgoCD, Atlantis"],
+  ["CI/CD", "GitHub Actions, ArgoCD, Atlantis, security automation"],
   ["Programming", "Go, Python, Bash"],
 ] as const;
 ---
 
 <BaseLayout
   title="Resume"
-  description="Resume of Enguerrand Allamel, Staff Cloud Security Engineer."
+  description="Resume of Enguerrand Allamel, Senior Platform Security Engineer."
 >
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/90 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
@@ -118,8 +135,9 @@ const skills = [
         </Badge>
         <CardTitle className="text-4xl sm:text-5xl">Enguerrand Allamel</CardTitle>
         <CardDescription className="max-w-3xl text-base sm:text-lg">
-          Staff Cloud Security Engineer with a strong SRE background and hands-on work in
-          Kubernetes, AWS, Python, Go, and CI/CD in production.
+          Senior Platform Security Engineer with a strong SRE background and hands-on work
+          across AI-first development, cloud security, Kubernetes, AWS, and CI/CD in
+          production.
         </CardDescription>
         <div class="pt-1">
           <a
