@@ -69,7 +69,7 @@ export function Hero({
               </div>
               <div className="flex flex-col gap-2">
                 <Badge className="w-fit border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
-                  Staff Cloud Security Engineer
+                  Senior Platform Security Engineer
                 </Badge>
                 <p className="text-sm text-muted-foreground">
                   Security | SRE | Platform Engineering
@@ -82,9 +82,9 @@ export function Hero({
               <span className="text-primary">secure and reliable cloud platforms</span>.
             </CardTitle>
             <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Staff Cloud Security Engineer with hands-on production experience in Kubernetes,
-              AWS, Python, Go, and CI/CD. This site is my notebook for talks, ideas, and
-              field notes from real systems.
+              Senior Platform Security Engineer working on AI-first development guardrails,
+              cloud and Kubernetes security, and secure-by-default developer platforms. This
+              site is my notebook for talks, ideas, and field notes from real systems.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap items-center gap-3 px-7 pb-8 sm:px-9">
