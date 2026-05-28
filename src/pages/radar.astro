@@ -1,8 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpRight, BookOpenText, Mic, Search, Star } from "lucide-react";
+import { ArrowUpRight, Search, Star } from "lucide-react";
 import { getCollection } from "astro:content";
 import { readFile } from "node:fs/promises";
 
@@ -70,30 +69,26 @@ const cards = [
   title="Radar"
   description="A single hub for my technical radar: curated repositories and quick site search."
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Knowledge Hub
-        </Badge>
-        <CardTitle className="text-4xl sm:text-5xl">Radar</CardTitle>
-        <CardDescription className="max-w-3xl text-base sm:text-lg">
-          A central place for what I track and curate: useful repositories and quick access
-          to search across the site.
-        </CardDescription>
-      </CardHeader>
-    </Card>
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <p class="section-label">Knowledge Hub</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">Radar</h1>
+      <p class="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        A central place for what I track and curate: useful repositories and quick access
+        to search across the site.
+      </p>
+    </div>
   </section>
 
-  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  <section class="grid gap-4 py-8 md:grid-cols-2">
     {cards.map((card) => {
       const Icon = card.icon;
 
       return (
-        <Card className="lift-card border-border/70 bg-card/90 shadow-[0_14px_34px_hsl(var(--foreground)/0.05)]">
+        <Card className="lift-card border-border/70 bg-card/80">
           <CardHeader className="space-y-3 pb-3">
             <div class="flex items-center justify-between gap-3">
-              <span class="rounded-full border border-border/70 bg-secondary/55 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+              <span class="rounded-md border border-border/70 bg-secondary/60 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                 {card.label}
               </span>
               <Icon className="h-5 w-5 text-primary" />
@@ -104,7 +99,7 @@ const cards = [
           <CardContent className="space-y-4 pt-0">
             <div class="flex flex-wrap gap-2">
               {card.stats.map((stat) => (
-                <span class="rounded-full border border-border/80 bg-background/70 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+                <span class="rounded-md border border-border/80 bg-background/70 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                   {stat}
                 </span>
               ))}

@@ -1,31 +1,26 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const lastUpdated = "February 7, 2026";
 ---
 
 <BaseLayout title="Privacy" description="Privacy notice for enguerrand.dev.">
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-4 p-7 sm:p-9">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Legal
-        </Badge>
-        <h1 class="text-4xl sm:text-5xl">Privacy Notice</h1>
-        <p class="max-w-3xl text-muted-foreground">
-          This page explains what data is processed when you browse this website.
-        </p>
-        <p class="text-xs uppercase tracking-[0.1em] text-muted-foreground">
-          Last updated: {lastUpdated}
-        </p>
-      </CardContent>
-    </Card>
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <p class="section-label">Legal</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">Privacy Notice</h1>
+      <p class="max-w-3xl text-base leading-relaxed text-muted-foreground">
+        This page explains what data is processed when you browse this website.
+      </p>
+      <p class="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+        Last updated: {lastUpdated}
+      </p>
+    </div>
   </section>
 
-  <section class="space-y-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+  <section class="space-y-6 py-8">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Controller</CardTitle>
       </CardHeader>
@@ -39,7 +34,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Data Processed</CardTitle>
         <CardDescription>
@@ -56,7 +51,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Third-Party Requests</CardTitle>
       </CardHeader>
@@ -74,7 +69,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Legal Basis (GDPR Context)</CardTitle>
       </CardHeader>
@@ -88,7 +83,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Retention and International Transfers</CardTitle>
       </CardHeader>
@@ -102,7 +97,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Cookies and Analytics</CardTitle>
       </CardHeader>
@@ -116,7 +111,7 @@ const lastUpdated = "February 7, 2026";
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">GDPR Rights (EEA/UK Visitors)</CardTitle>
       </CardHeader>

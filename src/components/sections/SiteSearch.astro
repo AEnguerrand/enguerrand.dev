@@ -65,7 +65,7 @@ const getPreview = (item: SearchItem) => {
 };
 ---
 
-<div id={componentId} class="rounded-lg border border-border/70 bg-card/90 text-card-foreground shadow-[0_12px_34px_hsl(var(--foreground)/0.05)]">
+<div id={componentId} class="editorial-panel rounded-lg text-card-foreground">
   <div class="space-y-5 p-6 sm:p-7">
     <div class="space-y-3">
       <label
@@ -95,7 +95,7 @@ const getPreview = (item: SearchItem) => {
           type="text"
           placeholder={placeholder}
           autocomplete="off"
-          class="flex h-11 w-full rounded-md border border-border/80 bg-background/70 px-3 py-2 pl-9 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          class="flex h-11 w-full rounded-md border border-border/80 bg-background/80 px-3 py-2 pl-9 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         />
       </div>
     </div>
@@ -104,21 +104,21 @@ const getPreview = (item: SearchItem) => {
       <button
         type="button"
         data-search-filter="all"
-        class="rounded-full border border-border/90 bg-secondary/70 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-foreground transition-colors hover:bg-secondary/70"
+        class="rounded-md border border-border/90 bg-secondary/70 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-foreground transition-colors hover:bg-secondary/70"
       >
         All
       </button>
       <button
         type="button"
         data-search-filter="talk"
-        class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+        class="rounded-md border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
         Talks
       </button>
       <button
         type="button"
         data-search-filter="page"
-        class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+        class="rounded-md border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
         Pages
       </button>
@@ -133,10 +133,10 @@ const getPreview = (item: SearchItem) => {
         <li>
           <a
             href={item.href}
-            class="block rounded-xl border border-border/70 bg-background/65 p-4 transition-colors hover:bg-secondary/45"
+            class="block rounded-lg border border-border/70 bg-background/65 p-4 transition-colors hover:bg-secondary/45"
           >
             <div class="mb-1.5 flex flex-wrap items-center gap-2">
-              <span class="inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground">
+              <span class="inline-flex items-center rounded-md border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground">
                 {item.kind === "talk" ? "Talk" : "Page"}
               </span>
               {formatDate(item.date) && (
@@ -151,7 +151,7 @@ const getPreview = (item: SearchItem) => {
             {(item.tags ?? []).length > 0 && (
               <div class="mt-2 flex flex-wrap gap-1.5">
                 {(item.tags ?? []).slice(0, 4).map((tag) => (
-                  <span class="rounded-full border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+                  <span class="rounded-md border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                     {tag}
                   </span>
                 ))}
@@ -164,7 +164,7 @@ const getPreview = (item: SearchItem) => {
 
     <div
       data-search-empty
-      class="hidden rounded-xl border border-border/70 bg-background/65 p-4 text-sm text-muted-foreground"
+      class="hidden rounded-lg border border-border/70 bg-background/65 p-4 text-sm text-muted-foreground"
     >
       No matches found. Try a broader keyword or switch filter.
     </div>
@@ -319,14 +319,14 @@ const getPreview = (item: SearchItem) => {
       const li = document.createElement("li");
       const link = createTag(
         "a",
-        "block rounded-xl border border-border/70 bg-background/65 p-4 transition-colors hover:bg-secondary/45"
+        "block rounded-lg border border-border/70 bg-background/65 p-4 transition-colors hover:bg-secondary/45"
       );
       link.href = item.href;
 
       const topRow = createTag("div", "mb-1.5 flex flex-wrap items-center gap-2");
       const kind = createTag(
         "span",
-        "inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground",
+        "inline-flex items-center rounded-md border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground",
         item.kind === "talk" ? "Talk" : "Page"
       );
       topRow.appendChild(kind);
@@ -360,7 +360,7 @@ const getPreview = (item: SearchItem) => {
           tagsRow.appendChild(
             createTag(
               "span",
-              "rounded-full border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground",
+              "rounded-md border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground",
               tag
             )
           );

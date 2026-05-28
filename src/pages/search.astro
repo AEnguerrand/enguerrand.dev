@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteSearch from "@/components/sections/SiteSearch.astro";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { getCollection, getEntry } from "astro:content";
 import { readFile } from "node:fs/promises";
@@ -174,24 +173,22 @@ const PageContent = renderedPage?.Content;
 ---
 
 <BaseLayout title={page.data.title ?? "Search"}>
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-4 p-7 sm:p-9">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Utility
-        </Badge>
-        <h1 class="text-4xl sm:text-5xl">{page.data.title ?? "Search"}</h1>
-        <p class="max-w-2xl text-muted-foreground">
-          Find talks and pages quickly from one place.
-        </p>
-      </CardContent>
-    </Card>
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <p class="section-label">Utility</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">{page.data.title ?? "Search"}</h1>
+      <p class="max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Find talks and pages quickly from one place.
+      </p>
+    </div>
   </section>
 
-  <SiteSearch items={searchItems} placeholder={placeholder} />
+  <section class="py-8">
+    <SiteSearch items={searchItems} placeholder={placeholder} />
+  </section>
 
   {hasBodyContent && PageContent && (
-    <Card className="mt-6 border-border/70 bg-card/90 shadow-[0_12px_34px_hsl(var(--foreground)/0.05)]">
+    <Card className="mt-6 border-border/70 bg-card/80">
       <CardContent className="prose max-w-none pt-8">
         <PageContent />
       </CardContent>

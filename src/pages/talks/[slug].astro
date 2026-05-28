@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import TalksSubnav from "@/components/sections/TalksSubnav.astro";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection } from "astro:content";
@@ -92,36 +91,32 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
 ---
 
 <BaseLayout title={talk.data.title} description={talk.data.summary}>
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-5 p-7 sm:p-9">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          {formattedDate}
-        </Badge>
-        <h1 class="text-4xl leading-tight sm:text-5xl">{talk.data.title}</h1>
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-5">
+      <p class="section-label">{formattedDate}</p>
+      <h1 class="max-w-5xl text-5xl leading-tight sm:text-6xl">{talk.data.title}</h1>
 
-        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground sm:text-lg">{talk.data.summary}</p>}
+      {talk.data.summary && <p class="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">{talk.data.summary}</p>}
 
-        {talk.data.author && <p class="text-sm text-muted-foreground">By {talk.data.author.join(", ")}</p>}
+      {talk.data.author && <p class="text-sm text-muted-foreground">By {talk.data.author.join(", ")}</p>}
 
-        {talk.data.tags && (
-          <div class="flex flex-wrap gap-2">
-            {talk.data.tags.map((tag) => (
-              <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-[11px] font-medium tracking-[0.08em] uppercase text-muted-foreground">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {talk.data.tags && (
+        <div class="flex flex-wrap gap-2">
+          {talk.data.tags.map((tag) => (
+            <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-[11px] font-medium tracking-[0.08em] uppercase text-muted-foreground">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   </section>
 
   <TalksSubnav sectionLinks={sectionLinks} showBackHome={false} />
 
   {videoEmbedUrl && (
     <section id="video" class={baseSectionClass}>
-      <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+      <Card className="border-border/70 bg-card/80">
         <CardHeader className="space-y-3">
           <CardTitle className="text-3xl">Watch talk</CardTitle>
           <CardDescription className="max-w-2xl">
@@ -129,7 +124,7 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div class="overflow-hidden rounded-xl border border-border/70 bg-background/65">
+          <div class="overflow-hidden rounded-lg border border-border/70 bg-background/65">
             <iframe
               class="aspect-video w-full"
               src={videoEmbedUrl}
@@ -144,7 +139,7 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
               href={videoResource.url}
               target="_blank"
               rel="noreferrer"
-              class="inline-flex rounded-full border border-border/70 bg-card/75 px-4 py-2 text-sm font-medium text-foreground hover:bg-card"
+              class="inline-flex rounded-md border border-border/70 bg-card/75 px-4 py-2 text-sm font-medium text-foreground hover:bg-card"
             >
               Open video source
             </a>
@@ -155,7 +150,7 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
   )}
 
   <section id="overview" class={overviewSectionClass}>
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Session overview</CardTitle>
         <CardDescription className="max-w-2xl">
@@ -178,7 +173,7 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
   </section>
 
   <section id="resources" class={stackedSectionClass}>
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Resources</CardTitle>
         <CardDescription className="max-w-2xl">
@@ -205,7 +200,7 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
   </section>
 
   <section id="content" class={stackedSectionClass}>
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Talk content</CardTitle>
       </CardHeader>

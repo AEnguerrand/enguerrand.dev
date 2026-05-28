@@ -25,7 +25,7 @@ type TalksTableProps = {
 
 export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps) {
   return (
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_48px_hsl(var(--foreground)/0.06)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <CardTitle className="text-3xl">{title}</CardTitle>
         {showViewAll && (
@@ -37,7 +37,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
         )}
       </CardHeader>
       <CardContent className="space-y-6">
-        <Alert className="border-border/80 bg-secondary/55">
+        <Alert className="rounded-lg border-border/80 bg-secondary/50">
           <CalendarDays className="h-4 w-4" />
           <AlertTitle className="font-semibold">Speaking archive</AlertTitle>
           <AlertDescription>
@@ -56,7 +56,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
           </TableHeader>
           <TableBody>
             {talks.map((talk) => (
-              <TableRow key={talk.slug} className="hover:bg-secondary/45">
+              <TableRow key={talk.slug} className="hover:bg-secondary/40">
                 <TableCell className="whitespace-nowrap text-muted-foreground">
                   {new Date(talk.data.date).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -79,7 +79,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                         <Badge
                           key={`${talk.slug}-${tag}`}
                           variant="secondary"
-                          className="border border-border/70 bg-secondary/60"
+                          className="border border-border/70 bg-secondary/60 uppercase"
                         >
                           {tag}
                         </Badge>
@@ -90,8 +90,8 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button asChild variant="outline" size="sm">
-                    <a href={`/talks/${talk.slug}`}>Details</a>
+                  <Button asChild variant="outline" size="sm" className="gap-1.5">
+                    <a href={`/talks/${talk.slug}`}>Details <ChevronRight className="h-4 w-4" /></a>
                   </Button>
                 </TableCell>
               </TableRow>

@@ -50,13 +50,13 @@ function formatDate(value: string): string {
 
 function RepoCard({ repo }: { repo: StarredRepository }) {
   return (
-    <Card className="lift-card border-border/70 bg-card/90 shadow-[0_10px_26px_hsl(var(--foreground)/0.05)]">
+    <Card className="lift-card border-border/70 bg-background/70">
       <CardHeader className="space-y-2 p-4 pb-3">
         <div className="flex flex-wrap items-center gap-2">
           {repo.language && (
             <Badge
               variant="secondary"
-              className="border border-border/70 bg-secondary/55 px-2 py-0.5 text-[10px]"
+              className="border border-border/70 bg-secondary/60 px-2 py-0.5 text-[10px] uppercase"
             >
               {repo.language}
             </Badge>
@@ -107,7 +107,7 @@ function RepoCard({ repo }: { repo: StarredRepository }) {
             {repo.topics.slice(0, 2).map((topic) => (
               <span
                 key={`${repo.id}-${topic}`}
-                className="rounded-full border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground"
+                className="rounded-md border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground"
               >
                 {topic}
               </span>
@@ -122,7 +122,7 @@ function RepoCard({ repo }: { repo: StarredRepository }) {
 export function GitHubStars({ dataset }: GitHubStarsProps) {
   if (!dataset) {
     return (
-      <Card className="border-border/70 bg-card/85">
+      <Card className="border-border/70 bg-card/80">
         <CardHeader>
           <CardTitle className="text-2xl">Starred repositories are unavailable</CardTitle>
           <CardDescription>
@@ -137,7 +137,7 @@ export function GitHubStars({ dataset }: GitHubStarsProps) {
 
   if (nonEmptyGroups.length === 0) {
     return (
-      <Card className="border-border/70 bg-card/85">
+      <Card className="border-border/70 bg-card/80">
         <CardHeader>
           <CardTitle className="text-2xl">No starred repositories yet</CardTitle>
           <CardDescription>There are no starred repositories to display yet.</CardDescription>
@@ -166,10 +166,10 @@ export function GitHubStars({ dataset }: GitHubStarsProps) {
             <a
               key={`quick-${group.slug}`}
               href={`#list-${group.slug}`}
-              className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/50 px-3 py-1 text-xs font-semibold text-foreground hover:bg-secondary/70"
+              className="inline-flex items-center gap-2 rounded-md border border-border/80 bg-secondary/50 px-3 py-1 text-xs font-semibold text-foreground hover:border-primary/50 hover:bg-secondary/70"
             >
               <span>{group.name}</span>
-              <span className="rounded-full border border-border/70 bg-card/80 px-2 py-0.5 text-[10px] text-muted-foreground">
+              <span className="rounded-md border border-border/70 bg-card/80 px-2 py-0.5 text-[10px] text-muted-foreground">
                 {formatNumber(group.repos.length)}
               </span>
             </a>
@@ -179,7 +179,7 @@ export function GitHubStars({ dataset }: GitHubStarsProps) {
 
       {nonEmptyGroups.map((group) => (
         <section key={group.slug} id={`list-${group.slug}`} className="scroll-mt-32">
-          <details className="group overflow-hidden rounded-xl border border-border/70 bg-card/80 open:bg-card/80">
+          <details className="group overflow-hidden rounded-lg border border-border/70 bg-card/80 open:bg-card/80">
             <summary className="flex list-none cursor-pointer flex-wrap items-start justify-between gap-3 bg-card/80 p-4 transition-colors hover:bg-card/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:bg-card/80 [&::-webkit-details-marker]:hidden">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ export function GitHubStars({ dataset }: GitHubStarsProps) {
                   <p className="text-sm text-muted-foreground">{group.description}</p>
                 )}
               </div>
-              <span className="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+              <span className="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                 {formatNumber(group.repos.length)} repos
               </span>
             </summary>

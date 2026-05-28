@@ -7,35 +7,38 @@
 
 @layer base {
   :root {
-    --background: 210 42% 95%;
-    --foreground: 201 100% 14.3%;
+    --background: 210 40% 99%;
+    --foreground: 218 44% 12%;
 
-    --card: 210 50% 98%;
-    --card-foreground: 201 100% 14.3%;
+    --card: 0 0% 100%;
+    --card-foreground: 218 44% 12%;
 
-    --popover: 210 50% 98%;
-    --popover-foreground: 201 100% 14.3%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 44% 12%;
 
-    --primary: 211 68% 45%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 218 68% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 211 44% 91%;
-    --secondary-foreground: 201 100% 14.3%;
+    --secondary: 214 36% 95%;
+    --secondary-foreground: 218 44% 12%;
 
-    --muted: 212 36% 92%;
-    --muted-foreground: 211 42% 38%;
+    --muted: 214 32% 94%;
+    --muted-foreground: 217 20% 38%;
 
-    --accent: 356 82.9% 41.4%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 10 86% 53%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 356 82.9% 41.4%;
+    --signal: 143 48% 47%;
+    --ink-soft: 218 30% 20%;
+
+    --destructive: 10 86% 45%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214 26% 80%;
-    --input: 214 26% 80%;
-    --ring: 211 68% 45%;
+    --border: 216 22% 82%;
+    --input: 216 22% 82%;
+    --ring: 218 68% 45%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;
     --font-sans: "Space Grotesk Variable", "Avenir Next", "Segoe UI", sans-serif;
     --font-display: "Fraunces Variable", "Iowan Old Style", "Times New Roman", serif;
   }
@@ -77,9 +80,23 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 8% 0%, hsl(var(--primary) / 0.2), transparent 34%),
-      radial-gradient(circle at 88% 12%, hsl(356 82.9% 41.4% / 0.16), transparent 30%),
-      linear-gradient(to bottom, hsl(210 100% 98%), hsl(var(--background)));
+      linear-gradient(hsl(var(--border) / 0.28) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.22) 1px, transparent 1px),
+      radial-gradient(circle at 16% 34%, hsl(var(--primary) / 0.08), transparent 24%),
+      radial-gradient(circle at 82% 18%, hsl(var(--accent) / 0.07), transparent 22%),
+      linear-gradient(to bottom, hsl(0 0% 100%), hsl(var(--background)));
+    background-position:
+      -1px -1px,
+      -1px -1px,
+      0 0,
+      0 0,
+      0 0;
+    background-size:
+      72px 72px,
+      72px 72px,
+      auto,
+      auto,
+      auto;
     min-height: 100%;
   }
 
@@ -92,7 +109,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
   }
 
   a {
@@ -121,13 +138,53 @@
 }
 
 @layer utilities {
+  .editorial-shell {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card) / 0.86);
+    box-shadow: 0 18px 60px hsl(218 44% 12% / 0.06);
+    backdrop-filter: blur(16px);
+  }
+
+  .editorial-panel {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card) / 0.76);
+    box-shadow: 0 14px 42px hsl(218 44% 12% / 0.045);
+  }
+
+  .editorial-line {
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+  }
+
+  .section-label {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground;
+    letter-spacing: 0.12em;
+  }
+
+  .section-label::after {
+    content: "";
+    display: inline-block;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 9999px;
+    background: hsl(var(--accent));
+  }
+
+  .signal-dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 9999px;
+    background: hsl(var(--signal));
+    box-shadow: 0 0 0 4px hsl(var(--signal) / 0.12);
+  }
+
   .lift-card {
-    transition: box-shadow 220ms ease, border-color 220ms ease;
+    transition: box-shadow 220ms ease, border-color 220ms ease, transform 220ms ease;
   }
 
   .lift-card:hover {
-    box-shadow: 0 20px 50px hsl(var(--foreground) / 0.1);
+    box-shadow: 0 22px 54px hsl(218 44% 12% / 0.09);
     border-color: hsl(var(--border) / 0.95);
+    transform: translateY(-1px);
   }
 
   .nav-pill {
@@ -142,7 +199,7 @@
     bottom: 0.25rem;
     height: 2px;
     border-radius: 9999px;
-    background-color: hsl(var(--primary));
+    background-color: hsl(var(--accent));
     transform: scaleX(0);
     transform-origin: center;
     transition: transform 220ms ease;
@@ -164,7 +221,7 @@
     bottom: 0.25rem;
     height: 2px;
     border-radius: 9999px;
-    background-color: hsl(var(--primary));
+    background-color: hsl(var(--accent));
     transform: scaleX(0);
     transform-origin: center;
     transition: transform 220ms ease;

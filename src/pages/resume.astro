@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Linkedin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -110,18 +109,15 @@ const skills = [
   title="Resume"
   description="Resume of Enguerrand Allamel, Staff Cloud Security Engineer."
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Resume
-        </Badge>
-        <CardTitle className="text-4xl sm:text-5xl">Enguerrand Allamel</CardTitle>
-        <CardDescription className="max-w-3xl text-base sm:text-lg">
-          Staff Cloud Security Engineer with a strong SRE background and hands-on work in
-          Kubernetes, AWS, Python, Go, and CI/CD in production.
-        </CardDescription>
-        <div class="pt-1">
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <p class="section-label">Resume</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">Enguerrand Allamel</h1>
+      <p class="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        Staff Cloud Security Engineer with a strong SRE background and hands-on work in
+        Kubernetes, AWS, Python, Go, and CI/CD in production.
+      </p>
+      <div class="pt-1">
           <a
             class="inline-flex h-11 items-center gap-2.5 rounded-md bg-primary px-5 text-base font-medium leading-none text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             href="https://www.linkedin.com/in/enguerrandallamel/"
@@ -131,47 +127,51 @@ const skills = [
             <Linkedin className="h-4 w-4 shrink-0" />
             <span>View LinkedIn Profile</span>
           </a>
-        </div>
-      </CardHeader>
-    </Card>
+      </div>
+    </div>
   </section>
 
-  <section class="space-y-6">
+  <section class="space-y-6 py-8">
     <div>
       <h2 class="text-3xl">Work Experience</h2>
     </div>
 
-    {experience.map((company) => (
-      <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-        <CardHeader className="space-y-2">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-2xl">{company.company}</CardTitle>
-            <span class="text-sm text-muted-foreground">{company.period}</span>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {company.roles.map((role) => (
-            <div class="space-y-3">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold">{role.title}</h3>
-                <span class="text-sm text-muted-foreground">{role.period}</span>
+    <div class="space-y-5 border-l border-border pl-5 sm:pl-7">
+      {experience.map((company) => (
+        <article class="relative">
+          <span class="absolute -left-[1.65rem] top-2 h-3 w-3 rounded-full border-2 border-background bg-primary sm:-left-[2.15rem]"></span>
+          <Card className="border-border/70 bg-card/80">
+            <CardHeader className="space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <CardTitle className="text-2xl">{company.company}</CardTitle>
+                <span class="text-sm font-medium text-muted-foreground">{company.period}</span>
               </div>
-              <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
-                {role.bullets.map((bullet) => (
-                  <li>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    ))}
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {company.roles.map((role) => (
+                <div class="space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-2">
+                    <h3 class="text-lg font-semibold">{role.title}</h3>
+                    <span class="text-sm text-muted-foreground">{role.period}</span>
+                  </div>
+                  <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+                    {role.bullets.map((bullet) => (
+                      <li>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </article>
+      ))}
+    </div>
   </section>
 
   <Separator className="my-10" />
 
   <section class="grid gap-6 lg:grid-cols-2">
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Education</CardTitle>
       </CardHeader>
@@ -186,7 +186,7 @@ const skills = [
       </CardContent>
     </Card>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Community & Speaking</CardTitle>
       </CardHeader>
@@ -198,17 +198,17 @@ const skills = [
   </section>
 
   <section class="mt-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader>
         <CardTitle className="text-2xl">Technical Skills</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div class="rounded-2xl border border-primary/30 bg-primary/5 p-4 sm:p-5">
+        <div class="rounded-lg border border-primary/30 bg-primary/5 p-4 sm:p-5">
           <p class="mb-3 text-sm font-semibold tracking-[0.08em] text-primary uppercase">
             Certifications
           </p>
           <div class="grid gap-3 sm:grid-cols-2">
-            <article class="flex items-center gap-3 rounded-xl border border-border/70 bg-background/95 p-3 shadow-[0_8px_20px_hsl(var(--foreground)/0.08)] sm:p-4">
+            <article class="flex items-center gap-3 rounded-lg border border-border/70 bg-background/95 p-3  sm:p-4">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
                 alt="Kubernetes official logo"
@@ -220,7 +220,7 @@ const skills = [
                 CKA: Certified Kubernetes Administrator
               </p>
             </article>
-            <article class="flex items-center gap-3 rounded-xl border border-border/70 bg-background/95 p-3 shadow-[0_8px_20px_hsl(var(--foreground)/0.08)] sm:p-4">
+            <article class="flex items-center gap-3 rounded-lg border border-border/70 bg-background/95 p-3  sm:p-4">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
                 alt="AWS official logo"
@@ -236,7 +236,7 @@ const skills = [
         </div>
         <div class="grid gap-3">
           {skills.map(([label, value]) => (
-            <div class="rounded-xl border border-border/70 bg-secondary/45 px-4 py-3">
+            <div class="rounded-lg border border-border/70 bg-secondary/45 px-4 py-3">
               <p class="text-sm font-semibold">{label}</p>
               <p class="text-sm text-muted-foreground">{value}</p>
             </div>

@@ -2,7 +2,6 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { TalksTable } from "@/components/sections/TalksTable";
 import TalksSubnav from "@/components/sections/TalksSubnav.astro";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection } from "astro:content";
 
@@ -66,29 +65,25 @@ const sectionLinks = [
   title="Talks"
   description="Conference talks and workshops on cloud security, software supply chain protection, and reliability."
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Speaking
-        </Badge>
-        <CardTitle className="text-4xl sm:text-5xl">Talks & Workshops</CardTitle>
-        <CardDescription className="max-w-2xl text-base sm:text-lg">
-          A unified archive of conference sessions, meetups, and security case studies.
-        </CardDescription>
-        <div class="flex flex-wrap gap-2 pt-1">
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <p class="section-label">Speaking</p>
+      <h1 class="text-5xl leading-tight sm:text-6xl">Talks & Workshops</h1>
+      <p class="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        A unified archive of conference sessions, meetups, and security case studies.
+      </p>
+      <div class="flex flex-wrap gap-2 pt-1">
+          <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
             {talks.length} Talks
           </span>
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+          <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
             {talksByYear.length} Years
           </span>
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+          <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
             {tags.length} Topics
           </span>
-        </div>
-      </CardHeader>
-    </Card>
+      </div>
+    </div>
   </section>
 
   <TalksSubnav sectionLinks={sectionLinks} showAllTalks={false} />
@@ -98,7 +93,7 @@ const sectionLinks = [
   </section>
 
   <section id="by-year" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Browse by year</CardTitle>
         <CardDescription className="max-w-2xl">
@@ -107,10 +102,10 @@ const sectionLinks = [
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
         {talksByYear.map(([year, yearTalks]) => (
-          <div class="rounded-xl border border-border/70 bg-background/65 p-4">
+          <div class="rounded-lg border border-border/70 bg-background/65 p-4">
             <div class="mb-3 flex items-center justify-between gap-3">
               <h3 class="text-2xl leading-none">{year}</h3>
-              <span class="rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+              <span class="rounded-md border border-border/80 bg-secondary/60 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                 {yearTalks.length} talks
               </span>
             </div>
@@ -138,7 +133,7 @@ const sectionLinks = [
   </section>
 
   <section id="tags" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Topic index</CardTitle>
         <CardDescription className="max-w-2xl">
@@ -149,9 +144,9 @@ const sectionLinks = [
         {tags.length > 0 ? (
           <div class="flex flex-wrap gap-2.5">
             {tags.map(([tag, count]) => (
-              <span class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+              <span class="inline-flex items-center gap-2 rounded-md border border-border/80 bg-secondary/60 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
                 {tag}
-                <span class="rounded-full border border-border/80 bg-card/75 px-2 py-0.5 text-[10px] text-foreground">
+                <span class="rounded-md border border-border/80 bg-card/75 px-2 py-0.5 text-[10px] text-foreground">
                   {count}
                 </span>
               </span>
@@ -165,7 +160,7 @@ const sectionLinks = [
   </section>
 
   <section id="resources" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <Card className="border-border/70 bg-card/80">
       <CardHeader className="space-y-3">
         <CardTitle className="text-3xl">Resource links</CardTitle>
         <CardDescription className="max-w-2xl">
@@ -192,7 +187,7 @@ const sectionLinks = [
                 </div>
                 <a
                   href={`/talks/${resource.talkSlug}`}
-                  class="rounded-full border border-border/70 bg-card/75 px-3 py-1 text-xs font-medium text-foreground hover:bg-card"
+                  class="rounded-md border border-border/70 bg-card/75 px-3 py-1 text-xs font-medium text-foreground hover:bg-card"
                 >
                   Talk
                 </a>

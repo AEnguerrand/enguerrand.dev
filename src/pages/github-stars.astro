@@ -1,8 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { GitHubStars } from "@/components/sections/GitHubStars";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { readFile } from "node:fs/promises";
 
@@ -51,40 +49,36 @@ const listCount = starredDataset?.groups.filter((group) => group.repos.length > 
   title="GitHub Stars"
   description="A curated collection of my starred GitHub repositories, organized by topic."
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-            GitHub
-          </Badge>
-          <a
-            href="/radar"
-            class="inline-flex items-center gap-1 rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-secondary/70 hover:text-foreground"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Back to radar
-          </a>
+  <section class="border-b border-border/80 py-10 sm:py-12">
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="section-label">GitHub</p>
+        <a
+          href="/radar"
+          class="inline-flex items-center gap-1 rounded-md border border-border/80 bg-secondary/60 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-secondary/70 hover:text-foreground"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to radar
+        </a>
+      </div>
+      <h1 class="text-5xl leading-tight sm:text-6xl">Curated GitHub Stars</h1>
+      <p class="max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        Repositories I find useful, organized by topic. Use the quick selector and expand only the lists you want to browse.
+      </p>
+      {starredDataset && (
+        <div class="flex flex-wrap gap-2">
+          <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+            {starredDataset.total_repos} Stars
+          </span>
+          <span class="rounded-md border border-border/80 bg-secondary/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+            {listCount} Lists
+          </span>
         </div>
-        <CardTitle className="text-4xl sm:text-5xl">Curated GitHub Stars</CardTitle>
-        <CardDescription className="max-w-3xl text-base sm:text-lg">
-          Repositories I find useful, organized by topic. Use the quick selector and expand only the lists you want to browse.
-        </CardDescription>
-        {starredDataset && (
-          <div class="flex flex-wrap gap-2">
-            <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-              {starredDataset.total_repos} Stars
-            </span>
-            <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-              {listCount} Lists
-            </span>
-          </div>
-        )}
-      </CardHeader>
-    </Card>
+      )}
+    </div>
   </section>
 
-  <section>
+  <section class="py-8">
     <GitHubStars dataset={starredDataset} />
   </section>
 </BaseLayout>

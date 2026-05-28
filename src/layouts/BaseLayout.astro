@@ -38,37 +38,28 @@ const ogImageUrl = new URL("/og-image.jpg", siteUrl).toString();
   </head>
   <body class="min-h-screen bg-background font-sans text-foreground antialiased">
     <div class="relative isolate min-h-screen">
-      <div
-        aria-hidden="true"
-        class="pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        class="pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
-      />
-
-      <header class="sticky top-4 z-40 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <nav class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
-          <a class="text-sm font-semibold tracking-[0.12em] text-foreground uppercase" href="/">Enguerrand Allamel</a>
-          <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks">Talks</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar">Radar</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume">Resume</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
+      <header class="sticky top-0 z-40 border-b border-border/80 bg-background/88 backdrop-blur-xl">
+        <nav class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+          <a class="text-sm font-bold uppercase text-foreground sm:text-base" style="letter-spacing:0.16em" href="/">Enguerrand Allamel</a>
+          <div class="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+            <a class="nav-pill px-3 py-1.5 hover:text-foreground" href="/talks">Talks</a>
+            <a class="nav-pill px-3 py-1.5 hover:text-foreground" href="/radar">Radar</a>
+            <a class="nav-pill px-3 py-1.5 hover:text-foreground" href="/resume">Resume</a>
+            <a class="nav-pill px-3 py-1.5 hover:text-foreground" href="/#contact">Contact</a>
           </div>
         </nav>
       </header>
 
-      <main class="mx-auto w-full max-w-6xl px-4 pb-20 pt-0 sm:px-6 lg:px-8">
+      <main class="mx-auto w-full max-w-7xl px-4 pb-20 pt-0 sm:px-6 lg:px-8">
         <slot />
       </main>
 
-      <footer class="mx-auto w-full max-w-6xl px-4 pb-10 text-xs text-muted-foreground sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/80 px-5 py-4">
-          <span class="tracking-[0.16em] uppercase">Security. SRE. Platform.</span>
+      <footer class="border-t border-border/80 text-xs text-muted-foreground">
+        <div class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6 sm:px-6 lg:px-8">
+          <span class="font-semibold uppercase" style="letter-spacing:0.16em">Security. SRE. Platform.</span>
           <div class="flex items-center gap-3">
             <span>Based in Vancouver, BC, Canada 🇨🇦</span>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 text-xs hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/privacy">
+            <a class="nav-pill px-2 py-1 text-xs hover:text-foreground" href="/privacy">
               Privacy
             </a>
           </div>
