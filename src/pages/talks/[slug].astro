@@ -4,15 +4,15 @@ import TalksSubnav from "@/components/sections/TalksSubnav.astro";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
-  return talks.map((talk) => ({ params: { slug: talk.slug }, props: { talk } }));
+  return talks.map((talk) => ({ params: { slug: talk.id }, props: { talk } }));
 }
 
 const { talk } = Astro.props;
-const { Content } = await talk.render();
+const { Content } = await render(talk);
 
 const formattedDate = new Date(talk.data.date).toLocaleDateString("en-US", {
   year: "numeric",

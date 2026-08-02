@@ -3,7 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteSearch from "@/components/sections/SiteSearch.astro";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getCollection, getEntry } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 import { readFile } from "node:fs/promises";
 
 type SearchItem = {
@@ -103,10 +103,10 @@ const [
 ]);
 
 const talkItems: SearchItem[] = talks.map((talk) => ({
-  id: `talk-${talk.slug}`,
+  id: `talk-${talk.id}`,
   kind: "talk",
   title: talk.data.title,
-  href: `/talks/${talk.slug}`,
+  href: `/talks/${talk.id}`,
   summary: talk.data.summary,
   content: toSearchText(talk.body),
   tags: talk.data.tags ?? [],
@@ -169,7 +169,7 @@ const searchItems: SearchItem[] = [...talkItems, ...pageItems];
 const placeholder = page.data.placeholder ?? "Search talks, topics, and pages";
 
 const hasBodyContent = (page.body ?? "").trim().length > 0;
-const renderedPage = hasBodyContent ? await page.render() : null;
+const renderedPage = hasBodyContent ? await render(page) : null;
 const PageContent = renderedPage?.Content;
 ---
 
