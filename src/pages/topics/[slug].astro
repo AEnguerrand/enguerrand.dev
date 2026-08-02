@@ -1,0 +1,140 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { topicDescription, topicHref, topicSlug, topicTitle } from "@/lib/topics";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const talks = await getCollection("talks");
+  const topicNames = Array.from(new Set(talks.flatMap((talk) => talk.data.tags ?? [])));
+
+  return topicNames.map((topic) => ({ params: { slug: topicSlug(topic) }, props: { topic } }));
+}
+
+const { topic } = Astro.props as { topic: string };
+const allTalks = await getCollection("talks");
+const talks = allTalks
+  .filter((talk) => (talk.data.tags ?? []).includes(topic))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const relatedTopicCounts = new Map<string, number>();
+for (const talk of talks) {
+  for (const tag of talk.data.tags ?? []) {
+    if (tag !== topic) relatedTopicCounts.set(tag, (relatedTopicCounts.get(tag) ?? 0) + 1);
+  }
+}
+const relatedTopics = Array.from(relatedTopicCounts, ([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  .slice(0, 8);
+
+const name = topicTitle(topic);
+const description = topicDescription(topic);
+const topicUrl = new URL(topicHref(topic), Astro.site).toString();
+const structuredData = [
+  {
+    "@type": "CollectionPage",
+    "@id": `${topicUrl}#collection`,
+    url: topicUrl,
+    name: `${name} talks and resources`,
+    description,
+    isPartOf: { "@id": "https://enguerrand.dev/#website" },
+    about: { "@type": "Thing", name },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: talks.length,
+      itemListElement: talks.map((talk, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: talk.data.title,
+        url: new URL(`/talks/${talk.id}`, Astro.site).toString(),
+      })),
+    },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://enguerrand.dev/" },
+      { "@type": "ListItem", position: 2, name: "Topics", item: "https://enguerrand.dev/topics/" },
+      { "@type": "ListItem", position: 3, name, item: topicUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={`${name} Talks`} description={description} structuredData={structuredData}>
+  <nav aria-label="Breadcrumb" class="pt-3 text-sm text-muted-foreground sm:pt-6">
+    <ol class="flex flex-wrap items-center gap-2">
+      <li><a class="hover:text-foreground" href="/">Home</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a class="hover:text-foreground" href="/topics">Topics</a></li>
+      <li aria-hidden="true">/</li>
+      <li aria-current="page" class="text-foreground">{name}</li>
+    </ol>
+  </nav>
+
+  <section class="py-8">
+    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
+      <CardHeader className="space-y-4">
+        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
+          {talks.length} {talks.length === 1 ? "conference talk" : "conference talks"}
+        </Badge>
+        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{name} talks & resources</h1>
+        <CardDescription className="max-w-3xl text-base leading-relaxed sm:text-lg">{description}</CardDescription>
+      </CardHeader>
+    </Card>
+  </section>
+
+  <section aria-labelledby="talks-heading" class="space-y-5">
+    <div>
+      <h2 id="talks-heading" class="text-3xl font-semibold tracking-tight">Talks about {name}</h2>
+      <p class="mt-2 text-muted-foreground">Open a session for the full abstract, implementation details, video, slides, and repositories.</p>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-2">
+      {talks.map((talk) => (
+        <Card className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
+          <CardHeader className="space-y-3">
+            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              {new Date(talk.data.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              {talk.data.event && ` · ${talk.data.event}`}
+            </p>
+            <h2 class="text-2xl font-semibold leading-snug tracking-tight">
+              <a class="hover:text-primary" href={`/talks/${talk.id}`}>{talk.data.title}</a>
+            </h2>
+            {talk.data.summary && <CardDescription className="leading-relaxed">{talk.data.summary}</CardDescription>}
+          </CardHeader>
+          <CardContent className="mt-auto space-y-4">
+            <div class="flex flex-wrap gap-2">
+              {(talk.data.tags ?? []).filter((tag) => tag !== topic).slice(0, 5).map((tag) => (
+                <a class="rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground hover:text-foreground" href={topicHref(tag)}>
+                  {topicTitle(tag)}
+                </a>
+              ))}
+            </div>
+            <a class="inline-flex text-sm font-semibold text-foreground hover:text-primary" href={`/talks/${talk.id}`}>
+              Read talk details →
+            </a>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  </section>
+
+  {relatedTopics.length > 0 && (
+    <section aria-labelledby="related-heading" class="pt-10">
+      <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
+        <CardHeader>
+          <h2 id="related-heading" class="text-2xl font-semibold tracking-tight">Related topics</h2>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-2.5">
+          {relatedTopics.map((related) => (
+            <a class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground hover:bg-secondary/80 hover:text-foreground" href={topicHref(related.name)}>
+              {topicTitle(related.name)} · {related.count}
+            </a>
+          ))}
+        </CardContent>
+      </Card>
+    </section>
+  )}
+</BaseLayout>

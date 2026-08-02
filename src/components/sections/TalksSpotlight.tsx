@@ -4,9 +4,10 @@ import { ArrowUpRight, CalendarDays, Mic2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { topicHref, topicTitle } from "@/lib/topics";
 
 type Talk = {
-  slug: string;
+  id: string;
   data: {
     title: string;
     date: string;
@@ -52,7 +53,7 @@ export function TalksSpotlight({ talks }: TalksSpotlightProps) {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {talks.map((talk) => (
           <Card
-            key={talk.slug}
+            key={talk.id}
             className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]"
           >
             <CardHeader className="space-y-3">
@@ -67,14 +68,18 @@ export function TalksSpotlight({ talks }: TalksSpotlightProps) {
               {(talk.data.tags ?? []).length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {(talk.data.tags ?? []).slice(0, 3).map((tag) => (
-                    <Badge key={`${talk.slug}-${tag}`} variant="secondary" className="border border-border/70 bg-secondary/60">
-                      {tag}
-                    </Badge>
+                    <a
+                      key={`${talk.id}-${tag}`}
+                      href={topicHref(tag)}
+                      className="rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary hover:text-foreground"
+                    >
+                      {topicTitle(tag)}
+                    </a>
                   ))}
                 </div>
               )}
               <Button asChild className="w-full gap-2">
-                <a href={`/talks/${talk.slug}`}>
+                <a href={`/talks/${talk.id}`}>
                   Read details <Mic2 className="h-4 w-4" />
                 </a>
               </Button>

@@ -7,6 +7,7 @@ const talks = defineCollection({
   schema: z
     .object({
       title: z.string(),
+      seoTitle: z.string().optional(),
       date: z.string(),
       author: z.array(z.string()).optional(),
       event: z.string().optional(),

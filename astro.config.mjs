@@ -5,5 +5,11 @@ import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: "https://enguerrand.dev",
-  integrations: [mdx(), react(), sitemap()],
+  integrations: [
+    mdx(),
+    react(),
+    sitemap({
+      filter: (page) => !page.endsWith("/404/") && !page.endsWith("/search/"),
+    }),
+  ],
 });

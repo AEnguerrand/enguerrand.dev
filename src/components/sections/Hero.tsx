@@ -77,10 +77,10 @@ export function Hero({
               </div>
             </div>
 
-            <CardTitle className="max-w-3xl text-4xl leading-tight sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               Hi, I&apos;m Enguerrand. I build{" "}
               <span className="text-primary">secure and reliable cloud platforms</span>.
-            </CardTitle>
+            </h1>
             <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               Senior Platform Security Engineer working on AI-first development guardrails,
               cloud and Kubernetes security, and secure-by-default developer platforms. This

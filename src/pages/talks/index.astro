@@ -5,6 +5,7 @@ import TalksSubnav from "@/components/sections/TalksSubnav.astro";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection } from "astro:content";
+import { topicHref, topicTitle } from "@/lib/topics";
 
 const talks = (await getCollection("talks")).sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
@@ -43,7 +44,7 @@ for (const talk of talks) {
       resourcesByUrl.set(resource.url, {
         label: resource.label,
         url: resource.url,
-        talkSlug: talk.slug,
+        talkSlug: talk.id,
         talkTitle: talk.data.title,
         date: talk.data.date,
       });
@@ -60,11 +61,30 @@ const sectionLinks = [
   { href: "#tags", label: "Tags" },
   { href: "#resources", label: "Resources" },
 ];
+const structuredData = {
+  "@type": "CollectionPage",
+  "@id": "https://enguerrand.dev/talks/#collection",
+  url: "https://enguerrand.dev/talks/",
+  name: "Cloud security talks and workshops",
+  description: "Conference talks and workshops on cloud security, software supply chain protection, and reliability.",
+  isPartOf: { "@id": "https://enguerrand.dev/#website" },
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: talks.length,
+    itemListElement: talks.map((talk, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: talk.data.title,
+      url: new URL(`/talks/${talk.id}`, Astro.site).toString(),
+    })),
+  },
+};
 ---
 
 <BaseLayout
   title="Talks"
   description="Conference talks and workshops on cloud security, software supply chain protection, and reliability."
+  structuredData={structuredData}
 >
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
@@ -72,7 +92,7 @@ const sectionLinks = [
         <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
           Speaking
         </Badge>
-        <CardTitle className="text-4xl sm:text-5xl">Talks & Workshops</CardTitle>
+        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">Cloud security talks & workshops</h1>
         <CardDescription className="max-w-2xl text-base sm:text-lg">
           A unified archive of conference sessions, meetups, and security case studies.
         </CardDescription>
@@ -117,7 +137,7 @@ const sectionLinks = [
             <ul class="space-y-3">
               {yearTalks.map((talk) => (
                 <li class="rounded-lg border border-border/70 bg-card/70 p-3">
-                  <a class="font-medium text-foreground hover:text-primary" href={`/talks/${talk.slug}`}>
+                  <a class="font-medium text-foreground hover:text-primary" href={`/talks/${talk.id}`}>
                     {talk.data.title}
                   </a>
                   <p class="mt-1 text-xs text-muted-foreground">
@@ -149,12 +169,12 @@ const sectionLinks = [
         {tags.length > 0 ? (
           <div class="flex flex-wrap gap-2.5">
             {tags.map(([tag, count]) => (
-              <span class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-                {tag}
+              <a href={topicHref(tag)} class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground hover:bg-secondary/80 hover:text-foreground">
+                {topicTitle(tag)}
                 <span class="rounded-full border border-border/80 bg-card/75 px-2 py-0.5 text-[10px] text-foreground">
                   {count}
                 </span>
-              </span>
+              </a>
             ))}
           </div>
         ) : (

@@ -173,7 +173,7 @@ const renderedPage = hasBodyContent ? await render(page) : null;
 const PageContent = renderedPage?.Content;
 ---
 
-<BaseLayout title={page.data.title ?? "Search"}>
+<BaseLayout title={page.data.title ?? "Search"} noindex={true}>
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
       <CardContent className="space-y-4 p-7 sm:p-9">
