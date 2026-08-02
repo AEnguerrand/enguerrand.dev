@@ -3,9 +3,11 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Hero } from "@/components/sections/Hero";
 import { ContactCard } from "@/components/sections/ContactCard";
 import { TalksSpotlight } from "@/components/sections/TalksSpotlight";
+import { WhyThisSite } from "@/components/sections/WhyThisSite";
 import { getCollection, getEntry } from "astro:content";
 
-const talks = (await getCollection("talks"))
+const allTalks = await getCollection("talks");
+const talks = allTalks
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
 const homePage = await getEntry("pages", "home");
@@ -20,6 +22,8 @@ const homePage = await getEntry("pages", "home");
     currentExploringDescription={homePage?.data.currentExploringDescription}
     currentExploringItems={homePage?.data.currentExploring}
   />
+
+  <WhyThisSite talkCount={allTalks.length} />
 
   <TalksSpotlight talks={talks} />
 
