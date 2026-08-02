@@ -1,14 +1,14 @@
 import * as React from "react";
 import { CalendarDays, ChevronRight } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { topicHref, topicTitle } from "@/lib/topics";
 
 type Talk = {
-  slug: string;
+  id: string;
   data: {
     title: string;
     date: string;
@@ -56,7 +56,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
           </TableHeader>
           <TableBody>
             {talks.map((talk) => (
-              <TableRow key={talk.slug} className="hover:bg-secondary/45">
+              <TableRow key={talk.id} className="hover:bg-secondary/45">
                 <TableCell className="whitespace-nowrap text-muted-foreground">
                   {new Date(talk.data.date).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -76,13 +76,13 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                   {(talk.data.tags ?? []).length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {(talk.data.tags ?? []).slice(0, 3).map((tag) => (
-                        <Badge
-                          key={`${talk.slug}-${tag}`}
-                          variant="secondary"
-                          className="border border-border/70 bg-secondary/60"
+                        <a
+                          key={`${talk.id}-${tag}`}
+                          href={topicHref(tag)}
+                          className="rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary hover:text-foreground"
                         >
-                          {tag}
-                        </Badge>
+                          {topicTitle(tag)}
+                        </a>
                       ))}
                     </div>
                   ) : (
@@ -91,7 +91,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
-                    <a href={`/talks/${talk.slug}`}>Details</a>
+                    <a href={`/talks/${talk.id}`}>Details</a>
                   </Button>
                 </TableCell>
               </TableRow>

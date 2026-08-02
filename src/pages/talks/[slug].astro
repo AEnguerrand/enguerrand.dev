@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection, render } from "astro:content";
+import { topicHref, topicTitle } from "@/lib/topics";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
@@ -89,9 +90,45 @@ const hasResources = resources.length > 0;
 const baseSectionClass = "mx-auto w-full max-w-5xl scroll-mt-40";
 const stackedSectionClass = `${baseSectionClass} mt-6 sm:mt-8`;
 const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionClass;
+const talkUrl = new URL(`/talks/${talk.id}`, Astro.site).toString();
+const structuredData = [
+  {
+    "@type": "TechArticle",
+    "@id": `${talkUrl}#article`,
+    headline: talk.data.title,
+    description: talk.data.summary,
+    datePublished: talk.data.date,
+    dateModified: talk.data.date,
+    mainEntityOfPage: talkUrl,
+    url: talkUrl,
+    author: { "@id": "https://enguerrand.dev/#person" },
+    publisher: { "@id": "https://enguerrand.dev/#person" },
+    keywords: talk.data.tags?.join(", "),
+    about: (talk.data.tags ?? []).map((tag) => ({ "@type": "Thing", name: topicTitle(tag) })),
+    isPartOf: { "@id": "https://enguerrand.dev/#website" },
+  },
+  {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://enguerrand.dev/" },
+      { "@type": "ListItem", position: 2, name: "Talks", item: "https://enguerrand.dev/talks/" },
+      { "@type": "ListItem", position: 3, name: talk.data.title, item: talkUrl },
+    ],
+  },
+  ...(videoEmbedUrl && videoResource
+    ? [{
+        "@type": "VideoObject",
+        name: talk.data.title,
+        description: talk.data.summary ?? `Recording of ${talk.data.title}`,
+        uploadDate: talk.data.date,
+        embedUrl: videoEmbedUrl,
+        contentUrl: videoResource.url,
+      }]
+    : []),
+];
 ---
 
-<BaseLayout title={talk.data.title} description={talk.data.summary}>
+<BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" structuredData={structuredData}>
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
       <CardContent className="space-y-5 p-7 sm:p-9">
@@ -107,9 +144,9 @@ const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionCl
         {talk.data.tags && (
           <div class="flex flex-wrap gap-2">
             {talk.data.tags.map((tag) => (
-              <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-[11px] font-medium tracking-[0.08em] uppercase text-muted-foreground">
-                {tag}
-              </span>
+              <a href={topicHref(tag)} class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-[11px] font-medium tracking-[0.08em] uppercase text-muted-foreground hover:bg-secondary/80 hover:text-foreground">
+                {topicTitle(tag)}
+              </a>
             ))}
           </div>
         )}

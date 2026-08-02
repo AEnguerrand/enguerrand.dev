@@ -1,14 +1,81 @@
 ---
 import "../styles/global.css";
 
-const { title = "Enguerrand Allamel", description } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article" | "profile";
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  image = "/og-image.jpg",
+  type = "website",
+  noindex = false,
+  structuredData,
+} = Astro.props;
 const pageDescription =
   description ??
   "Senior Platform Security Engineer focused on AI-first development guardrails, secure platforms, and resilient cloud systems.";
-const pageTitle = title ? `${title} · Enguerrand Allamel` : "Enguerrand Allamel";
+const pageTitle = title ? `${title} | Enguerrand Allamel` : "Enguerrand Allamel | Platform Security Engineer";
 const siteUrl = Astro.site ?? new URL("https://enguerrand.dev");
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
-const ogImageUrl = new URL("/og-image.jpg", siteUrl).toString();
+const ogImageUrl = new URL(image, siteUrl).toString();
+const defaultStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": new URL("/#person", siteUrl).toString(),
+      name: "Enguerrand Allamel",
+      url: siteUrl.toString(),
+      image: new URL("/avatar.webp", siteUrl).toString(),
+      jobTitle: "Senior Platform Security Engineer",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Vancouver",
+        addressRegion: "BC",
+        addressCountry: "CA",
+      },
+      sameAs: [
+        "https://github.com/AEnguerrand",
+        "https://www.linkedin.com/in/enguerrandallamel/",
+      ],
+      knowsAbout: [
+        "AI development security",
+        "Cloud security",
+        "Software supply chain security",
+        "Kubernetes",
+        "Site reliability engineering",
+        "AWS",
+        "SLSA",
+        "Sigstore",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": new URL("/#website", siteUrl).toString(),
+      url: siteUrl.toString(),
+      name: "Enguerrand Allamel",
+      description: pageDescription,
+      inLanguage: "en",
+      author: { "@id": new URL("/#person", siteUrl).toString() },
+    },
+  ],
+};
+const extraStructuredData = structuredData
+  ? Array.isArray(structuredData)
+    ? structuredData
+    : [structuredData]
+  : [];
+const jsonLd = {
+  ...defaultStructuredData,
+  "@graph": [...defaultStructuredData["@graph"], ...extraStructuredData],
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -16,20 +83,31 @@ const ogImageUrl = new URL("/og-image.jpg", siteUrl).toString();
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
+    <meta name="author" content="Enguerrand Allamel" />
+    <meta
+      name="robots"
+      content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}
+    />
     <title>{pageTitle}</title>
     <link rel="canonical" href={canonicalUrl} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="en_CA" />
     <meta property="og:site_name" content="Enguerrand Allamel" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content="Enguerrand Allamel, platform security engineer and conference speaker" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Enguerrand Allamel, platform security engineer and conference speaker" />
+    <meta name="theme-color" content="#f6f4ef" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -52,6 +130,7 @@ const ogImageUrl = new URL("/og-image.jpg", siteUrl).toString();
           <a class="text-sm font-semibold tracking-[0.12em] text-foreground uppercase" href="/">Enguerrand Allamel</a>
           <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks">Talks</a>
+            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics">Topics</a>
             <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar">Radar</a>
             <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume">Resume</a>
             <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>

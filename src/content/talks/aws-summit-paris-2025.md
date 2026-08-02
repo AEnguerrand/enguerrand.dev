@@ -1,6 +1,7 @@
 ---
 author: ["Enguerrand Allamel"]
 title: "AWS Summit Paris 2025: Rethinking Cloud Security, from Code to Real-time Protection"
+seoTitle: "AWS Cloud Security from Code to Runtime"
 date: "2025-04-09"
 event: "AWS Summit Paris 2025"
 location: "Paris, France"
