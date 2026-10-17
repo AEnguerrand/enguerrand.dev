@@ -1,27 +1,21 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Hero } from "@/components/sections/Hero";
-import { ContactCard } from "@/components/sections/ContactCard";
-import { TalksSpotlight } from "@/components/sections/TalksSpotlight";
+import { HomePage } from "@/components/pilot/HomePage";
+import "@/styles/once-ui.css";
 import { getCollection, getEntry } from "astro:content";
 
-const talks = (await getCollection("talks"))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 3);
+const allTalks = (await getCollection("talks"))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const featured = allTalks.find((talk) => talk.id === "kubecon-na-2024");
+const talks = [featured, ...allTalks.filter((talk) => talk.id !== featured?.id).slice(0, 2)]
+  .filter((talk): talk is NonNullable<typeof talk> => Boolean(talk));
 const homePage = await getEntry("pages", "home");
 ---
 
 <BaseLayout
+  onceUI
   title="Platform Security Engineer & Conference Speaker"
   description="Enguerrand Allamel is a Senior Platform Security Engineer sharing practical work on AI development guardrails, cloud security, AWS, Kubernetes, SLSA, SRE, and secure platforms."
 >
-  <Hero
-    currentExploringTitle={homePage?.data.currentExploringTitle}
-    currentExploringDescription={homePage?.data.currentExploringDescription}
-    currentExploringItems={homePage?.data.currentExploring}
-  />
-
-  <TalksSpotlight talks={talks} />
-
-  <ContactCard />
+  <HomePage talks={talks.map(({ id, data }) => ({ id, data }))} exploring={homePage?.data ?? {}} />
 </BaseLayout>

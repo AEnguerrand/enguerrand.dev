@@ -4,7 +4,7 @@ import { GitHubStars } from "@/components/sections/GitHubStars";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import { readFile } from "node:fs/promises";
+import starsData from "../../public/data/starred-groups.json";
 
 type StarredRepository = {
   id: number;
@@ -35,14 +35,7 @@ type StarredDataset = {
   groups: StarredGroup[];
 };
 
-let starredDataset: StarredDataset | null = null;
-try {
-  const dataPath = new URL("../../public/data/starred-groups.json", import.meta.url);
-  const raw = await readFile(dataPath, "utf-8");
-  starredDataset = JSON.parse(raw) as StarredDataset;
-} catch {
-  starredDataset = null;
-}
+const starredDataset: StarredDataset = starsData;
 
 const listCount = starredDataset?.groups.filter((group) => group.repos.length > 0).length ?? 0;
 ---

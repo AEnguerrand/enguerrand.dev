@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    ".astro/types.d.ts",
+    "src/components/pilot/**/*.tsx",
+    "src/lib/talk-presentation.ts",
+    "src/lib/topics.ts"
+  ]
+}

@@ -126,8 +126,9 @@ export function GitHubStars({ dataset }: GitHubStarsProps) {
         <CardHeader>
           <CardTitle className="text-2xl">Starred repositories are unavailable</CardTitle>
           <CardDescription>
-            I couldn&apos;t load the stars data right now. Please try again later.
+            The local repository list is unavailable. Browse the original list on GitHub.
           </CardDescription>
+          <a href="https://github.com/AEnguerrand?tab=stars" className="text-sm font-semibold text-primary underline">Browse GitHub Stars</a>
         </CardHeader>
       </Card>
     );

@@ -12,7 +12,9 @@
     "deploy:cf": "npm run build && npx wrangler deploy",
     "stars:import-ui": "uv run scripts/import_starred_lists_from_ui.py",
     "stars:sync": "uv run scripts/sync_starred_lists.py",
-    "stars:refresh": "npm run stars:import-ui && npm run stars:sync"
+    "stars:refresh": "npm run stars:import-ui && npm run stars:sync",
+    "check:pilot": "astro sync && tsc -p tsconfig.pilot.json && once-ui-validate-ai-code src/components/pilot/HomePage.tsx && once-ui-validate-ai-code src/components/pilot/TalkPage.tsx && once-ui-validate-ai-code src/components/pilot/PilotUI.tsx",
+    "test:pilot": "node --test scripts/pilot-output.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.1",
@@ -21,6 +23,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@fontsource-variable/fraunces": "^5.2.9",
     "@fontsource-variable/space-grotesk": "^5.2.10",
+    "@once-ui-system/core": "2.1.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-label": "^2.1.1",
@@ -36,8 +39,12 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.4.20",
+    "parse5": "^7.3.0",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.9.3"
   }
 }

@@ -1,0 +1,17 @@
+---
+import { getEntry, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { TalkPage } from "@/components/pilot/TalkPage";
+import { getTalkPresentation } from "@/lib/talk-presentation";
+import "@/styles/once-ui.css";
+
+const talk = await getEntry("talks", "kubecon-na-2024");
+if (!talk) throw new Error("The Once UI pilot talk is missing.");
+const { Content } = await render(talk);
+const { formattedDate, videoEmbedUrl, structuredData } = getTalkPresentation(talk, Astro.site);
+---
+<BaseLayout onceUI title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" structuredData={structuredData}>
+  <TalkPage talk={{ id: talk.id, data: talk.data }} formattedDate={formattedDate} videoEmbedUrl={videoEmbedUrl}>
+    <Content />
+  </TalkPage>
+</BaseLayout>

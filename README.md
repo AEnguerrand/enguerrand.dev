@@ -15,6 +15,25 @@ npm run dev
 npm run build
 ```
 
+## UI pilot and agent work
+
+Home and `/talks/kubecon-na-2024/` use Once UI 2.1 with static React rendering.
+Astro, the site fonts, and the existing palette stay in place. Other pages keep
+Tailwind components. Once UI utilities are scoped in `postcss.config.cjs` to
+prevent collisions with Tailwind classes. Import individual components to limit
+unused component CSS.
+
+Read [AGENTS.md](AGENTS.md) before changes. Check the pilot after a build:
+
+```bash
+npm run check:pilot
+npm run build
+npm run test:pilot
+```
+
+The last command checks generated HTML, resource links, heading order, CSS
+isolation, dates, and Stars data. Also inspect phone, tablet, and desktop layouts.
+
 ## Deploy (Cloudflare Workers - Static Assets)
 
 This site is deployed as static assets through Cloudflare Workers using `wrangler.toml`.
