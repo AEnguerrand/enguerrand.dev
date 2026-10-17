@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { HomePage } from "@/components/pilot/HomePage";
-import "@/styles/once-ui.css";
+import { Hero } from "@/components/sections/Hero";
+import { ContactCard } from "@/components/sections/ContactCard";
+import { TalksSpotlight } from "@/components/sections/TalksSpotlight";
 import { getCollection, getEntry } from "astro:content";
 
 const allTalks = (await getCollection("talks"))
@@ -13,9 +14,22 @@ const homePage = await getEntry("pages", "home");
 ---
 
 <BaseLayout
-  onceUI
   title="Platform Security Engineer & Conference Speaker"
   description="Enguerrand Allamel is a Senior Platform Security Engineer sharing practical work on AI development guardrails, cloud security, AWS, Kubernetes, SLSA, SRE, and secure platforms."
 >
-  <HomePage talks={talks.map(({ id, data }) => ({ id, data }))} exploring={homePage?.data ?? {}} />
+  <Hero
+    currentExploringTitle={homePage?.data.currentExploringTitle}
+    currentExploringDescription={homePage?.data.currentExploringDescription}
+    currentExploringItems={homePage?.data.currentExploring}
+  />
+
+  <TalksSpotlight talks={talks} />
+
+  <section class="mt-8 rounded-lg border border-border/70 bg-card/90 p-6 shadow-sm" aria-labelledby="writing-title">
+    <h2 id="writing-title" class="text-2xl">Writing</h2>
+    <p class="mt-2 text-muted-foreground">Notes on security, AI, and life in Canada.</p>
+    <a href="/blog/" class="mt-4 inline-block font-medium text-primary hover:underline">Browse the blog →</a>
+  </section>
+
+  <ContactCard />
 </BaseLayout>

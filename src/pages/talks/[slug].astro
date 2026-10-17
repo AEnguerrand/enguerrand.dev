@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import TalksSubnav from "@/components/sections/TalksSubnav.astro";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection, render } from "astro:content";
 import { getTalkPresentation } from "@/lib/talk-presentation";
@@ -10,7 +10,7 @@ import { topicHref, topicTitle } from "@/lib/topics";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
-  return talks.filter((talk) => talk.id !== "kubecon-na-2024").map((talk) => ({ params: { slug: talk.id }, props: { talk } }));
+  return talks.map((talk) => ({ params: { slug: talk.id }, props: { talk } }));
 }
 
 const { talk } = Astro.props;
@@ -22,13 +22,21 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" structuredData={structuredData}>
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-5 p-7 sm:p-9">
+      <CardContent className="space-y-4 p-6 sm:p-7">
         <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          {formattedDate}
+          <time datetime={talk.data.date}>{formattedDate}</time>
         </Badge>
-        <h1 class="text-4xl leading-tight sm:text-5xl">{talk.data.title}</h1>
+        <h1 class="text-3xl leading-tight sm:text-4xl">{talk.data.displayTitle ?? talk.data.title}</h1>
 
-        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground sm:text-lg">{talk.data.summary}</p>}
+        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground">{talk.data.summary}</p>}
+
+        {hasResources && (
+          <div class="flex flex-wrap gap-3" aria-label="Session resources">
+            {resources.map((resource, index) => (
+              <a href={resource.url} class={buttonVariants({ variant: index === 0 ? "default" : "outline", className: "h-auto min-h-10 max-w-full whitespace-normal text-center" })}>{resource.label}</a>
+            ))}
+          </div>
+        )}
 
         {talk.data.author && <p class="text-sm text-muted-foreground">By {talk.data.author.join(", ")}</p>}
 
@@ -50,12 +58,9 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
   {videoEmbedUrl && (
     <section id="video" class={baseSectionClass}>
       <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-        <CardHeader className="space-y-3">
-          <CardTitle className="text-3xl">Watch talk</CardTitle>
-          <CardDescription className="max-w-2xl">
-            {videoResource?.label ?? "Session recording"}
-          </CardDescription>
-        </CardHeader>
+        <CardHeader className="space-y-2 pb-4">
+          <h2 class="text-2xl font-semibold leading-none tracking-tight">Watch talk</h2>
+          </CardHeader>
         <CardContent className="space-y-4">
           <div class="overflow-hidden rounded-xl border border-border/70 bg-background/65">
             <iframe
@@ -84,11 +89,8 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
 
   <section id="overview" class={overviewSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Session overview</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Standardized details for this talk, including event metadata and reference links.
-        </CardDescription>
+      <CardHeader className="space-y-2 pb-4">
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">Session overview</h2>
       </CardHeader>
       <CardContent className="space-y-6">
         {talkMetadata.length > 0 && (
@@ -107,11 +109,8 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
 
   <section id="resources" class={stackedSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Resources</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Links to videos, slides, repositories, and related reading.
-        </CardDescription>
+      <CardHeader className="space-y-2 pb-4">
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">Resources</h2>
       </CardHeader>
       <CardContent>
         {hasResources ? (
@@ -134,10 +133,7 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
 
   <section id="content" class={stackedSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Talk content</CardTitle>
-      </CardHeader>
-      <CardContent className="prose prose-headings:mt-8 prose-p:leading-relaxed max-w-none pt-2">
+      <CardContent className="prose prose-headings:mt-8 prose-p:leading-relaxed max-w-none pt-6">
         <Content />
       </CardContent>
     </Card>

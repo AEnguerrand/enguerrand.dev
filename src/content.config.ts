@@ -49,4 +49,31 @@ const pages = defineCollection({
     .passthrough(),
 });
 
-export const collections = { talks, pages };
+const publicationDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a date in YYYY-MM-DD format.").refine(
+  (value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  },
+  "Use a valid calendar date.",
+);
+
+const posts = defineCollection({
+  loader: glob({ pattern: "[^_]*.md", base: "./src/content/posts" }),
+  schema: z.object({
+    title: z.string().trim().min(1),
+    description: z.string().trim().min(1),
+    draft: z.boolean().default(true),
+    publishDate: publicationDate.optional(),
+    tags: z.array(z.string().trim().min(1)).default([]),
+  }).superRefine((post, context) => {
+    if (!post.draft && !post.publishDate) {
+      context.addIssue({
+        code: "custom",
+        path: ["publishDate"],
+        message: "A published post must have a publishDate.",
+      });
+    }
+  }),
+});
+
+export const collections = { talks, pages, posts };

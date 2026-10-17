@@ -8,8 +8,11 @@
   },
   "include": [
     ".astro/types.d.ts",
-    "src/components/pilot/**/*.tsx",
+    "src/components/sections/Hero.tsx",
+    "src/components/sections/TalksSpotlight.tsx",
+    "src/components/sections/ContactCard.tsx",
     "src/lib/talk-presentation.ts",
+    "src/lib/posts.ts",
     "src/lib/topics.ts"
   ]
 }

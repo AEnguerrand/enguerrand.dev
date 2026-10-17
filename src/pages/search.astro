@@ -1,4 +1,5 @@
 ---
+import { getPosts, postHref } from "@/lib/posts";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteSearch from "@/components/sections/SiteSearch.astro";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,7 @@ import { readFile } from "node:fs/promises";
 
 type SearchItem = {
   id: string;
-  kind: "talk" | "page";
+  kind: "talk" | "page" | "post";
   title: string;
   href: string;
   summary?: string;
@@ -83,6 +84,11 @@ async function readSearchableAstroFile(path: URL): Promise<string> {
 
 const page = await getEntry("pages", "search");
 const talks = await getCollection("talks");
+const posts = await getPosts();
+const postItems: SearchItem[] = posts.map((post) => ({
+  id: `post-${post.id}`, kind: "post", title: post.data.title, href: postHref(post.id),
+  summary: post.data.description, content: toSearchText(post.body), tags: post.data.tags, date: post.data.publishDate,
+}));
 
 const [
   homePageContent,
@@ -115,6 +121,7 @@ const talkItems: SearchItem[] = talks.map((talk) => ({
 }));
 
 const pageItems: SearchItem[] = [
+  { id: "page-blog", kind: "page", title: "Blog", href: "/blog/", summary: "Notes on life in Canada, security, and AI." },
   {
     id: "page-home",
     kind: "page",
@@ -165,8 +172,8 @@ const pageItems: SearchItem[] = [
   },
 ];
 
-const searchItems: SearchItem[] = [...talkItems, ...pageItems];
-const placeholder = page.data.placeholder ?? "Search talks, topics, and pages";
+const searchItems: SearchItem[] = [...talkItems, ...postItems, ...pageItems];
+const placeholder = page.data.placeholder ?? "Search talks, posts, and pages";
 
 const hasBodyContent = (page.body ?? "").trim().length > 0;
 const renderedPage = hasBodyContent ? await render(page) : null;
@@ -182,7 +189,7 @@ const PageContent = renderedPage?.Content;
         </Badge>
         <h1 class="text-4xl sm:text-5xl">{page.data.title ?? "Search"}</h1>
         <p class="max-w-2xl text-muted-foreground">
-          Find talks and pages quickly from one place.
+          Find talks, posts, and pages quickly from one place.
         </p>
       </CardContent>
     </Card>

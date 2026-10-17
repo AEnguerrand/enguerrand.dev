@@ -13,20 +13,25 @@ Use ASD-STE100 Simplified Technical English (STE) by default.
 ## UI contract
 
 - Preserve the Fraunces headings, Space Grotesk body text, blue accent, pale background, and restrained surfaces.
-- The Once UI pilot covers Home and `/talks/kubecon-na-2024/`. Other pages retain their current components until the user extends the migration.
-- Pilot React components live in `src/components/pilot/`. Brand aliases live in `src/styles/once-ui.css`. Keep this stylesheet on the pilot routes.
-- Use Once UI `Column`, `Row`, `Grid`, `Heading`, `Text`, `Button`, and `SmartLink`. Use token props for layout and spacing. Static panels use `Column`; `Card` is for interactive surfaces.
-- Read `node_modules/@once-ui-system/core/AGENTS.md`, `ai/manifest.json`, `ai/rules.compact.md`, and the relevant task bundle before new Once UI work. Use installed package types as the API reference. Do not copy obsolete version examples.
-- Use the root `LayoutProvider` for Astro. Do not add Next.js. Render native links on the server; add an Astro `client:*` directive only when browser state is required.
-- Keep shared presentation rules in `PilotUI.tsx`. Avoid duplicate Tailwind and Once UI controls within a pilot page. Keep custom CSS for brand aliases, typography, prose, and embeds.
+- Use Astro, Tailwind, and the existing components in `src/components/ui/`. Keep the current layout, spacing, card shapes, and shadows unless the user requests a design change.
+- Use shared components and CSS tokens to keep the UI consistent. Do not add another UI system for routine content pages.
+- Render native links on the server. Add an Astro `client:*` directive only when browser state is required.
+- Keep page introductions and section headings compact. Avoid separate cards or badges that only repeat a heading.
 - Use one H1 per page and H2 for sections. Check keyboard focus, anchor targets, phone layouts, and long text. Do not invent achievements or metrics.
 - Keep content URLs, metadata, structured data, resources, and article text intact. A short `displayTitle` can differ from the full title.
 - Import checked-in JSON at build time. Do not read source-relative files with `import.meta.url` inside compiled Astro pages. Missing data must not appear as a zero count.
 
+## Blog
+
+- Write posts in `src/content/posts/` as Markdown. Use `draft: true` until the author is ready to publish.
+- Production listings, routes, and search must use the shared publication filter in `src/lib/posts.ts`. Exclude drafts and future posts. Local development can show clearly marked draft previews.
+- Keep personal facts and opinions with the author. Do not write invented experiences or publish outlines. Use a real `publishDate` in `YYYY-MM-DD` format, interpreted as UTC.
+- This is a static site. A future publication date needs a new build on or after that date.
+
 ## Validation
 
-- Run `npm run check:pilot`, `npm run build`, and `npm run test:pilot` on the final source. Run `git diff --check`.
-- Inspect Home and the pilot talk at phone, tablet, and desktop widths. Check at least one unchanged talk page and Stars for regressions.
+- Run `npm run check:site`, `npm run build`, and `npm run test:site` on the final source. Run `git diff --check`.
+- Inspect Home, the KubeCon talk, and the blog at phone, tablet, and desktop widths. Check at least one unchanged talk page and Stars for regressions.
 - Verify headings, internal links, resources, keyboard focus, horizontal overflow, console errors, and JavaScript output. Keep Astro pages static unless a feature needs hydration.
 - Record checks and evidence limits in the pull request. Screenshots do not prove screen-reader support or live video playback.
 

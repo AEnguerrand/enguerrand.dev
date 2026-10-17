@@ -8,7 +8,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 
 type CurrentExploringItem = {
@@ -53,10 +52,10 @@ export function Hero({
       : defaultCurrentExploringItems;
 
   return (
-    <section className="pt-3 pb-12 sm:pt-6">
+    <section className="pt-3 pb-12 sm:pt-6" aria-label="Introduction and current interests">
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
         <Card className="lift-card overflow-hidden border-border/70 shadow-[0_18px_50px_hsl(var(--foreground)/0.07)]">
-          <CardHeader className="space-y-6 p-7 sm:p-9">
+          <CardHeader className="space-y-4 p-6 sm:p-7">
             <div className="flex flex-wrap items-center gap-4">
               <div className="group h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary/20">
                 <img
@@ -77,20 +76,20 @@ export function Hero({
               </div>
             </div>
 
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
               Hi, I&apos;m Enguerrand. I build{" "}
               <span className="text-primary">secure and reliable cloud platforms</span>.
             </h1>
             <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Senior Platform Security Engineer working on AI-first development guardrails,
-              cloud and Kubernetes security, and secure-by-default developer platforms. This
-              site is my notebook for talks, ideas, and field notes from real systems.
+              I work on cloud and Kubernetes security, AI development guardrails,
+              and developer platforms. Here I share practical lessons from
+              production systems, conference talks, and hands-on labs.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-wrap items-center gap-3 px-7 pb-8 sm:px-9">
+          <CardContent className="flex flex-wrap items-center gap-3 px-6 pb-6 sm:px-7">
             <Button asChild className="gap-2">
-              <a href="/talks">
-                Explore talks <ArrowUpRight className="h-4 w-4" />
+              <a href="#selected-talks">
+                Explore selected talks <ArrowUpRight className="h-4 w-4" />
               </a>
             </Button>
             <Button asChild variant="outline">
@@ -107,7 +106,7 @@ export function Hero({
 
         <Card className="lift-card border-border/70 bg-card/90 shadow-[0_14px_38px_hsl(var(--foreground)/0.06)]">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">{currentExploringTitle}</CardTitle>
+            <h2 id="exploring-title" className="text-2xl font-semibold leading-none tracking-tight">{currentExploringTitle}</h2>
             <CardDescription>{currentExploringDescription}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -119,10 +118,10 @@ export function Hero({
                   key={`${item.title}-${index}`}
                   className="lift-card rounded-xl border border-border/70 bg-secondary/55 p-4"
                 >
-                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
+                  <h3 className="mb-2 flex items-center gap-2 font-sans text-sm font-semibold">
                     <Icon className="h-4 w-4 text-primary" />
                     {item.title}
-                  </div>
+                  </h3>
                   <p className="text-sm text-muted-foreground">{item.description}</p>
                 </div>
               );

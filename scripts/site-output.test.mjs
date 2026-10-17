@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
-import { join } from "node:path";
 import test from "node:test";
 import { parse } from "parse5";
-import postcss from "postcss";
 
 const output = new URL("../dist/", import.meta.url);
 const load = (path) => readFile(new URL(path, output), "utf8");
@@ -22,7 +20,7 @@ const talk = await page("talks/kubecon-na-2024/index.html");
 
 for (const [name, { html, nodes }] of [
   ["Home", home],
-  ["pilot talk", talk],
+  ["talk", talk],
 ]) {
   test(`${name}: static HTML has ordered headings and working local anchors`, () => {
     const headings = nodes.filter((n) => /^h[1-6]$/.test(n.tagName ?? ""));
@@ -47,18 +45,15 @@ for (const [name, { html, nodes }] of [
   });
 }
 
-test("Home puts three selected talks before interests and keeps the contact target", () => {
+test("Home keeps the original hero layout, three selected talks, and the contact target", () => {
   const selected = home.nodes.find((n) => attrs(n).id === "selected-talks");
-  assert.equal(walk(selected).filter((n) => n.tagName === "article").length, 3);
-  assert.ok(
-    home.html.indexOf('id="selected-talks"') <
-      home.html.indexOf('id="exploring-title"'),
-  );
+  assert.equal(walk(selected).filter((n) => n.tagName === "h3").length, 3);
+  assert.ok(home.html.includes("lg:grid-cols-[1.35fr_1fr]"));
   assert.ok(home.nodes.some((n) => attrs(n).id === "contact"));
   assert.match(text(selected), /Nov 15, 2024/);
 });
 
-test("Pilot talk keeps source resources, full structured title, and a stable calendar date", async () => {
+test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {
   const source = await readFile(
     new URL("../src/content/talks/kubecon-na-2024.md", import.meta.url),
     "utf8",
@@ -84,6 +79,8 @@ test("Pilot talk keeps source resources, full structured title, and a stable cal
     text(talk.nodes.find((n) => n.tagName === "time")),
     /November 15, 2024/,
   );
+  const topResources = talk.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
+  assert.ok(walk(topResources).some((n) => n.tagName === "a" && attrs(n).class.includes("bg-primary")), "Primary resource link lost its button style");
   const video = attrs(talk.nodes.find((n) => n.tagName === "iframe"));
   assert.equal(video.loading, "lazy");
   assert.equal(video.src, "https://www.youtube.com/embed/0w_dBmvu5l8");
@@ -111,28 +108,29 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
   assert.ok(radar.includes(`${count} lists`));
 });
 
-test("Once UI CSS stays on the two pilot routes and cannot override global Tailwind utilities", async () => {
+test("Generated pages have no Once UI assets or markup", async () => {
   const files = await readdir(output, { recursive: true });
-  const pilotPaths = [
-    "index.html",
-    join("talks", "kubecon-na-2024", "index.html"),
-  ];
-  for (const file of files.filter((f) => f.endsWith(".html"))) {
-    assert.equal(
-      /href="[^\"]*once-ui\.[^\"]+\.css"/.test(await load(file)),
-      pilotPaths.includes(file),
-      file,
-    );
+  for (const file of files.filter((f) => /\.(html|css|js)$/.test(f)))
+    assert.doesNotMatch(await load(file), /once-ui|@once-ui-system/, file);
+  const lock = await readFile(new URL("../package-lock.json", import.meta.url), "utf8");
+  assert.doesNotMatch(lock, /@once-ui-system/);
+});
+
+test("Blog is linked and private drafts stay out of production routes, search, and sitemap", async () => {
+  const blog = await page("blog/index.html");
+  assert.match(text(blog.nodes[0]), /No posts published yet/);
+  assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
+  assert.ok(home.nodes.some((n) => attrs(n).href === "/blog/"));
+  const files = await readdir(output, { recursive: true });
+  const postFiles = await readdir(new URL("../src/content/posts/", import.meta.url));
+  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 3);
+  const publicText = (await Promise.all(files.filter((f) => /\.(html|xml|js|json)$/.test(f)).map(load))).join("\n");
+  for (const filename of postFiles.filter((f) => f.endsWith(".md"))) {
+    const slug = filename.slice(0, -3);
+    assert.ok(!files.some((f) => f.startsWith(`blog/${slug}/`)), `Draft route emitted: ${slug}`);
+    const source = await readFile(new URL(`../src/content/posts/${filename}`, import.meta.url), "utf8");
+    const title = source.match(/^title: "(.+)"$/m)[1];
+    assert.ok(!publicText.includes(title), `Draft title leaked: ${title}`);
+    assert.ok(!publicText.includes(`/blog/${slug}/`), `Draft URL leaked: ${slug}`);
   }
-  const cssFile = files.find((f) => /once-ui\..+\.css$/.test(f));
-  let utilityRules = 0;
-  postcss.parse(await load(cssFile)).walkRules((rule) => {
-    if (!rule.selector.includes(".px-4")) return;
-    utilityRules++;
-    assert.ok(
-      rule.selectors.every((selector) => selector.includes(".once-ui")),
-      rule.selector,
-    );
-  });
-  assert.ok(utilityRules > 0, "Once UI spacing rules were not checked");
 });

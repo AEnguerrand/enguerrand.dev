@@ -15,24 +15,38 @@ npm run dev
 npm run build
 ```
 
-## UI pilot and agent work
+## Agent work and checks
 
-Home and `/talks/kubecon-na-2024/` use Once UI 2.1 with static React rendering.
-Astro, the site fonts, and the existing palette stay in place. Other pages keep
-Tailwind components. Once UI utilities are scoped in `postcss.config.cjs` to
-prevent collisions with Tailwind classes. Import individual components to limit
-unused component CSS.
-
-Read [AGENTS.md](AGENTS.md) before changes. Check the pilot after a build:
+Read [AGENTS.md](AGENTS.md) before changes. Use the existing Astro and Tailwind components to preserve the site design.
 
 ```bash
-npm run check:pilot
+npm run check:site
 npm run build
-npm run test:pilot
+npm run test:site
 ```
 
-The last command checks generated HTML, resource links, heading order, CSS
-isolation, dates, and Stars data. Also inspect phone, tablet, and desktop layouts.
+The checks cover generated HTML, headings, links, resources, dates, Stars data, and blog publication. Also inspect phone, tablet, and desktop layouts.
+
+## Write a blog post
+
+Create a file such as `src/content/posts/my-first-post.md`. Its file name becomes `/blog/my-first-post/`.
+
+```markdown
+---
+title: "My first post"
+description: "A short description for the listing and search."
+draft: true
+tags: [Security]
+---
+
+## Start here
+
+Write your post in Markdown. The page adds the H1 from your title.
+```
+
+Three draft outlines are ready for Canada, security, and AI. Run `npm run dev` and open `/blog/` to preview drafts locally. Drafts are marked in development. Draft Markdown remains visible to anyone who can read this repository; only the built website excludes it. Production builds exclude drafts and future posts from routes, listings, search, and the sitemap.
+
+To publish, replace the outline with your article, set `draft: false`, and add `publishDate: "YYYY-MM-DD"` with the publication date. Run the checks, then commit and deploy through the normal workflow. Dates use UTC. A future date needs a new build on or after that date; there is no automatic publication scheduler. `npm run preview` shows production output and does not show drafts.
 
 ## Deploy (Cloudflare Workers - Static Assets)
 

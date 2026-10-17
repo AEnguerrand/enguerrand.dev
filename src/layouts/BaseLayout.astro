@@ -2,7 +2,6 @@
 import "../styles/global.css";
 
 interface Props {
-  onceUI?: boolean;
   title?: string;
   description?: string;
   image?: string;
@@ -12,7 +11,6 @@ interface Props {
 }
 
 const {
-  onceUI = false,
   title,
   description,
   image = "/og-image.jpg",
@@ -80,7 +78,7 @@ const jsonLd = {
 };
 ---
 <!doctype html>
-<html lang="en" data-once-ui={onceUI || undefined} data-theme={onceUI ? "light" : undefined} data-brand={onceUI ? "blue" : undefined} data-neutral={onceUI ? "slate" : undefined} data-accent={onceUI ? "red" : undefined} data-solid={onceUI ? "color" : undefined} data-solid-style={onceUI ? "flat" : undefined} data-border={onceUI ? "rounded" : undefined}>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -117,7 +115,7 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body class="min-h-screen bg-background font-sans text-foreground antialiased">
-    {onceUI && <a href="#main-content" class="pilot-skip-link">Skip to content</a>}
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="relative isolate min-h-screen">
       <div
         aria-hidden="true"
@@ -129,14 +127,15 @@ const jsonLd = {
       />
 
       <header class="sticky top-4 z-40 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <nav class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
+        <nav class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
           <a class="text-sm font-semibold tracking-[0.12em] text-foreground uppercase" href="/">Enguerrand Allamel</a>
-          <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks">Talks</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics">Topics</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar">Radar</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume">Resume</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
+          <div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:gap-2 sm:text-sm">
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/blog/">Blog</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks">Talks</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics">Topics</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar">Radar</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume">Resume</a>
+            <a class="nav-pill hidden rounded-full border border-transparent px-2 py-1 sm:inline-flex sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
           </div>
         </nav>
       </header>

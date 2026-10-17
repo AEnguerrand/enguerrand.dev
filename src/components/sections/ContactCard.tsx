@@ -1,19 +1,15 @@
 import * as React from "react";
 import { Github, Linkedin, Mail, MessageSquareMore } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
 export function ContactCard() {
   return (
     <section id="contact" className="mt-10 sm:mt-12">
       <Card className="lift-card overflow-hidden border-border/70 bg-card/90 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
-        <CardHeader className="space-y-4">
-          <Badge className="w-fit border border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
-            Contact
-          </Badge>
-          <CardTitle className="text-3xl sm:text-4xl">Let&apos;s connect</CardTitle>
+        <CardHeader className="space-y-3">
+          <h2 className="text-2xl font-semibold leading-none tracking-tight sm:text-3xl">Let&apos;s connect</h2>
           <CardDescription>
             I&apos;m always happy to chat with people working on cloud security, SRE, platform
             engineering, and open source.
@@ -40,7 +36,7 @@ export function ContactCard() {
             <Button asChild variant="outline" className="w-full justify-start gap-2">
               <a href="https://www.linkedin.com/in/enguerrandallamel/" target="_blank" rel="noreferrer">
                 <Linkedin className="h-4 w-4" />
-                linkedin.com/in/enguerrandallamel
+                LinkedIn profile
               </a>
             </Button>
             <Button asChild variant="outline" className="w-full justify-start gap-2">
