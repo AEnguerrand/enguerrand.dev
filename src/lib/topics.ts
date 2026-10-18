@@ -52,5 +52,5 @@ export function topicDescription(topic: string): string {
 }
 
 export function topicHref(topic: string): string {
-  return `/topics/${topicSlug(topic)}`;
+  return `/topics/${topicSlug(topic)}/`;
 }

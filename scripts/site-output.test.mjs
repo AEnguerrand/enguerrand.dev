@@ -150,3 +150,90 @@ test("Blog is linked and private drafts stay out of production routes, search, a
     assert.ok(!publicText.includes(`/blog/${slug}/`), `Draft URL leaked: ${slug}`);
   }
 });
+
+// Check the public search contract against every built page, not just source templates.
+const builtFiles = await readdir(output, { recursive: true });
+const builtPages = await Promise.all(builtFiles.filter((f) => f.endsWith(".html")).map(async (file) => ({ file, ...await page(file) })));
+const meta = (nodes, name) => attrs(nodes.find((n) => n.tagName === "meta" && (attrs(n).name === name || attrs(n).property === name))).content;
+const canonical = (nodes) => attrs(nodes.find((n) => n.tagName === "link" && attrs(n).rel === "canonical")).href;
+const graph = (nodes) => JSON.parse(text(nodes.find((n) => attrs(n).type === "application/ld+json")))["@graph"];
+
+test("SEO: every indexed page has unique metadata, a matching canonical, and a sitemap entry", async () => {
+  const sitemap = await load("sitemap-0.xml");
+  const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  const titles = new Set();
+  const descriptions = new Set();
+  for (const { file, nodes } of builtPages) {
+    assert.equal(nodes.filter((n) => n.tagName === "h1").length, 1, `${file}: one H1`);
+    const title = text(nodes.find((n) => n.tagName === "title"));
+    const description = meta(nodes, "description");
+    assert.ok(title && description, `${file}: missing metadata`);
+    const url = canonical(nodes);
+    const expectedPath = file === "404.html" ? "/404/" : file === "index.html" ? "/" : `/${file.replace(/index\.html$/, "")}`;
+    assert.equal(url, `https://enguerrand.dev${expectedPath}`, file);
+    assert.equal(meta(nodes, "og:url"), url, file);
+    assert.equal(meta(nodes, "og:title"), title, file);
+    assert.equal(meta(nodes, "twitter:description"), description, file);
+    if (meta(nodes, "robots").includes("noindex")) {
+      assert.ok(!sitemapUrls.includes(url), `${file}: noindex URL in sitemap`);
+    } else {
+      assert.ok(!titles.has(title), `${file}: duplicate title`);
+      assert.ok(!descriptions.has(description), `${file}: duplicate description`);
+      titles.add(title);
+      descriptions.add(description);
+      assert.ok(sitemapUrls.includes(url), `${file}: missing from sitemap`);
+    }
+  }
+  for (const url of sitemapUrls)
+    assert.ok(builtPages.some(({ nodes }) => canonical(nodes) === url), `Sitemap URL has no page: ${url}`);
+});
+
+test("SEO: page, profile, and article structured data agree with public URLs", () => {
+  const websiteDescriptions = new Set();
+  for (const { file, nodes } of builtPages) {
+    const url = canonical(nodes);
+    const data = graph(nodes);
+    const webpage = data.find((n) => n["@id"] === `${url}#webpage`);
+    assert.equal(webpage.url, url, file);
+    assert.equal(webpage.name, meta(nodes, "og:title"), file);
+    websiteDescriptions.add(data.find((n) => n["@type"] === "WebSite").description);
+    if (["index.html", "resume/index.html"].includes(file)) {
+      assert.equal(webpage["@type"], "ProfilePage");
+      assert.equal(webpage.mainEntity["@id"], "https://enguerrand.dev/#person");
+    }
+    for (const article of data.filter((n) => ["TechArticle", "BlogPosting"].includes(n["@type"]))) {
+      assert.equal(article.url, url, file);
+      assert.equal(article.mainEntityOfPage, url, file);
+      assert.equal(article.author.name, "Enguerrand Allamel", file);
+      assert.equal(article.author.url, "https://enguerrand.dev/", file);
+      assert.equal(article.image, meta(nodes, "og:image"), file);
+      assert.equal(meta(nodes, "article:published_time").slice(0, 10), article.datePublished.slice(0, 10), file);
+      assert.equal(meta(nodes, "article:author"), "https://enguerrand.dev/", file);
+    }
+    for (const list of data.filter((n) => n["@type"] === "BreadcrumbList"))
+      assert.equal(list.itemListElement.at(-1).item, url, file);
+  }
+  assert.equal(websiteDescriptions.size, 1, "Site description must not change on each page");
+});
+
+test("SEO: search can be crawled to read noindex and internal links use canonical routes", async () => {
+  const robots = await load("robots.txt");
+  assert.doesNotMatch(robots, /Disallow:\s*\/search/);
+  assert.match(robots, /Sitemap: https:\/\/enguerrand\.dev\/sitemap-index\.xml/);
+  assert.match(meta((await page("search/index.html")).nodes, "robots"), /noindex/);
+  for (const { file, nodes } of builtPages) {
+    for (const link of nodes.filter((n) => n.tagName === "a")) {
+      const href = attrs(link).href;
+      if (!href?.startsWith("/") || href.startsWith("//")) continue;
+      const target = new URL(href, "https://enguerrand.dev");
+      if (/\.[a-z0-9]+$/i.test(target.pathname)) continue;
+      assert.ok(target.pathname.endsWith("/"), `${file}: noncanonical link ${href}`);
+      assert.ok(builtPages.some(({ nodes: targetNodes }) => canonical(targetNodes) === `${target.origin}${target.pathname}`), `${file}: missing link ${href}`);
+    }
+    const image = new URL(meta(nodes, "og:image"));
+    assert.equal(image.origin, "https://enguerrand.dev");
+    assert.ok(builtFiles.includes(image.pathname.slice(1)), `${file}: missing social image`);
+    assert.equal(meta(nodes, "og:image:width"), "1536");
+    assert.equal(meta(nodes, "og:image:height"), "1536");
+  }
+});

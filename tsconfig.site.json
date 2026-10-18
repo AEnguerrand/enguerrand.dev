@@ -13,6 +13,7 @@
     "src/components/sections/ContactCard.tsx",
     "src/lib/talk-presentation.ts",
     "src/lib/posts.ts",
-    "src/lib/topics.ts"
+    "src/lib/topics.ts",
+    "src/lib/seo.ts"
   ]
 }

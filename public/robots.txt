@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /search
 
 Sitemap: https://enguerrand.dev/sitemap-index.xml

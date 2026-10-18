@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 ---
 
 <BaseLayout title="Page not found" description="The page you are looking for does not exist." noindex={true}>
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
     <Card className="lift-card mx-auto max-w-3xl border-border/70 bg-card/95 shadow-[0_16px_44px_hsl(var(--foreground)/0.08)]">
       <CardHeader className="space-y-4">
         <p class="text-[12px] tracking-[0.1em] text-muted-foreground uppercase">Error 404</p>
-        <CardTitle className="text-4xl sm:text-5xl">Page not found</CardTitle>
+        <h1 class="text-4xl font-semibold leading-none tracking-tight sm:text-5xl">Page not found</h1>
         <CardDescription className="max-w-2xl text-base sm:text-lg">
           The link may be outdated or the page may have moved.
         </CardDescription>
@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
           <a href="/">Go back home</a>
         </Button>
         <Button asChild variant="outline">
-          <a href="/talks">Browse talks</a>
+          <a href="/talks/">Browse talks</a>
         </Button>
       </CardContent>
     </Card>

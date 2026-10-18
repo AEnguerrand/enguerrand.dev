@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { canonicalUrl } from "@/lib/seo";
 import { formatPostDate, getPosts, isPublishedPost } from "@/lib/posts";
 
 export async function getStaticPaths() {
@@ -16,21 +17,23 @@ const { Content } = await render(post);
 const publishDate = post.data.publishDate;
 const published = isPublishedPost(post.data);
 const siteUrl = Astro.site ?? new URL("https://enguerrand.dev");
-const articleUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const articleUrl = canonicalUrl(Astro.url.pathname, siteUrl);
 const structuredData = published ? {
   "@type": "BlogPosting",
   "@id": `${articleUrl}#article`,
   headline: post.data.title,
   description: post.data.description,
   datePublished: `${publishDate}T00:00:00.000Z`,
-  author: { "@type": "Person", "@id": new URL("/#person", siteUrl).toString(), name: "Enguerrand Allamel" },
+  author: { "@type": "Person", "@id": new URL("/#person", siteUrl).toString(), name: "Enguerrand Allamel", url: siteUrl.toString() },
   mainEntityOfPage: articleUrl,
   url: articleUrl,
+  image: new URL("/og-image.jpg", siteUrl).toString(),
+  isPartOf: { "@id": new URL("/#website", siteUrl).toString() },
   keywords: post.data.tags,
 } : undefined;
 ---
 
-<BaseLayout noindex={!published} title={post.data.title} description={post.data.description} type="article" structuredData={structuredData}>
+<BaseLayout noindex={!published} title={post.data.title} description={post.data.description} type="article" publishedTime={published ? `${publishDate}T00:00:00.000Z` : undefined} structuredData={structuredData}>
   <article class="mx-auto max-w-3xl pt-6 sm:pt-9">
     <a href="/blog/" class="inline-block rounded-sm text-sm font-semibold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">← Back to blog</a>
     <header class="mt-5 border-b border-border/70 pb-6">

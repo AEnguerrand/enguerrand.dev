@@ -20,7 +20,7 @@ const { Content } = await render(talk);
 const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, talkMetadata, hasResources, baseSectionClass, stackedSectionClass, overviewSectionClass, structuredData } = getTalkPresentation(talk, Astro.site);
 ---
 
-<BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" structuredData={structuredData}>
+<BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
       <CardContent className="space-y-4 p-6 sm:p-7">
@@ -142,7 +142,7 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
 
   <div class="mt-8 flex flex-wrap gap-3">
     <Button asChild variant="outline" size="sm">
-      <a href="/talks">Back to talks</a>
+      <a href="/talks/">Back to talks</a>
     </Button>
     <Button asChild variant="outline" size="sm">
       <a href="/">Back home</a>

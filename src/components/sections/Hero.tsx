@@ -50,7 +50,7 @@ export function Hero() {
             </a>
           </Button>
           <Button asChild variant="outline">
-            <a href="/resume">Read resume</a>
+            <a href="/resume/">Read resume</a>
           </Button>
         </CardContent>
       </Card>

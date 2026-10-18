@@ -89,7 +89,7 @@ export function getTalkPresentation(
   const overviewSectionClass = videoEmbedUrl
     ? stackedSectionClass
     : baseSectionClass;
-  const talkUrl = new URL(`/talks/${talk.id}`, site).toString();
+  const talkUrl = new URL(`/talks/${talk.id}/`, site).toString();
   const structuredData = [
     {
       "@type": "TechArticle",
@@ -97,11 +97,11 @@ export function getTalkPresentation(
       headline: talk.data.title,
       description: talk.data.summary,
       datePublished: talk.data.date,
-      dateModified: talk.data.date,
       mainEntityOfPage: talkUrl,
       url: talkUrl,
-      author: { "@id": "https://enguerrand.dev/#person" },
+      author: { "@type": "Person", "@id": new URL("/#person", site).toString(), name: "Enguerrand Allamel", url: site.toString() },
       publisher: { "@id": "https://enguerrand.dev/#person" },
+      image: new URL("/og-image.jpg", site).toString(),
       keywords: talk.data.tags?.join(", "),
       about: (talk.data.tags ?? []).map((tag) => ({
         "@type": "Thing",

@@ -30,7 +30,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
         <CardTitle className="text-3xl">{title}</CardTitle>
         {showViewAll && (
           <Button asChild variant="outline" size="sm" className="gap-1">
-            <a href="/talks">
+            <a href="/talks/">
               View all <ChevronRight className="h-4 w-4" />
             </a>
           </Button>
@@ -91,7 +91,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
-                    <a href={`/talks/${talk.id}`}>Details</a>
+                    <a href={`/talks/${talk.id}/`}>Details</a>
                   </Button>
                 </TableCell>
               </TableRow>
