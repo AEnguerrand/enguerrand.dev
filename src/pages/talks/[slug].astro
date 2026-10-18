@@ -2,10 +2,12 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import TalksSubnav from "@/components/sections/TalksSubnav.astro";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCollection, render } from "astro:content";
+import { getTalkPresentation } from "@/lib/talk-presentation";
 import { topicHref, topicTitle } from "@/lib/topics";
+import { cn } from "@/lib/utils";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
@@ -15,129 +17,27 @@ export async function getStaticPaths() {
 const { talk } = Astro.props;
 const { Content } = await render(talk);
 
-const formattedDate = new Date(talk.data.date).toLocaleDateString("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
-
-const resources = talk.data.resources ?? [];
-
-const videoResource = resources.find((resource) => {
-  const label = resource.label.toLowerCase();
-  const url = resource.url.toLowerCase();
-  return label.includes("video") || label.includes("recording") || url.includes("youtube.com") || url.includes("youtu.be") || url.includes("vimeo.com");
-});
-
-const toEmbedUrl = (rawUrl: string) => {
-  try {
-    const parsed = new URL(rawUrl);
-    const host = parsed.hostname.toLowerCase();
-
-    if (host.includes("youtu.be")) {
-      const id = parsed.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-
-    if (host.includes("youtube.com")) {
-      const id = parsed.searchParams.get("v");
-      if (id) {
-        return `https://www.youtube.com/embed/${id}`;
-      }
-
-      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/?#]+)/);
-      if (shortsMatch) {
-        return `https://www.youtube.com/embed/${shortsMatch[1]}`;
-      }
-
-      const embedMatch = parsed.pathname.match(/^\/embed\/([^/?#]+)/);
-      if (embedMatch) {
-        return `https://www.youtube.com/embed/${embedMatch[1]}`;
-      }
-    }
-
-    if (host.includes("vimeo.com")) {
-      const vimeoMatch = parsed.pathname.match(/\/(\d+)(?:$|\/)/);
-      if (vimeoMatch) {
-        return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-      }
-    }
-  } catch {}
-
-  return null;
-};
-
-const videoEmbedUrl = videoResource ? toEmbedUrl(videoResource.url) : null;
-
-const sectionLinks: { href: string; label: string }[] = [];
-if (videoEmbedUrl) {
-  sectionLinks.push({ href: "#video", label: "Video" });
-}
-sectionLinks.push(
-  { href: "#overview", label: "Overview" },
-  { href: "#resources", label: "Resources" },
-  { href: "#content", label: "Content" }
-);
-
-const talkMetadata = [
-  { label: "Event", value: talk.data.event },
-  { label: "Location", value: talk.data.location },
-  { label: "Language", value: talk.data.language?.join(", ") },
-  { label: "Format", value: talk.data.sessionType },
-].filter((item) => Boolean(item.value));
-
-const hasResources = resources.length > 0;
-const baseSectionClass = "mx-auto w-full max-w-5xl scroll-mt-40";
-const stackedSectionClass = `${baseSectionClass} mt-6 sm:mt-8`;
-const overviewSectionClass = videoEmbedUrl ? stackedSectionClass : baseSectionClass;
-const talkUrl = new URL(`/talks/${talk.id}`, Astro.site).toString();
-const structuredData = [
-  {
-    "@type": "TechArticle",
-    "@id": `${talkUrl}#article`,
-    headline: talk.data.title,
-    description: talk.data.summary,
-    datePublished: talk.data.date,
-    dateModified: talk.data.date,
-    mainEntityOfPage: talkUrl,
-    url: talkUrl,
-    author: { "@id": "https://enguerrand.dev/#person" },
-    publisher: { "@id": "https://enguerrand.dev/#person" },
-    keywords: talk.data.tags?.join(", "),
-    about: (talk.data.tags ?? []).map((tag) => ({ "@type": "Thing", name: topicTitle(tag) })),
-    isPartOf: { "@id": "https://enguerrand.dev/#website" },
-  },
-  {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://enguerrand.dev/" },
-      { "@type": "ListItem", position: 2, name: "Talks", item: "https://enguerrand.dev/talks/" },
-      { "@type": "ListItem", position: 3, name: talk.data.title, item: talkUrl },
-    ],
-  },
-  ...(videoEmbedUrl && videoResource
-    ? [{
-        "@type": "VideoObject",
-        name: talk.data.title,
-        description: talk.data.summary ?? `Recording of ${talk.data.title}`,
-        uploadDate: talk.data.date,
-        embedUrl: videoEmbedUrl,
-        contentUrl: videoResource.url,
-      }]
-    : []),
-];
+const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, talkMetadata, hasResources, baseSectionClass, stackedSectionClass, overviewSectionClass, structuredData } = getTalkPresentation(talk, Astro.site);
 ---
 
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" structuredData={structuredData}>
   <section class="pt-3 pb-8 sm:pt-6">
     <Card className="border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-5 p-7 sm:p-9">
+      <CardContent className="space-y-4 p-6 sm:p-7">
         <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          {formattedDate}
+          <time datetime={talk.data.date}>{formattedDate}</time>
         </Badge>
-        <h1 class="text-4xl leading-tight sm:text-5xl">{talk.data.title}</h1>
+        <h1 class="text-3xl leading-tight sm:text-4xl">{talk.data.displayTitle ?? talk.data.title}</h1>
 
-        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground sm:text-lg">{talk.data.summary}</p>}
+        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground">{talk.data.summary}</p>}
+
+        {hasResources && (
+          <div class="flex flex-wrap gap-3" aria-label="Session resources">
+            {resources.map((resource, index) => (
+              <a href={resource.url} class={cn(buttonVariants({ variant: index === 0 ? "default" : "outline" }), "h-auto min-h-10 max-w-full whitespace-normal text-center")}>{resource.label}</a>
+            ))}
+          </div>
+        )}
 
         {talk.data.author && <p class="text-sm text-muted-foreground">By {talk.data.author.join(", ")}</p>}
 
@@ -159,12 +59,9 @@ const structuredData = [
   {videoEmbedUrl && (
     <section id="video" class={baseSectionClass}>
       <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-        <CardHeader className="space-y-3">
-          <CardTitle className="text-3xl">Watch talk</CardTitle>
-          <CardDescription className="max-w-2xl">
-            {videoResource?.label ?? "Session recording"}
-          </CardDescription>
-        </CardHeader>
+        <CardHeader className="space-y-2 pb-4">
+          <h2 class="text-2xl font-semibold leading-none tracking-tight">Watch talk</h2>
+          </CardHeader>
         <CardContent className="space-y-4">
           <div class="overflow-hidden rounded-xl border border-border/70 bg-background/65">
             <iframe
@@ -193,11 +90,8 @@ const structuredData = [
 
   <section id="overview" class={overviewSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Session overview</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Standardized details for this talk, including event metadata and reference links.
-        </CardDescription>
+      <CardHeader className="space-y-2 pb-4">
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">Session overview</h2>
       </CardHeader>
       <CardContent className="space-y-6">
         {talkMetadata.length > 0 && (
@@ -216,11 +110,8 @@ const structuredData = [
 
   <section id="resources" class={stackedSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Resources</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Links to videos, slides, repositories, and related reading.
-        </CardDescription>
+      <CardHeader className="space-y-2 pb-4">
+        <h2 class="text-2xl font-semibold leading-none tracking-tight">Resources</h2>
       </CardHeader>
       <CardContent>
         {hasResources ? (
@@ -243,10 +134,7 @@ const structuredData = [
 
   <section id="content" class={stackedSectionClass}>
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Talk content</CardTitle>
-      </CardHeader>
-      <CardContent className="prose prose-headings:mt-8 prose-p:leading-relaxed max-w-none pt-2">
+      <CardContent className="prose prose-headings:mt-8 prose-p:leading-relaxed max-w-none pt-6">
         <Content />
       </CardContent>
     </Card>

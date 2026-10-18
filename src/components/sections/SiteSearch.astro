@@ -1,7 +1,7 @@
 ---
 type SearchItem = {
   id: string;
-  kind: "talk" | "page";
+  kind: "talk" | "page" | "post";
   title: string;
   href: string;
   summary?: string;
@@ -44,6 +44,7 @@ const formatDate = (value?: string) => {
     year: "numeric",
     month: "short",
     day: "numeric",
+    timeZone: "UTC",
   });
 };
 
@@ -117,6 +118,13 @@ const getPreview = (item: SearchItem) => {
       </button>
       <button
         type="button"
+        data-search-filter="post"
+        class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+      >
+        Posts
+      </button>
+      <button
+        type="button"
         data-search-filter="page"
         class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
@@ -137,7 +145,7 @@ const getPreview = (item: SearchItem) => {
           >
             <div class="mb-1.5 flex flex-wrap items-center gap-2">
               <span class="inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground">
-                {item.kind === "talk" ? "Talk" : "Page"}
+                {item.kind === "talk" ? "Talk" : item.kind === "post" ? "Post" : "Page"}
               </span>
               {formatDate(item.date) && (
                 <span class="text-xs text-muted-foreground">{formatDate(item.date)}</span>
@@ -223,6 +231,7 @@ const getPreview = (item: SearchItem) => {
         year: "numeric",
         month: "short",
         day: "numeric",
+      timeZone: "UTC",
       });
     };
 
@@ -327,7 +336,7 @@ const getPreview = (item: SearchItem) => {
       const kind = createTag(
         "span",
         "inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground",
-        item.kind === "talk" ? "Talk" : "Page"
+        item.kind === "talk" ? "Talk" : item.kind === "post" ? "Post" : "Page"
       );
       topRow.appendChild(kind);
 

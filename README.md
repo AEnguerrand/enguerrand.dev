@@ -15,6 +15,39 @@ npm run dev
 npm run build
 ```
 
+## Agent work and checks
+
+Read [AGENTS.md](AGENTS.md) before changes. Use the existing Astro and Tailwind components to preserve the site design.
+
+```bash
+npm run check:site
+npm run build
+npm run test:site
+```
+
+The checks cover generated HTML, headings, links, resources, dates, Stars data, and blog publication. Also inspect phone, tablet, and desktop layouts.
+
+## Write a blog post
+
+Create a file such as `src/content/posts/my-first-post.md`. Its file name becomes `/blog/my-first-post/`.
+
+```markdown
+---
+title: "My first post"
+description: "A short description for the listing and search."
+draft: true
+tags: [Security]
+---
+
+## Start here
+
+Write your post in Markdown. The page adds the H1 from your title.
+```
+
+Three draft outlines are ready for Canada, security, and AI. Run `npm run dev` and open `/blog/` to preview drafts locally. Drafts are marked in development. Draft Markdown remains visible to anyone who can read this repository; only the built website excludes it. Production builds exclude drafts and future posts from routes, listings, search, and the sitemap.
+
+To publish, replace the outline with your article, set `draft: false`, and add `publishDate: "YYYY-MM-DD"` with the publication date. Run the checks, then commit and deploy through the normal workflow. Dates use UTC. A future date needs a new build on or after that date; there is no automatic publication scheduler. `npm run preview` shows production output and does not show drafts.
+
 ## Deploy (Cloudflare Workers - Static Assets)
 
 This site is deployed as static assets through Cloudflare Workers using `wrangler.toml`.

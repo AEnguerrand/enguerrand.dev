@@ -12,7 +12,9 @@
     "deploy:cf": "npm run build && npx wrangler deploy",
     "stars:import-ui": "uv run scripts/import_starred_lists_from_ui.py",
     "stars:sync": "uv run scripts/sync_starred_lists.py",
-    "stars:refresh": "npm run stars:import-ui && npm run stars:sync"
+    "stars:refresh": "npm run stars:import-ui && npm run stars:sync",
+    "check:site": "astro sync && tsc -p tsconfig.site.json",
+    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.1",
@@ -36,8 +38,12 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "autoprefixer": "^10.4.20",
+    "parse5": "^7.3.0",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14"
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.9.3"
   }
 }
