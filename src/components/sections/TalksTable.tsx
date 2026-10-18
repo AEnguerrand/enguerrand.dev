@@ -27,7 +27,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
   return (
     <Card className="border-border/70 bg-card/85 shadow-[0_18px_48px_hsl(var(--foreground)/0.06)]">
       <CardHeader className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <CardTitle className="text-3xl">{title}</CardTitle>
+        <CardTitle as="h2" className="text-3xl">{title}</CardTitle>
         {showViewAll && (
           <Button asChild variant="outline" size="sm" className="gap-1">
             <a href="/talks/">
@@ -66,7 +66,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                 </TableCell>
                 <TableCell className="font-medium">
                   <div className="space-y-1">
-                    <p>{talk.data.title}</p>
+                    <a href={`/talks/${talk.id}/`} className="hover:text-primary">{talk.data.title}</a>
                     {talk.data.event && (
                       <p className="text-xs font-normal text-muted-foreground">{talk.data.event}</p>
                     )}
@@ -91,7 +91,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                 </TableCell>
                 <TableCell className="text-right">
                   <Button asChild variant="outline" size="sm">
-                    <a href={`/talks/${talk.id}/`}>Details</a>
+                    <a href={`/talks/${talk.id}/`} aria-label={`Details: ${talk.data.title}`}>Details</a>
                   </Button>
                 </TableCell>
               </TableRow>

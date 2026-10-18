@@ -26,7 +26,7 @@ for (const talk of talks) {
 }
 const relatedTopics = Array.from(relatedTopicCounts, ([name, count]) => ({ name, count }))
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
-  .slice(0, 8);
+  .slice(0, 4);
 
 const name = topicTitle(topic);
 const description = topicDescription(topic);
@@ -73,22 +73,15 @@ const structuredData = [
     </ol>
   </nav>
 
-  <section class="py-8">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          {talks.length} {talks.length === 1 ? "conference talk" : "conference talks"}
-        </Badge>
-        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{name} talks & resources</h1>
-        <CardDescription className="max-w-3xl text-base leading-relaxed sm:text-lg">{description}</CardDescription>
-      </CardHeader>
-    </Card>
-  </section>
+  <header class="py-6">
+    <h1 class="text-3xl leading-tight sm:text-4xl">{name}</h1>
+    <p class="mt-3 max-w-3xl text-muted-foreground">{description}</p>
+  </header>
 
   <section aria-labelledby="talks-heading" class="space-y-5">
     <div>
       <h2 id="talks-heading" class="text-3xl font-semibold tracking-tight">Talks about {name}</h2>
-      <p class="mt-2 text-muted-foreground">Open a session for the full abstract, implementation details, video, slides, and repositories.</p>
+
     </div>
 
     <div class="grid gap-4 lg:grid-cols-2">
@@ -96,12 +89,12 @@ const structuredData = [
         <Card className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
           <CardHeader className="space-y-3">
             <p class="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              {new Date(talk.data.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+              {new Date(talk.data.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
               {talk.data.event && ` · ${talk.data.event}`}
             </p>
-            <h2 class="text-2xl font-semibold leading-snug tracking-tight">
-              <a class="hover:text-primary" href={`/talks/${talk.id}/`}>{talk.data.title}</a>
-            </h2>
+            <h3 class="text-2xl font-semibold leading-snug tracking-tight">
+              <a class="hover:text-primary" href={`/talks/${talk.id}/`}>{talk.data.displayTitle ?? talk.data.title}</a>
+            </h3>
             {talk.data.summary && <CardDescription className="leading-relaxed">{talk.data.summary}</CardDescription>}
           </CardHeader>
           <CardContent className="mt-auto space-y-4">

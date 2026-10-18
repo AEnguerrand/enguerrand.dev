@@ -132,18 +132,7 @@ export function getTalkPresentation(
         },
       ],
     },
-    ...(videoEmbedUrl && videoResource
-      ? [
-          {
-            "@type": "VideoObject",
-            name: talk.data.title,
-            description: talk.data.summary ?? `Recording of ${talk.data.title}`,
-            uploadDate: talk.data.date,
-            embedUrl: videoEmbedUrl,
-            contentUrl: videoResource.url,
-          },
-        ]
-      : []),
+    // Add VideoObject only when the recording upload date and thumbnail are verified.
   ];
   return {
     formattedDate,

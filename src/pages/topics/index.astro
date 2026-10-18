@@ -14,9 +14,9 @@ for (const talk of talks) {
   }
 }
 
-const topics = Array.from(topicCounts, ([name, count]) => ({ name, count })).sort(
-  (a, b) => b.count - a.count || a.name.localeCompare(b.name),
-);
+const topics = ["cloud security", "software supply chain security", "npm"]
+  .map(name => ({name, count: topicCounts.get(name) ?? 0}))
+  .filter(topic => topic.count > 0);
 
 const structuredData = {
   "@type": "CollectionPage",
@@ -44,39 +44,20 @@ const structuredData = {
   description="Browse conference talks and practical resources by cloud security, software supply chain security, Kubernetes, AWS, npm, SLSA, and related topics."
   structuredData={structuredData}
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Topic library
-        </Badge>
-        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-          Cloud security & platform engineering topics
-        </h1>
-        <CardDescription className="max-w-3xl text-base leading-relaxed sm:text-lg">
-          Follow a topic to find focused talks, incident analysis, implementation guidance,
-          videos, slides, and repositories drawn from production cloud and security work.
-        </CardDescription>
-      </CardHeader>
-    </Card>
-  </section>
-
+  <header class="pt-6 pb-6 sm:pt-8">
+    <h1 class="text-3xl sm:text-4xl">Topics</h1>
+    <p class="mt-3 max-w-2xl text-muted-foreground">Cloud security, software supply chains, and dependency security. Choose a topic to find related talks.</p>
+  </header>
   <section aria-labelledby="topic-list-heading" class="space-y-5">
-    <div>
-      <h2 id="topic-list-heading" class="text-3xl font-semibold tracking-tight">Browse every topic</h2>
-      <p class="mt-2 max-w-3xl text-muted-foreground">
-        These topic pages connect related conference sessions and make the full archive easier to explore.
-      </p>
-    </div>
-
+    <h2 id="topic-list-heading" class="sr-only">Browse topics</h2>
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {topics.map((topic) => (
         <Card className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
           <CardHeader className="space-y-3 pb-3">
             <div class="flex items-center justify-between gap-3">
-              <h2 class="text-2xl font-semibold tracking-tight">
+              <h3 class="text-2xl font-semibold tracking-tight">
                 <a class="hover:text-primary" href={topicHref(topic.name)}>{topicTitle(topic.name)}</a>
-              </h2>
+              </h3>
               <span class="whitespace-nowrap rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {topic.count} {topic.count === 1 ? "talk" : "talks"}
               </span>
