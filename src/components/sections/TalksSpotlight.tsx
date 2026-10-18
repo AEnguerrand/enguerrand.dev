@@ -37,7 +37,7 @@ export function TalksSpotlight({ talks }: TalksSpotlightProps) {
           <h2 id="talks-title" className="text-2xl font-semibold tracking-tight sm:text-3xl">Selected talks</h2>
           <p className="max-w-2xl text-sm text-muted-foreground">Recordings, slides, and practical examples.</p>
         </div>
-        <a href="/talks" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">All talks <ArrowUpRight className="h-4 w-4" /></a>
+        <a href="/talks/" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">All talks <ArrowUpRight className="h-4 w-4" /></a>
       </div>
 
       {talks.length > 0 && (

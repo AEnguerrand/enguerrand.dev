@@ -16,10 +16,32 @@ const exploringIcons = [ShieldCheck, Radar, Workflow];
 ---
 
 <BaseLayout
-  title="Platform Security Engineer & Conference Speaker"
-  description="Enguerrand Allamel is a Senior Platform Security Engineer sharing practical work on AI development guardrails, cloud security, AWS, Kubernetes, SLSA, SRE, and secure platforms."
+  title="Platform Security Engineer"
+  pageType="ProfilePage"
+  description="Enguerrand Allamel, Senior Platform Security Engineer. Talks and field notes on AI development guardrails, cloud security, Kubernetes, and developer platforms."
 >
-  <Hero />
+  <div class="grid gap-6 pt-3 pb-8 sm:pt-6 lg:grid-cols-[1.35fr_1fr]">
+    <Hero />
+
+    <section class="lift-card rounded-lg border border-border/70 bg-card/90 p-6 shadow-[0_14px_38px_hsl(var(--foreground)/0.06)]" aria-labelledby="exploring-title">
+      <h2 id="exploring-title" class="text-2xl font-semibold leading-none tracking-tight">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
+      <p class="mt-2 text-sm text-muted-foreground">{homePage?.data.currentExploringDescription}</p>
+      <div class="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-1">
+        {homePage?.data.currentExploring?.map((item, index) => {
+          const Icon = exploringIcons[index % exploringIcons.length];
+          return (
+            <div class="rounded-xl border border-border/70 bg-secondary/55 p-4">
+              <h3 class="mb-2 flex items-start gap-2 font-sans text-sm font-semibold">
+                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                {item.title}
+              </h3>
+              <p class="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  </div>
 
   <TalksSpotlight talks={talks} />
 
@@ -29,24 +51,6 @@ const exploringIcons = [ShieldCheck, Radar, Workflow];
     <a href="/blog/" class="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline">Browse the blog →</a>
   </section>
 
-  <section class="lift-card mt-8 rounded-lg border border-border/70 bg-card/90 p-6 shadow-[0_14px_38px_hsl(var(--foreground)/0.06)]" aria-labelledby="exploring-title">
-    <h2 id="exploring-title" class="text-2xl font-semibold leading-none tracking-tight">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
-    <p class="mt-2 text-sm text-muted-foreground">{homePage?.data.currentExploringDescription}</p>
-    <div class="mt-5 grid gap-3 md:grid-cols-2">
-      {homePage?.data.currentExploring?.map((item, index) => {
-        const Icon = exploringIcons[index % exploringIcons.length];
-        return (
-          <div class="rounded-xl border border-border/70 bg-secondary/55 p-4">
-            <h3 class="mb-2 flex items-start gap-2 font-sans text-sm font-semibold">
-              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-              {item.title}
-            </h3>
-            <p class="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-          </div>
-        );
-      })}
-    </div>
-  </section>
 
   <ContactCard />
 </BaseLayout>

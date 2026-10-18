@@ -88,3 +88,13 @@ npm run stars:refresh
 ```
 
 Stars scripts use `uv`. Optional env vars: `GITHUB_TOKEN`, `GITHUB_COOKIE`.
+
+## Search metadata
+
+Page titles and descriptions are set through `BaseLayout`. Keep them specific to the page and consistent with its visible content. Page canonicals, sitemap URLs, internal page links, and structured article URLs use trailing slashes, matching the static host. Query strings are excluded from canonical URLs.
+
+The shared layout supplies stable Person/WebSite identity, page metadata, and social previews. Home and Resume identify the author through ProfilePage data. Talk and published blog pages supply article author, image, and publication metadata. Do not infer a modification date from an event date. The current social image is 1536 × 1536; update its metadata if the asset changes.
+
+Search and 404 pages are `noindex` and absent from the sitemap. Search remains crawlable so a crawler can read its `noindex` tag. Draft and future blog posts remain excluded from production. Run `npm run check:site`, `npm run build`, and `npm run test:site` before publishing; the output checks cover all generated page canonicals, metadata, internal routes, sitemap membership, and structured data.
+
+After deployment, use Google Search Console to submit `https://enguerrand.dev/sitemap-index.xml` and inspect representative URLs. Validate structured data with Google's Rich Results Test. These external checks need the deployed site and account access; passing local checks does not prove indexing, ranking, or rich-result eligibility.
