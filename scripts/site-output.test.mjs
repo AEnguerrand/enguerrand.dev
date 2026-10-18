@@ -51,7 +51,7 @@ test("Home keeps a short introduction, three linked talks, and the approved sect
   const intro = home.nodes.find((n) => attrs(n)["aria-label"] === "Introduction");
   assert.deepEqual(walk(intro).filter((n) => n.tagName === "a").map((n) => text(n).trim()), ["Explore talks", "Read resume"]);
   const headings = home.nodes.filter((n) => n.tagName === "h2").map(text);
-  assert.deepEqual(headings, ["Selected talks", "Writing", "What I'm exploring now", "Let's connect"]);
+  assert.deepEqual(headings, ["What I'm exploring now", "Selected talks", "Writing", "Let's connect"]);
   assert.doesNotMatch(text(selected), /Read details/);
   assert.equal(walk(selected).filter((n) => n.tagName === "a" && attrs(n).href?.startsWith("/topics/")).length, 0);
   for (const heading of walk(selected).filter((n) => n.tagName === "h3"))

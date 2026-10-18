@@ -12,8 +12,8 @@ import {
 
 export function Hero() {
   return (
-    <section className="pt-3 pb-8 sm:pt-6" aria-label="Introduction">
-      <Card className="lift-card overflow-hidden border-border/70 shadow-[0_18px_50px_hsl(var(--foreground)/0.07)]">
+    <section className="h-full" aria-label="Introduction">
+      <Card className="lift-card h-full overflow-hidden border-border/70 shadow-[0_18px_50px_hsl(var(--foreground)/0.07)]">
         <CardHeader className="space-y-4 p-6 sm:p-7">
           <div className="flex flex-wrap items-center gap-4">
             <div className="group h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary/20">
