@@ -45,11 +45,19 @@ for (const [name, { html, nodes }] of [
   });
 }
 
-test("Home keeps the original hero layout, three selected talks, and the contact target", () => {
+test("Home keeps a short introduction, three linked talks, and the approved section order", () => {
   const selected = home.nodes.find((n) => attrs(n).id === "selected-talks");
   assert.equal(walk(selected).filter((n) => n.tagName === "h3").length, 3);
-  assert.ok(home.html.includes("lg:grid-cols-[1.35fr_1fr]"));
-  assert.ok(home.nodes.some((n) => attrs(n).id === "contact"));
+  const intro = home.nodes.find((n) => attrs(n)["aria-label"] === "Introduction");
+  assert.deepEqual(walk(intro).filter((n) => n.tagName === "a").map((n) => text(n).trim()), ["Explore talks", "Read resume"]);
+  const headings = home.nodes.filter((n) => n.tagName === "h2").map(text);
+  assert.deepEqual(headings, ["Selected talks", "Writing", "What I'm exploring now", "Let's connect"]);
+  assert.doesNotMatch(text(selected), /Read details/);
+  assert.equal(walk(selected).filter((n) => n.tagName === "a" && attrs(n).href?.startsWith("/topics/")).length, 0);
+  for (const heading of walk(selected).filter((n) => n.tagName === "h3"))
+    assert.ok(walk(heading).some((n) => n.tagName === "a" && attrs(n).href?.startsWith("/talks/")));
+  const contact = home.nodes.find((n) => attrs(n).id === "contact");
+  assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.match(text(selected), /Nov 15, 2024/);
 });
 
@@ -81,6 +89,14 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
   );
   const topResources = talk.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
   assert.ok(walk(topResources).some((n) => n.tagName === "a" && attrs(n).class.includes("bg-primary")), "Primary resource link lost its button style");
+  const aws = await page("talks/aws-summit-paris-2025/index.html");
+  for (const current of [talk, aws]) {
+    const resources = current.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
+    for (const link of walk(resources).filter((n) => n.tagName === "a")) {
+      assert.ok(attrs(link).class.split(" ").includes("whitespace-normal"));
+      assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
+    }
+  }
   const video = attrs(talk.nodes.find((n) => n.tagName === "iframe"));
   assert.equal(video.loading, "lazy");
   assert.equal(video.src, "https://www.youtube.com/embed/0w_dBmvu5l8");

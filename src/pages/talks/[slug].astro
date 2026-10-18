@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getCollection, render } from "astro:content";
 import { getTalkPresentation } from "@/lib/talk-presentation";
 import { topicHref, topicTitle } from "@/lib/topics";
+import { cn } from "@/lib/utils";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
@@ -33,7 +34,7 @@ const { formattedDate, resources, videoResource, videoEmbedUrl, sectionLinks, ta
         {hasResources && (
           <div class="flex flex-wrap gap-3" aria-label="Session resources">
             {resources.map((resource, index) => (
-              <a href={resource.url} class={buttonVariants({ variant: index === 0 ? "default" : "outline", className: "h-auto min-h-10 max-w-full whitespace-normal text-center" })}>{resource.label}</a>
+              <a href={resource.url} class={cn(buttonVariants({ variant: index === 0 ? "default" : "outline" }), "h-auto min-h-10 max-w-full whitespace-normal text-center")}>{resource.label}</a>
             ))}
           </div>
         )}

@@ -17,18 +17,21 @@ const homePage = await getEntry("pages", "home");
   title="Platform Security Engineer & Conference Speaker"
   description="Enguerrand Allamel is a Senior Platform Security Engineer sharing practical work on AI development guardrails, cloud security, AWS, Kubernetes, SLSA, SRE, and secure platforms."
 >
-  <Hero
-    currentExploringTitle={homePage?.data.currentExploringTitle}
-    currentExploringDescription={homePage?.data.currentExploringDescription}
-    currentExploringItems={homePage?.data.currentExploring}
-  />
+  <Hero />
 
   <TalksSpotlight talks={talks} />
 
   <section class="mt-8 rounded-lg border border-border/70 bg-card/90 p-6 shadow-sm" aria-labelledby="writing-title">
     <h2 id="writing-title" class="text-2xl">Writing</h2>
-    <p class="mt-2 text-muted-foreground">Notes on security, AI, and life in Canada.</p>
-    <a href="/blog/" class="mt-4 inline-block font-medium text-primary hover:underline">Browse the blog →</a>
+    <p class="mt-2 text-sm text-muted-foreground">Notes on security, AI, and life in Canada.</p>
+    <a href="/blog/" class="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline">Browse the blog →</a>
+  </section>
+
+  <section class="mt-8" aria-labelledby="exploring-title">
+    <h2 id="exploring-title" class="text-2xl">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
+    <ul class="mt-3 space-y-2 text-sm text-muted-foreground">
+      {homePage?.data.currentExploring?.slice(0, 3).map((item) => <li>{item.title}</li>)}
+    </ul>
   </section>
 
   <ContactCard />
