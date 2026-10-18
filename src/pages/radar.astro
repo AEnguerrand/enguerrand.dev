@@ -2,43 +2,11 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpRight, BookOpenText, Mic, Search, Star } from "lucide-react";
-import { getCollection } from "astro:content";
-import { readFile } from "node:fs/promises";
+import { ArrowUpRight, Search, Star } from "lucide-react";
+import starsData from "../../public/data/starred-groups.json";
 
-type StarredDataset = {
-  total_repos: number;
-  groups: { repos: unknown[] }[];
-};
-
-let starsTotal = 0;
-let starsListCount = 0;
-
-try {
-  const dataPath = new URL("../../public/data/starred-groups.json", import.meta.url);
-  const raw = await readFile(dataPath, "utf-8");
-  const parsed = JSON.parse(raw) as StarredDataset;
-  starsTotal = parsed.total_repos ?? 0;
-  starsListCount = parsed.groups.filter((group) => group.repos.length > 0).length;
-} catch {
-  starsTotal = 0;
-  starsListCount = 0;
-}
-
-const talks = await getCollection("talks");
-const talksCount = talks.length;
-const latestTalkTimestamp = talks.reduce((latest, talk) => {
-  const timestamp = new Date(talk.data.date).getTime();
-  return Number.isFinite(timestamp) ? Math.max(latest, timestamp) : latest;
-}, 0);
-const latestTalkLabel =
-  latestTalkTimestamp > 0
-    ? new Date(latestTalkTimestamp).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : null;
+const starsTotal = starsData.total_repos;
+const starsListCount = starsData.groups.filter((group) => group.repos.length > 0).length;
 
 const cards = [
   {
@@ -47,7 +15,7 @@ const cards = [
     label: "Curated repos",
     description:
       "Repositories I find useful, organized by topic.",
-    href: "/github-stars",
+    href: "/github-stars/",
     cta: "Open stars",
     stats: [`${starsTotal} repos`, `${starsListCount} lists`],
     icon: Star,
@@ -58,7 +26,7 @@ const cards = [
     label: "Utility",
     description:
       "Quickly find content from a single entry point.",
-    href: "/search",
+    href: "/search/",
     cta: "Open search",
     stats: ["Fast lookup", "Cross-page"],
     icon: Search,
@@ -67,7 +35,7 @@ const cards = [
 ---
 
 <BaseLayout
-  title="Radar"
+  title="Technical Radar"
   description="A single hub for my technical radar: curated repositories and quick site search."
 >
   <section class="pt-3 pb-8 sm:pt-6">

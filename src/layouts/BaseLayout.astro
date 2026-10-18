@@ -1,11 +1,17 @@
 ---
 import "../styles/global.css";
+import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib/seo";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   type?: "website" | "article" | "profile";
+  pageType?: "WebPage" | "ProfilePage";
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  publishedTime?: string;
   noindex?: boolean;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
@@ -13,18 +19,23 @@ interface Props {
 const {
   title,
   description,
-  image = "/og-image.jpg",
+  image = siteImage,
+  imageAlt = "Enguerrand Allamel speaking at a cloud-native conference",
+  imageWidth,
+  imageHeight,
+  publishedTime,
+  pageType = "WebPage",
   type = "website",
   noindex = false,
   structuredData,
 } = Astro.props;
-const pageDescription =
-  description ??
-  "Senior Platform Security Engineer focused on AI-first development guardrails, secure platforms, and resilient cloud systems.";
+const pageDescription = description ?? siteDescription;
 const pageTitle = title ? `${title} | Enguerrand Allamel` : "Enguerrand Allamel | Platform Security Engineer";
 const siteUrl = Astro.site ?? new URL("https://enguerrand.dev");
-const canonicalUrl = new URL(Astro.url.pathname, siteUrl).toString();
+const pageUrl = canonicalUrl(Astro.url.pathname, siteUrl);
 const ogImageUrl = new URL(image, siteUrl).toString();
+const ogImageWidth = imageWidth ?? (image === siteImage ? 1536 : undefined);
+const ogImageHeight = imageHeight ?? (image === siteImage ? 1536 : undefined);
 const defaultStructuredData = {
   "@context": "https://schema.org",
   "@graph": [
@@ -61,9 +72,21 @@ const defaultStructuredData = {
       "@id": new URL("/#website", siteUrl).toString(),
       url: siteUrl.toString(),
       name: "Enguerrand Allamel",
-      description: pageDescription,
+      description: siteDescription,
       inLanguage: "en",
       author: { "@id": new URL("/#person", siteUrl).toString() },
+    },
+    {
+      "@type": pageType,
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: pageTitle,
+      description: pageDescription,
+      inLanguage: "en",
+      isPartOf: { "@id": new URL("/#website", siteUrl).toString() },
+      primaryImageOfPage: { "@type": "ImageObject", url: ogImageUrl },
+      ...(pageType === "ProfilePage" ? { mainEntity: { "@id": new URL("/#person", siteUrl).toString() } } : {}),
+      ...(type === "article" ? { mainEntity: { "@id": `${pageUrl}#article` } } : {}),
     },
   ],
 };
@@ -89,25 +112,30 @@ const jsonLd = {
       content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}
     />
     <title>{pageTitle}</title>
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={pageUrl} />
 
     <meta property="og:type" content={type} />
     <meta property="og:locale" content="en_CA" />
     <meta property="og:site_name" content="Enguerrand Allamel" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:url" content={pageUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:alt" content="Enguerrand Allamel, platform security engineer and conference speaker" />
+    <meta property="og:image:alt" content={imageAlt} />
+
+    {ogImageWidth && <meta property="og:image:width" content={ogImageWidth} />}
+    {ogImageHeight && <meta property="og:image:height" content={ogImageHeight} />}
+    {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {type === "article" && <meta property="article:author" content={siteUrl.toString()} />}
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="Enguerrand Allamel, platform security engineer and conference speaker" />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <meta name="theme-color" content="#f6f4ef" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -115,6 +143,7 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body class="min-h-screen bg-background font-sans text-foreground antialiased">
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="relative isolate min-h-screen">
       <div
         aria-hidden="true"
@@ -126,19 +155,20 @@ const jsonLd = {
       />
 
       <header class="sticky top-4 z-40 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <nav class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
+        <nav class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
           <a class="text-sm font-semibold tracking-[0.12em] text-foreground uppercase" href="/">Enguerrand Allamel</a>
-          <div class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks">Talks</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics">Topics</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar">Radar</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume">Resume</a>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
+          <div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:gap-2 sm:text-sm">
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/blog/">Blog</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks/">Talks</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics/">Topics</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar/">Radar</a>
+            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume/">Resume</a>
+            <a class="nav-pill hidden rounded-full border border-transparent px-2 py-1 sm:inline-flex sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
           </div>
         </nav>
       </header>
 
-      <main class="mx-auto w-full max-w-6xl px-4 pb-20 pt-0 sm:px-6 lg:px-8">
+      <main id="main-content" tabindex="-1" class="mx-auto w-full max-w-6xl px-4 pb-20 pt-0 sm:px-6 lg:px-8">
         <slot />
       </main>
 
@@ -147,7 +177,7 @@ const jsonLd = {
           <span class="tracking-[0.16em] uppercase">Security. SRE. Platform.</span>
           <div class="flex items-center gap-3">
             <span>Based in Vancouver, BC, Canada 🇨🇦</span>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 text-xs hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/privacy">
+            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 text-xs hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/privacy/">
               Privacy
             </a>
           </div>
@@ -334,7 +364,7 @@ const jsonLd = {
             return;
           }
 
-          const searchUrl = new URL("/search", window.location.origin);
+          const searchUrl = new URL("/search/", window.location.origin);
           searchUrl.searchParams.set("focus", "1");
           window.location.assign(searchUrl.toString());
         });
