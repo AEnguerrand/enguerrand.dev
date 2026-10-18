@@ -32,8 +32,8 @@ const exploringIcons = [ShieldCheck, Radar, Workflow];
   <section class="lift-card mt-8 rounded-lg border border-border/70 bg-card/90 p-6 shadow-[0_14px_38px_hsl(var(--foreground)/0.06)]" aria-labelledby="exploring-title">
     <h2 id="exploring-title" class="text-2xl font-semibold leading-none tracking-tight">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
     <p class="mt-2 text-sm text-muted-foreground">{homePage?.data.currentExploringDescription}</p>
-    <div class="mt-5 grid gap-3 md:grid-cols-3">
-      {homePage?.data.currentExploring?.slice(0, 3).map((item, index) => {
+    <div class="mt-5 grid gap-3 md:grid-cols-2">
+      {homePage?.data.currentExploring?.map((item, index) => {
         const Icon = exploringIcons[index % exploringIcons.length];
         return (
           <div class="rounded-xl border border-border/70 bg-secondary/55 p-4">

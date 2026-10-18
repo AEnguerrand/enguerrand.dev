@@ -37,8 +37,10 @@ export function Hero() {
             <span className="text-primary">secure and reliable cloud platforms</span>.
           </h1>
           <CardDescription className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Practical lessons on cloud security, Kubernetes, and AI development
-            from production systems, conference talks, and hands-on labs.
+            Senior Platform Security Engineer working on AI-first development
+            guardrails, cloud and Kubernetes security, and secure-by-default
+            developer platforms. This site is my notebook for talks, ideas, and
+            field notes from real systems.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-3 px-6 pb-6 sm:px-7">
