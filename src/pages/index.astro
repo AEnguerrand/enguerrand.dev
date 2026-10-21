@@ -71,8 +71,17 @@ const talkFormats = (talk: typeof talks[number]) => {
         <ul class="home-list">
           {projects.map((project) => (
             <li class="home-entry">
-              <p class="home-entry-status">{project.status}</p>
-              <h3><a href={project.url}>{project.title}</a></h3>
+              <div class="home-project-heading">
+                <div>
+                  <p class="home-entry-status">{project.status}</p>
+                  <h3><a href={project.url}>{project.title}</a></h3>
+                </div>
+                {project.image && project.imageAlt && (
+                  <a class="home-project-art" href={project.url} aria-label={`Open ${project.title}`}>
+                    <img src={project.image} alt={project.imageAlt} width="96" height="96" loading="lazy" decoding="async" />
+                  </a>
+                )}
+              </div>
               <p>{project.description}</p>
               <a class="home-link" href={project.url}>{project.action} <ArrowRight size={18} aria-hidden="true" /></a>
             </li>
@@ -101,15 +110,21 @@ const talkFormats = (talk: typeof talks[number]) => {
       ) : (
         <div class="home-blog-status">
           <p class="home-entry-status">Writing now</p>
-          <p>The first note is in progress.</p>
+          <p>The first article is in progress. Until then, you can read my latest security notes.</p>
+          <a class="home-link" href="/talks/meetup-owasp-france-chapter-10-2025/">Read the npm security notes <ArrowRight size={18} aria-hidden="true" /></a>
         </div>
       )}
     </section>
   </div>
 
   <section class="home-exploring" aria-labelledby="exploring-title">
-    <h2 id="exploring-title">Currently exploring</h2>
-    <p class="home-section-description">Questions and systems shaping my work right now.</p>
+    <div class="home-exploring-heading">
+      <div>
+        <h2 id="exploring-title">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
+        <p class="home-section-description">{homePage?.data.currentExploringDescription ?? "Questions shaping my work right now."}</p>
+      </div>
+      {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
+    </div>
     <div class="home-exploring-grid">
       {homePage?.data.currentExploring?.map((item) => (
         <article class="home-exploring-card">

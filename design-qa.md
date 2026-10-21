@@ -31,6 +31,7 @@ final result: passed
 12. The name in the Home title now uses the solid primary blue. The previous blue-to-red text gradient was removed.
 13. The hero action block was still too large at normal viewing scale. The two actions now use shorter labels and 36-pixel buttons, while Email, GitHub, and LinkedIn use compact text links with small 15-pixel icons.
 14. The footer slogan was removed. The footer now ends with the Vancouver label, email address, and utility links only.
+15. The final improvement pass gives Foliobruma Scanner its official app icon, turns the empty Blog area into a compact reading path, and reduces Currently exploring to three dated questions. It also places the portrait beside the name on phones, removes excess project and exploration rules, and darkens the primary blue slightly so small blue text meets AA contrast. Checks at 320, 390, and 1440 CSS pixels show one H1, no horizontal overflow, a loaded 320-pixel project image, and a skip link that stays above the viewport until keyboard focus moves to it.
 
 ## Required surfaces
 
@@ -56,7 +57,7 @@ final result: passed
 ## Source validation
 
 - `npm run check:site`: passed.
-- `npm run build`: passed; 68 pages built.
+- `npm run build`: passed; 69 pages built.
 - `npm run test:site`: passed; 19 tests.
 - `git diff --check`: passed.
 

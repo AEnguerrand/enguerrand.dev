@@ -56,7 +56,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
-  assert.match(text(blog), /first note is in progress/i);
+  assert.match(text(blog), /first article is in progress/i);
   assert.ok(!walk(blog).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"), "Empty Blog must not offer an empty archive action");
   const projects = home.nodes.find((n) => attrs(n).id === "projects");
   assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
