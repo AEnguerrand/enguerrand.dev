@@ -154,8 +154,8 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
   const count = dataset.groups.filter((g) => g.repos.length > 0).length;
   const stars = text((await page("github-stars/index.html")).nodes[0]);
   const radar = text((await page("radar/index.html")).nodes[0]);
-  assert.ok(stars.includes(`${dataset.total_repos} Stars`));
-  assert.ok(stars.includes(`${count} Lists`));
+  assert.ok(stars.includes(`${dataset.total_repos} repositories`));
+  assert.ok(stars.includes(`${count} topics`));
   const directory = await page("github-stars/index.html");
   assert.ok(Buffer.byteLength(directory.html) < 60000, "Stars directory must remain small");
   for (const group of dataset.groups.filter(g => g.repos.length)) {
@@ -165,6 +165,8 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
     for (let number = 1; number <= count; number++) {
       const list = await page(`github-stars/${group.slug}/${number === 1 ? "" : `${number}/`}index.html`);
       assert.ok(Buffer.byteLength(list.html) < 200000, "Stars list page is too large");
+      assert.ok(list.nodes.some(n => attrs(n)["data-radar-filter"] === group.slug), `Missing repository filter for ${group.slug}`);
+      assert.ok(list.nodes.some(n => "data-radar-query" in attrs(n)), `Missing repository query for ${group.slug}`);
       const headings = list.nodes.filter(n => n.tagName === "h3");
       assert.ok(headings.length <= 36, "List pagination exceeded its bound");
       names.push(...headings.map(n => text(n).replace("↗", "").trim()));
@@ -172,8 +174,8 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
     assert.deepEqual(names, group.repos.map(repo => repo.full_name), `Missing or duplicated repository in ${group.slug}`);
   }
   assert.doesNotMatch(stars, /Starred repositories are unavailable/);
-  assert.ok(radar.includes(`${dataset.total_repos} repositories`));
-  assert.ok(radar.includes(`${count} lists`));
+  assert.ok(radar.includes(`${count} topics`));
+  assert.ok(radar.includes("Current signals"));
   const radarPage = await page("radar/index.html");
   for (const slug of ["security", "kubernetes", "supply-chain-security", "ci-cd", "mcp", "aws", "dev", "ai-ml"])
     assert.ok(radarPage.nodes.some((node) => attrs(node).href === `/github-stars/${slug}/`), `Radar is missing ${slug}`);
@@ -214,11 +216,25 @@ test("Command-K opens a site-wide modal instead of leaving the page", async () =
   for (const current of [home, await page("radar/index.html"), talk]) {
     const dialog = current.nodes.find((node) => node.tagName === "dialog" && attrs(node).id === "site-command-dialog");
     assert.ok(dialog, "Missing command dialog");
-    assert.ok(walk(dialog).some((node) => node.tagName === "input" && attrs(node)["data-command-input"] !== undefined));
+    const input = walk(dialog).find((node) => node.tagName === "input" && attrs(node)["data-command-input"] !== undefined);
+    assert.equal(attrs(input).role, "combobox");
+    assert.equal(attrs(input)["aria-controls"], "command-dialog-results");
+    assert.ok(walk(dialog).some((node) => node.tagName === "ul" && attrs(node).role === "listbox"));
   }
   const homeHtml = await load("index.html");
   assert.match(homeHtml, /site-command:open/);
   assert.doesNotMatch(homeHtml, /searchParams\.set\("focus", "1"\)/);
+});
+
+test("Shared shell keeps route width stable and uses client navigation", async () => {
+  for (const current of [home, await page("radar/index.html"), talk]) {
+    for (const tag of ["header", "main", "footer"])
+      assert.ok(current.nodes.some((node) => node.tagName === tag && attrs(node).class.split(" ").includes("site-shell")));
+  }
+  const cssFiles = (await readdir(new URL("../dist/_astro/", import.meta.url))).filter((file) => file.endsWith(".css"));
+  const css = (await Promise.all(cssFiles.map((file) => load(`_astro/${file}`)))).join("\n");
+  assert.match(css, /scrollbar-gutter:stable/);
+  assert.match(await load("index.html"), /astro-view-transitions/);
 });
 
 test("Projects has a dedicated page with the public project list", () => {

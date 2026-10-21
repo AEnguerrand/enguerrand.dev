@@ -1,0 +1,213 @@
+---
+interface Props {
+  languages: string[];
+  pageNumber: number;
+  slug: string;
+  total: number;
+}
+
+const { languages, pageNumber, slug, total } = Astro.props;
+---
+
+<div class="radar-filter" data-radar-filter={slug} data-radar-total={total} data-radar-page={pageNumber}>
+  <form class="radar-filter-grid" data-radar-filter-form>
+    <label class="radar-filter-field radar-filter-query">
+      <span>Filter repositories</span>
+      <input
+        type="search"
+        name="q"
+        autocomplete="off"
+        placeholder="Name, description, or topic"
+        data-radar-query
+      />
+    </label>
+    <label class="radar-filter-field">
+      <span>Language</span>
+      <select name="language" data-radar-language>
+        <option value="">All languages</option>
+        {languages.map((language) => <option value={language}>{language}</option>)}
+      </select>
+    </label>
+    <label class="radar-filter-field">
+      <span>Status</span>
+      <select name="status" data-radar-status>
+        <option value="">Any status</option>
+        <option value="active">Active</option>
+        <option value="archived">Archived</option>
+      </select>
+    </label>
+    <button type="button" class="site-action site-action-secondary radar-filter-clear" data-radar-clear>
+      Clear
+    </button>
+  </form>
+  <p class="radar-filter-summary" role="status" aria-live="polite" data-radar-filter-summary>
+    {pageNumber === 1 ? `Showing the first page of ${total} repositories.` : `Showing page ${pageNumber} of ${total} repositories.`}
+  </p>
+</div>
+
+<div class="radar-filter-results" data-radar-filter-results hidden></div>
+
+<script is:inline>
+  (() => {
+    const initializeRadarFilter = () => {
+    window.__radarFilterController?.abort();
+    const controller = new AbortController();
+    window.__radarFilterController = controller;
+
+    const root = document.querySelector("[data-radar-filter]");
+    if (!(root instanceof HTMLElement)) return;
+    const slug = root.dataset.radarFilter ?? "";
+    const total = Number(root.dataset.radarTotal ?? 0);
+    const pageNumber = Number(root.dataset.radarPage ?? 1);
+    const form = root?.querySelector("[data-radar-filter-form]");
+    const queryInput = root?.querySelector("[data-radar-query]");
+    const languageSelect = root?.querySelector("[data-radar-language]");
+    const statusSelect = root?.querySelector("[data-radar-status]");
+    const clearButton = root?.querySelector("[data-radar-clear]");
+    const summary = root?.querySelector("[data-radar-filter-summary]");
+    const results = document.querySelector("[data-radar-filter-results]");
+    const defaultList = document.querySelector("[data-radar-default]");
+    const pagination = document.querySelector("[data-radar-pagination]");
+
+    if (
+      !(form instanceof HTMLFormElement) ||
+      !(queryInput instanceof HTMLInputElement) ||
+      !(languageSelect instanceof HTMLSelectElement) ||
+      !(statusSelect instanceof HTMLSelectElement) ||
+      !(clearButton instanceof HTMLButtonElement) ||
+      !(summary instanceof HTMLElement) ||
+      !(results instanceof HTMLElement) ||
+      !(defaultList instanceof HTMLElement)
+    ) return;
+
+    let repositoriesPromise;
+
+    const loadRepositories = () => {
+      repositoriesPromise ??= fetch("/data/starred-groups.json", { signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) throw new Error("Repository data is unavailable.");
+          return response.json();
+        })
+        .then((dataset) => dataset.groups.find((group) => group.slug === slug)?.repos ?? []);
+      return repositoriesPromise;
+    };
+
+    const normalize = (value) => String(value ?? "").toLocaleLowerCase().trim();
+
+    const renderRepository = (repository) => {
+      const article = document.createElement("article");
+      article.className = "radar-result-row";
+
+      const heading = document.createElement("h3");
+      heading.className = "text-lg font-semibold";
+      const link = document.createElement("a");
+      link.className = "site-link items-start text-foreground";
+      link.href = repository.html_url;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.textContent = repository.full_name;
+      heading.append(link);
+      article.append(heading);
+
+      if (repository.description) {
+        const description = document.createElement("p");
+        description.className = "mt-2 text-sm leading-relaxed text-muted-foreground";
+        description.textContent = repository.description;
+        article.append(description);
+      }
+
+      const meta = document.createElement("p");
+      meta.className = "mt-3 text-xs text-muted-foreground";
+      meta.textContent = [repository.language, repository.archived ? "Archived" : "Active"]
+        .filter(Boolean)
+        .join(" · ");
+      article.append(meta);
+
+      return article;
+    };
+
+    const updateUrl = (query, language, status) => {
+      const url = new URL(window.location.href);
+      const values = { q: query, language, status };
+      for (const [key, value] of Object.entries(values)) {
+        if (value) url.searchParams.set(key, value);
+        else url.searchParams.delete(key);
+      }
+      history.replaceState(history.state, "", url);
+    };
+
+    const render = async () => {
+      const query = normalize(queryInput.value);
+      const language = languageSelect.value;
+      const status = statusSelect.value;
+      const isFiltering = Boolean(query || language || status);
+      updateUrl(queryInput.value.trim(), language, status);
+
+      defaultList.hidden = isFiltering;
+      if (pagination instanceof HTMLElement) pagination.hidden = isFiltering;
+      results.hidden = !isFiltering;
+
+      if (!isFiltering) {
+        results.replaceChildren();
+        summary.textContent = pageNumber === 1
+          ? `Showing the first page of ${total} repositories.`
+          : `Showing page ${pageNumber} of ${total} repositories.`;
+        return;
+      }
+
+      summary.textContent = "Filtering repositories…";
+      try {
+        const repositories = await loadRepositories();
+        if (controller.signal.aborted) return;
+        const matches = repositories.filter((repository) => {
+          const searchable = normalize([
+            repository.full_name,
+            repository.description,
+            ...(repository.topics ?? []),
+          ].join(" "));
+          const matchesQuery = !query || query.split(/\s+/).every((token) => searchable.includes(token));
+          const matchesLanguage = !language || repository.language === language;
+          const matchesStatus = !status || (status === "archived" ? repository.archived : !repository.archived);
+          return matchesQuery && matchesLanguage && matchesStatus;
+        });
+
+        results.replaceChildren(...matches.map(renderRepository));
+        if (!matches.length) {
+          const empty = document.createElement("p");
+          empty.className = "radar-filter-empty";
+          empty.textContent = "No repositories match these filters.";
+          results.append(empty);
+        }
+        summary.textContent = `${matches.length} ${matches.length === 1 ? "repository" : "repositories"} found.`;
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        summary.textContent = "Repository filtering is unavailable. The current page is still available below.";
+        defaultList.hidden = false;
+        results.hidden = true;
+      }
+    };
+
+    const parameters = new URLSearchParams(window.location.search);
+    queryInput.value = parameters.get("q") ?? "";
+    languageSelect.value = parameters.get("language") ?? "";
+    statusSelect.value = parameters.get("status") ?? "";
+
+    form.addEventListener("input", render, { signal: controller.signal });
+    form.addEventListener("change", render, { signal: controller.signal });
+    form.addEventListener("submit", (event) => event.preventDefault(), { signal: controller.signal });
+    clearButton.addEventListener("click", () => {
+      form.reset();
+      render();
+      queryInput.focus();
+    }, { signal: controller.signal });
+
+    render();
+    };
+
+    if (!window.__radarFilterPageLoadBound) {
+      document.addEventListener("astro:page-load", initializeRadarFilter);
+      window.__radarFilterPageLoadBound = true;
+    }
+    initializeRadarFilter();
+  })();
+</script>

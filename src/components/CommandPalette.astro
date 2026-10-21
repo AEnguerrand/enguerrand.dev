@@ -23,7 +23,11 @@ const initialItems = items.slice(0, 8);
         data-command-input
         type="search"
         autocomplete="off"
-        placeholder="Search talks, projects, lists, and pages"
+        placeholder="Search talks, projects, topics, and pages"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-controls="command-dialog-results"
+        aria-expanded="false"
       />
       <form method="dialog">
         <button type="submit" class="command-dialog-close" aria-label="Close search">
@@ -36,10 +40,17 @@ const initialItems = items.slice(0, 8);
     <p class="command-dialog-status" data-command-status role="status" aria-live="polite">
       Quick links
     </p>
-    <ul class="command-dialog-results" data-command-results>
-      {initialItems.map((item) => (
+    <ul id="command-dialog-results" class="command-dialog-results" data-command-results role="listbox">
+      {initialItems.map((item, index) => (
         <li>
-          <a href={item.href} class="command-dialog-result">
+          <a
+            id={`command-result-${index}`}
+            href={item.href}
+            class="command-dialog-result"
+            role="option"
+            aria-selected={index === 0 ? "true" : "false"}
+            data-active={index === 0 ? true : undefined}
+          >
             <span>{item.title}</span>
             <span>{item.kind}</span>
           </a>
@@ -52,6 +63,11 @@ const initialItems = items.slice(0, 8);
 
 <script is:inline define:vars={{ items }}>
   (() => {
+    const initializeCommandPalette = () => {
+    window.__commandPaletteController?.abort();
+    const controller = new AbortController();
+    window.__commandPaletteController = controller;
+
     const dialog = document.getElementById("site-command-dialog");
     const input = dialog?.querySelector("[data-command-input]");
     const results = dialog?.querySelector("[data-command-results]");
@@ -87,9 +103,17 @@ const initialItems = items.slice(0, 8);
 
     const setActive = (index) => {
       const links = Array.from(results.querySelectorAll("a"));
-      if (!links.length) return;
+      if (!links.length) {
+        input.removeAttribute("aria-activedescendant");
+        return;
+      }
       activeIndex = (index + links.length) % links.length;
-      links.forEach((link, linkIndex) => link.toggleAttribute("data-active", linkIndex === activeIndex));
+      links.forEach((link, linkIndex) => {
+        const isActive = linkIndex === activeIndex;
+        link.toggleAttribute("data-active", isActive);
+        link.setAttribute("aria-selected", String(isActive));
+      });
+      input.setAttribute("aria-activedescendant", links[activeIndex].id);
       links[activeIndex]?.scrollIntoView({ block: "nearest" });
     };
 
@@ -106,13 +130,16 @@ const initialItems = items.slice(0, 8);
         : items.slice(0, 8);
 
       results.replaceChildren();
-      for (const item of visibleItems) {
+      for (const [index, item] of visibleItems.entries()) {
         const row = document.createElement("li");
         const link = document.createElement("a");
         const title = document.createElement("span");
         const kind = document.createElement("span");
         link.href = item.href;
         link.className = "command-dialog-result";
+        link.id = `command-result-${index}`;
+        link.setAttribute("role", "option");
+        link.setAttribute("aria-selected", "false");
         title.textContent = item.title;
         kind.textContent = item.kind;
         link.append(title, kind);
@@ -135,6 +162,7 @@ const initialItems = items.slice(0, 8);
 
     const open = () => {
       if (!dialog.open) dialog.showModal();
+      input.setAttribute("aria-expanded", "true");
       input.value = "";
       render();
       window.requestAnimationFrame(() => input.focus());
@@ -145,9 +173,9 @@ const initialItems = items.slice(0, 8);
         event.preventDefault();
         open();
       }
-    });
-    window.addEventListener("site-command:open", open);
-    input.addEventListener("input", render);
+    }, { signal: controller.signal });
+    window.addEventListener("site-command:open", open, { signal: controller.signal });
+    input.addEventListener("input", render, { signal: controller.signal });
     input.addEventListener("keydown", (event) => {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -159,9 +187,20 @@ const initialItems = items.slice(0, 8);
         event.preventDefault();
         results.querySelectorAll("a")[activeIndex]?.click();
       }
-    });
+    }, { signal: controller.signal });
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
-    });
+    }, { signal: controller.signal });
+    dialog.addEventListener("close", () => {
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
+    }, { signal: controller.signal });
+    };
+
+    if (!window.__commandPalettePageLoadBound) {
+      document.addEventListener("astro:page-load", initializeCommandPalette);
+      window.__commandPalettePageLoadBound = true;
+    }
+    initializeCommandPalette();
   })();
 </script>

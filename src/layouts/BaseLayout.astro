@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import CommandPalette from "@/components/CommandPalette.astro";
 import { getCollection, getEntry } from "astro:content";
+import { ClientRouter } from "astro:transitions";
 import { getPosts, postHref } from "@/lib/posts";
 import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib/seo";
 import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
@@ -118,7 +119,7 @@ const commandItems = [
   { id: "page-blog", title: "Blog", href: "/blog/", kind: "Page", keywords: "articles field notes" },
   { id: "page-about", title: "About", href: "/about/", kind: "Page", keywords: "Enguerrand Allamel biography" },
   { id: "page-resume", title: "Resume", href: "/resume/", kind: "Page", keywords: "experience work cv" },
-  { id: "page-stars", title: "GitHub Stars", href: "/github-stars/", kind: "Page", keywords: "repositories lists bookmarks" },
+  { id: "page-stars", title: "All Radar topics", href: "/github-stars/", kind: "Page", keywords: "repositories technical resources bookmarks" },
   { id: "page-topics", title: "Topics", href: "/topics/", kind: "Page", keywords: "talk subjects tags" },
   { id: "page-search", title: "Full search", href: "/search/", kind: "Page", keywords: "site search" },
   { id: "page-privacy", title: "Privacy", href: "/privacy/", kind: "Page", keywords: "analytics data" },
@@ -147,7 +148,7 @@ const commandItems = [
     id: `stars-${group.slug}`,
     title: starsListName(group.name),
     href: starsListHref(group.slug),
-    kind: "Radar list",
+    kind: "Radar topic",
     keywords: `${group.description ?? ""} ${group.slug.replaceAll("-", " ")}`,
   })),
 ];
@@ -193,16 +194,19 @@ const commandItems = [
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <ClientRouter fallback="swap" />
   </head>
-  <body class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
+  <body transition:animate="none" class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="site-page relative isolate min-h-screen">
       <div
         aria-hidden="true"
+        transition:persist="site-orb-primary"
         class="site-orb site-orb-primary pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
       />
       <div
         aria-hidden="true"
+        transition:persist="site-orb-accent"
         class="site-orb site-orb-accent pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
       />
 
@@ -231,7 +235,7 @@ const commandItems = [
         <div class="site-footer-bottom">
           <a class="site-footer-email" href="mailto:hello@enguerrand.dev">hello@enguerrand.dev</a>
           <div class="site-footer-links">
-            <a href="/github-stars/">GitHub Stars</a>
+            <a href="/github-stars/">Radar topics</a>
             <a href="/topics/">Topics</a>
             <a href="/radar/">Radar</a>
             <a href="/search/">Search</a>
@@ -243,6 +247,11 @@ const commandItems = [
     <CommandPalette items={commandItems} />
     <script is:inline>
       (() => {
+        const initializeSiteShell = () => {
+        window.__siteShellController?.abort();
+        const siteShellController = new AbortController();
+        window.__siteShellController = siteShellController;
+
         const isEditableTarget = (target) => {
           if (!(target instanceof HTMLElement)) {
             return false;
@@ -416,7 +425,14 @@ const commandItems = [
           event.preventDefault();
 
           window.dispatchEvent(new CustomEvent("site-command:open"));
-        });
+        }, { signal: siteShellController.signal });
+        };
+
+        if (!window.__siteShellPageLoadBound) {
+          document.addEventListener("astro:page-load", initializeSiteShell);
+          window.__siteShellPageLoadBound = true;
+        }
+        initializeSiteShell();
       })();
     </script>
   </body>
