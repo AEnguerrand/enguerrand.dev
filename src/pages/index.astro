@@ -41,7 +41,7 @@ const talkFormats = (talk: typeof talks[number]) => {
   <section id="selected-talks" class="home-talks" aria-labelledby="talks-title">
     <div class="home-section-heading">
       <h2 id="talks-title">Talks</h2>
-      <a class="home-link" href="/talks/">All talks <ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="site-action-button site-action-button-secondary home-section-action" href="/talks/">All talks <ArrowRight size={15} aria-hidden="true" /></a>
     </div>
     <ul class="home-list home-talk-list">
       {talks.map((talk) => (
@@ -66,7 +66,7 @@ const talkFormats = (talk: typeof talks[number]) => {
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
       <div class="home-section-heading">
         <h2 id="projects-title">Projects</h2>
-        <a class="home-link" href="/projects/">All projects <ArrowRight size={18} aria-hidden="true" /></a>
+        <a class="site-action-button site-action-button-secondary home-section-action" href="/projects/">All projects <ArrowRight size={15} aria-hidden="true" /></a>
       </div>
       {projects.length ? (
         <ul class="home-list">

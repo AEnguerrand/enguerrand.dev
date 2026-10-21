@@ -1,4 +1,4 @@
-import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail } from "lucide-react";
 
 export function Hero() {
   return (
@@ -10,14 +10,6 @@ export function Hero() {
           I&apos;m a Senior Platform Security Engineer based in Vancouver. Here I
           share talks, notes, and the software I&apos;m building.
         </p>
-        <div className="home-actions">
-          <a className="site-action-button site-action-button-primary" href="/talks/">
-            Talks <ArrowRight size={15} aria-hidden="true" />
-          </a>
-          <a className="site-action-button site-action-button-secondary" href="/projects/">
-            Projects <ArrowRight size={15} aria-hidden="true" />
-          </a>
-        </div>
         <div id="contact" className="home-contact" aria-label="Contact links">
           <a className="site-text-link" href="mailto:hello@enguerrand.dev" aria-label="Email hello@enguerrand.dev"><Mail size={15} aria-hidden="true" />Email</a>
           <a className="site-text-link" href="https://github.com/AEnguerrand"><Github size={15} aria-hidden="true" />GitHub</a>
