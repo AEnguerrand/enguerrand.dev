@@ -28,6 +28,7 @@ final result: passed
 9. The first restored buttons were too large beside the contact links. Their final size is 40 pixels high with a compact radius and padding; the blue and red hover states remain.
 10. Home and About now use one shared action hierarchy. Main actions use the same compact button styles; contact and profile destinations use the same text-link style.
 11. The final composition review found an unfinished empty Blog column and clickable-looking exploration cards. Blog now has a deliberate writing-status panel, while Currently exploring uses a lighter static reading list with no hover affordance. Desktop and phone checks confirm that the sections stay balanced and readable.
+12. The name in the Home title now uses the solid primary blue. The previous blue-to-red text gradient was removed.
 
 ## Required surfaces
 

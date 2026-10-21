@@ -4,7 +4,7 @@
 .home-page main.home-shell { padding-top: 0; padding-bottom: 0; }
 .home-intro { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: start; gap: 40px; padding: 48px 0 32px; }
 .home-intro h1 { margin: 0; font-size: clamp(36px, 5.6vw, 58px); line-height: 1.12; font-weight: 600; }
-.home-name { color: hsl(var(--primary)); background: linear-gradient(110deg, hsl(var(--primary)) 12%, hsl(var(--accent)) 92%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.home-name { color: hsl(var(--primary)); }
 .home-intro-statement { margin-top: 14px; font-size: clamp(22px, 3.2vw, 30px); line-height: 1.35; letter-spacing: -.025em; }
 .home-intro-description { max-width: 65ch; margin-top: 24px; font-size: 18px; line-height: 1.6; color: hsl(var(--muted-foreground)); }
 .home-portrait { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 1px solid hsl(var(--border)); }
