@@ -1,66 +1,10 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { TalksTable } from "@/components/sections/TalksTable";
-import TalksSubnav from "@/components/sections/TalksSubnav.astro";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { getCollection } from "astro:content";
-import { topicHref, topicTitle } from "@/lib/topics";
 
-const talks = (await getCollection("talks")).sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
-
-const talksByYearMap: Record<string, (typeof talks)[number][]> = {};
-for (const talk of talks) {
-  const year = String(new Date(talk.data.date).getFullYear());
-  if (!talksByYearMap[year]) {
-    talksByYearMap[year] = [];
-  }
-  talksByYearMap[year].push(talk);
-}
-const talksByYear = Object.entries(talksByYearMap).sort((a, b) => Number(b[0]) - Number(a[0]));
-
-const tagCounts: Record<string, number> = {};
-for (const talk of talks) {
-  for (const tag of talk.data.tags ?? []) {
-    tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
-  }
-}
-const tags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-
-type TalkResource = {
-  label: string;
-  url: string;
-  talkSlug: string;
-  talkTitle: string;
-  date: string;
-};
-
-const resourcesByUrl = new Map<string, TalkResource>();
-for (const talk of talks) {
-  for (const resource of talk.data.resources ?? []) {
-    if (!resourcesByUrl.has(resource.url)) {
-      resourcesByUrl.set(resource.url, {
-        label: resource.label,
-        url: resource.url,
-        talkSlug: talk.id,
-        talkTitle: talk.data.title,
-        date: talk.data.date,
-      });
-    }
-  }
-}
-const resources = Array.from(resourcesByUrl.values()).sort(
-  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-);
-
-const sectionLinks = [
-  { href: "#overview", label: "Overview" },
-  { href: "#by-year", label: "By year" },
-  { href: "#tags", label: "Tags" },
-  { href: "#resources", label: "Resources" },
-];
+const talks = (await getCollection("talks")).sort((a,b) => b.data.date.localeCompare(a.data.date));
+const years = [...new Set(talks.map(talk => talk.data.date.slice(0,4)))];
 const structuredData = {
   "@type": "CollectionPage",
   "@id": "https://enguerrand.dev/talks/#collection",
@@ -81,148 +25,28 @@ const structuredData = {
 };
 ---
 
-<BaseLayout
-  title="Cloud & Kubernetes Security Talks"
-  description="Conference talks and workshops on cloud security, software supply chain protection, and reliability."
-  structuredData={structuredData}
->
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Speaking
-        </Badge>
-        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">Cloud security talks & workshops</h1>
-        <CardDescription className="max-w-2xl text-base sm:text-lg">
-          A unified archive of conference sessions, meetups, and security case studies.
-        </CardDescription>
-        <div class="flex flex-wrap gap-2 pt-1">
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-            {talks.length} Talks
-          </span>
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-            {talksByYear.length} Years
-          </span>
-          <span class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-            {tags.length} Topics
-          </span>
-        </div>
-      </CardHeader>
-    </Card>
-  </section>
-
-  <TalksSubnav sectionLinks={sectionLinks} showAllTalks={false} />
-
-  <section id="overview" class="scroll-mt-40">
-    <TalksTable title="All talks" talks={talks} showViewAll={false} />
-  </section>
-
-  <section id="by-year" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Browse by year</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Quick chronological view of all sessions with direct links.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-2">
-        {talksByYear.map(([year, yearTalks]) => (
-          <div class="rounded-xl border border-border/70 bg-background/65 p-4">
-            <div class="mb-3 flex items-center justify-between gap-3">
-              <h3 class="text-2xl leading-none">{year}</h3>
-              <span class="rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-                {yearTalks.length} talks
-              </span>
-            </div>
-            <ul class="space-y-3">
-              {yearTalks.map((talk) => (
-                <li class="rounded-lg border border-border/70 bg-card/70 p-3">
-                  <a class="font-medium text-foreground hover:text-primary" href={`/talks/${talk.id}/`}>
-                    {talk.data.title}
-                  </a>
-                  <p class="mt-1 text-xs text-muted-foreground">
-                    {new Date(talk.data.date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                    {talk.data.event && ` - ${talk.data.event}`}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  </section>
-
-  <section id="tags" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Topic index</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Topics are aggregated from all talks to make recurring themes easier to scan.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {tags.length > 0 ? (
-          <div class="flex flex-wrap gap-2.5">
-            {tags.map(([tag, count]) => (
-              <a href={topicHref(tag)} class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/55 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground hover:bg-secondary/80 hover:text-foreground">
-                {topicTitle(tag)}
-                <span class="rounded-full border border-border/80 bg-card/75 px-2 py-0.5 text-[10px] text-foreground">
-                  {count}
-                </span>
-              </a>
+<BaseLayout title="Cloud & Kubernetes Security Talks" description="Conference talks and workshops on cloud security, software supply chain protection, and reliability." structuredData={structuredData}>
+  <header id="overview" class="pt-6 pb-6 sm:pt-8">
+    <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">Talks & workshops</h1>
+    <p class="mt-3 max-w-2xl text-muted-foreground">Conference sessions, meetups, and field notes on cloud and software supply chain security.</p>
+  </header>
+  <div id="by-year" class="space-y-7">
+    {years.map(year => (
+      <section aria-labelledby={`year-${year}`}>
+        <h2 id={`year-${year}`} class="mb-3 text-2xl">{year}</h2>
+        <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+          <CardContent className="divide-y divide-border/70 px-5 py-1 sm:px-6">
+            {talks.filter(talk => talk.data.date.startsWith(year)).map(talk => (
+              <article class="py-5">
+                <p class="mb-2 text-xs text-muted-foreground"><time datetime={talk.data.date}>{new Date(talk.data.date).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"})}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
+                <h3 class="text-xl leading-snug"><a href={`/talks/${talk.id}/`} class="hover:text-primary">{talk.data.displayTitle ?? talk.data.title} <span aria-hidden="true">→</span></a></h3>
+                {talk.data.summary && <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{talk.data.summary}</p>}
+              </article>
             ))}
-          </div>
-        ) : (
-          <p class="text-sm text-muted-foreground">No tags available yet.</p>
-        )}
-      </CardContent>
-    </Card>
-  </section>
-
-  <section id="resources" class="scroll-mt-40 pt-8 sm:pt-10">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Resource links</CardTitle>
-        <CardDescription className="max-w-2xl">
-          Consolidated links to videos, slides, and repositories from all sessions.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {resources.length > 0 ? (
-          <ul class="space-y-3">
-            {resources.map((resource) => (
-              <li class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-background/65 p-3">
-                <div class="min-w-0 space-y-1">
-                  <a
-                    href={resource.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="block truncate font-medium text-foreground hover:text-primary"
-                  >
-                    {resource.label}
-                  </a>
-                  <a href={`/talks/${resource.talkSlug}/`} class="block text-xs text-muted-foreground hover:text-foreground">
-                    {resource.talkTitle}
-                  </a>
-                </div>
-                <a
-                  href={`/talks/${resource.talkSlug}/`}
-                  class="rounded-full border border-border/70 bg-card/75 px-3 py-1 text-xs font-medium text-foreground hover:bg-card"
-                >
-                  Talk
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="text-sm text-muted-foreground">No resources listed yet.</p>
-        )}
-      </CardContent>
-    </Card>
-  </section>
+          </CardContent>
+        </Card>
+      </section>
+    ))}
+  </div>
+  <p id="resources" class="mt-6 text-sm text-muted-foreground">Videos, slides, and resources are on each talk page. <a id="tags" href="/topics/" class="font-semibold text-primary hover:underline">Browse topics →</a></p>
 </BaseLayout>

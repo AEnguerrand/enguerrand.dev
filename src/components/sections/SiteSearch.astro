@@ -104,35 +104,35 @@ const getPreview = (item: SearchItem) => {
     <div class="flex flex-wrap gap-2">
       <button
         type="button"
-        data-search-filter="all"
+        data-search-filter="all" aria-pressed="true"
         class="rounded-full border border-border/90 bg-secondary/70 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-foreground transition-colors hover:bg-secondary/70"
       >
         All
       </button>
       <button
         type="button"
-        data-search-filter="talk"
+        data-search-filter="talk" aria-pressed="false"
         class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
         Talks
       </button>
       <button
         type="button"
-        data-search-filter="post"
+        data-search-filter="post" aria-pressed="false"
         class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
         Posts
       </button>
       <button
         type="button"
-        data-search-filter="page"
+        data-search-filter="page" aria-pressed="false"
         class="rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
       >
         Pages
       </button>
     </div>
 
-    <p class="text-xs text-muted-foreground" data-search-count>
+    <p class="text-xs text-muted-foreground" data-search-count role="status" aria-live="polite" aria-atomic="true">
       Showing {initialItems.length} recent entries
     </p>
 
@@ -279,6 +279,7 @@ const getPreview = (item: SearchItem) => {
       for (const button of filterButtons) {
         const filter = button.getAttribute("data-search-filter");
         const isActive = filter === state.filter;
+        button.setAttribute("aria-pressed", String(isActive));
 
         button.classList.remove(
           "border-border/90",
@@ -423,19 +424,40 @@ const getPreview = (item: SearchItem) => {
       setFilterButtonStyles();
     };
 
+    const syncUrl = () => {
+      const url = new URL(window.location.href);
+      if (state.query) url.searchParams.set("q", state.query);
+      else url.searchParams.delete("q");
+      if (state.filter !== "all") url.searchParams.set("filter", state.filter);
+      else url.searchParams.delete("filter");
+      url.searchParams.delete("focus");
+      window.history.replaceState(null, "", url);
+    };
+
     for (const button of filterButtons) {
       button.addEventListener("click", () => {
         const nextFilter = button.getAttribute("data-search-filter");
         state.filter = nextFilter || "all";
+        syncUrl();
         render();
       });
     }
 
     input.addEventListener("input", (event) => {
       state.query = event.currentTarget?.value ?? "";
+      syncUrl();
       render();
     });
 
+    const readUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      state.query = params.get("q") ?? "";
+      const filter = params.get("filter") ?? "all";
+      state.filter = ["all", "talk", "post", "page"].includes(filter) ? filter : "all";
+      input.value = state.query;
+    };
+    window.addEventListener("popstate", () => { readUrl(); render(); });
+    readUrl();
     const searchParams = new URLSearchParams(window.location.search);
     const initialQuery = searchParams.get("q");
     if (initialQuery) {

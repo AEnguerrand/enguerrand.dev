@@ -14,6 +14,8 @@
     "src/lib/talk-presentation.ts",
     "src/lib/posts.ts",
     "src/lib/topics.ts",
-    "src/lib/seo.ts"
+    "src/lib/seo.ts",
+    "src/lib/stars.ts",
+    "src/components/sections/GitHubStars.tsx"
   ]
 }

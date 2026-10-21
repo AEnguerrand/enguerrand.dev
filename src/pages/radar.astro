@@ -1,92 +1,24 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpRight, Search, Star } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import starsData from "../../public/data/starred-groups.json";
-
-const starsTotal = starsData.total_repos;
-const starsListCount = starsData.groups.filter((group) => group.repos.length > 0).length;
-
-const cards = [
-  {
-    key: "stars",
-    title: "GitHub Stars",
-    label: "Curated repos",
-    description:
-      "Repositories I find useful, organized by topic.",
-    href: "/github-stars/",
-    cta: "Open stars",
-    stats: [`${starsTotal} repos`, `${starsListCount} lists`],
-    icon: Star,
-  },
-  {
-    key: "search",
-    title: "Search",
-    label: "Utility",
-    description:
-      "Quickly find content from a single entry point.",
-    href: "/search/",
-    cta: "Open search",
-    stats: ["Fast lookup", "Cross-page"],
-    icon: Search,
-  },
-] as const;
+const listCount = starsData.groups.filter(group => group.repos.length > 0).length;
 ---
-
-<BaseLayout
-  title="Technical Radar"
-  description="A single hub for my technical radar: curated repositories and quick site search."
->
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_46px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-4">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Knowledge Hub
-        </Badge>
-        <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">Cloud security engineering radar</h1>
-        <CardDescription className="max-w-3xl text-base sm:text-lg">
-          A central place for what I track and curate: useful repositories and quick access
-          to search across the site.
-        </CardDescription>
-      </CardHeader>
-    </Card>
-  </section>
-
-  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {cards.map((card) => {
-      const Icon = card.icon;
-
-      return (
-        <Card className="lift-card border-border/70 bg-card/90 shadow-[0_14px_34px_hsl(var(--foreground)/0.05)]">
-          <CardHeader className="space-y-3 pb-3">
-            <div class="flex items-center justify-between gap-3">
-              <span class="rounded-full border border-border/70 bg-secondary/55 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-                {card.label}
-              </span>
-              <Icon className="h-5 w-5 text-primary" />
-            </div>
-            <CardTitle className="text-3xl">{card.title}</CardTitle>
-            <CardDescription>{card.description}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-0">
-            <div class="flex flex-wrap gap-2">
-              {card.stats.map((stat) => (
-                <span class="rounded-full border border-border/80 bg-background/70 px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-                  {stat}
-                </span>
-              ))}
-            </div>
-            <a
-              href={card.href}
-              class="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-primary"
-            >
-              {card.cta}
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </CardContent>
-        </Card>
-      );
-    })}
-  </section>
+<BaseLayout title="Technical Radar" description="Useful repositories and a quick search across my talks, notes, and pages.">
+  <header class="pt-6 pb-6 sm:pt-8">
+    <h1 class="text-3xl sm:text-4xl">Radar</h1>
+    <p class="mt-3 text-muted-foreground">Useful repositories and a quick way to find things on this site.</p>
+  </header>
+  <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+    <CardContent className="divide-y divide-border/70 px-5 py-1 sm:px-6">
+      <section class="py-5">
+        <h2 class="text-2xl"><a href="/github-stars/" class="hover:text-primary">GitHub Stars →</a></h2>
+        <p class="mt-2 text-sm text-muted-foreground">Repositories I find useful, organized by topic. {starsData.total_repos} repos · {listCount} lists.</p>
+      </section>
+      <section class="py-5">
+        <h2 class="text-2xl"><a href="/search/" class="hover:text-primary">Search →</a></h2>
+        <p class="mt-2 text-sm text-muted-foreground">Find a talk, post, or page.</p>
+      </section>
+    </CardContent>
+  </Card>
 </BaseLayout>

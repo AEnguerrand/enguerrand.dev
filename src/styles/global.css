@@ -201,3 +201,5 @@
 @media (min-width: 640px) { [id] { scroll-margin-top: 13rem; } }
 .prose { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.nav-pill[aria-current="page"] { color: hsl(var(--primary)); background: hsl(var(--secondary) / 0.7); }

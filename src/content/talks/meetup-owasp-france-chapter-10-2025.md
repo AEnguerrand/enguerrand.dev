@@ -1,6 +1,7 @@
 ---
 author: ["Enguerrand Allamel"]
-title: "Meetup OWASP France (October 2025): NPM Supply Chain AttackS - What Happened in September 2025"
+title: "Meetup OWASP France (October 2025): npm Supply Chain Attacks - What Happened in September 2025"
+displayTitle: "The September 2025 npm supply chain attacks"
 seoTitle: "September 2025 npm Supply Chain Attacks Explained"
 date: "2025-10-13"
 event: "OWASP France Chapter Meetup (October 2025)"

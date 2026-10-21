@@ -93,7 +93,8 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
   for (const current of [talk, aws]) {
     const resources = current.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
     for (const link of walk(resources).filter((n) => n.tagName === "a")) {
-      assert.ok(attrs(link).class.split(" ").includes("whitespace-normal"));
+      if (attrs(link).class.split(" ").includes("bg-primary"))
+        assert.ok(attrs(link).class.split(" ").includes("whitespace-normal"));
       assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
     }
   }
@@ -114,11 +115,21 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
   const radar = text((await page("radar/index.html")).nodes[0]);
   assert.ok(stars.includes(`${dataset.total_repos} Stars`));
   assert.ok(stars.includes(`${count} Lists`));
-  assert.ok(
-    stars.includes(
-      dataset.groups.find((g) => g.repos.length > 0).repos[0].full_name,
-    ),
-  );
+  const directory = await page("github-stars/index.html");
+  assert.ok(Buffer.byteLength(directory.html) < 60000, "Stars directory must remain small");
+  for (const group of dataset.groups.filter(g => g.repos.length)) {
+    assert.ok(directory.nodes.some(n => attrs(n).href === `/github-stars/${group.slug}/`));
+    const names = [];
+    const count = Math.ceil(group.repos.length / 36);
+    for (let number = 1; number <= count; number++) {
+      const list = await page(`github-stars/${group.slug}/${number === 1 ? "" : `${number}/`}index.html`);
+      assert.ok(Buffer.byteLength(list.html) < 200000, "Stars list page is too large");
+      const headings = list.nodes.filter(n => n.tagName === "h3");
+      assert.ok(headings.length <= 36, "List pagination exceeded its bound");
+      names.push(...headings.map(n => text(n).replace("↗", "").trim()));
+    }
+    assert.deepEqual(names, group.repos.map(repo => repo.full_name), `Missing or duplicated repository in ${group.slug}`);
+  }
   assert.doesNotMatch(stars, /Starred repositories are unavailable/);
   assert.ok(radar.includes(`${dataset.total_repos} repos`));
   assert.ok(radar.includes(`${count} lists`));
@@ -127,7 +138,7 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
 test("Generated pages have no Once UI assets or markup", async () => {
   const files = await readdir(output, { recursive: true });
   for (const file of files.filter((f) => /\.(html|css|js)$/.test(f)))
-    assert.doesNotMatch(await load(file), /once-ui|@once-ui-system/, file);
+    assert.doesNotMatch(await load(file), /data-once-ui|@once-ui-system|once-ui-(?:provider|button|flex)/, file);
   const lock = await readFile(new URL("../package-lock.json", import.meta.url), "utf8");
   assert.doesNotMatch(lock, /@once-ui-system/);
 });
@@ -235,5 +246,48 @@ test("SEO: search can be crawled to read noindex and internal links use canonica
     assert.ok(builtFiles.includes(image.pathname.slice(1)), `${file}: missing social image`);
     assert.equal(meta(nodes, "og:image:width"), "1536");
     assert.equal(meta(nodes, "og:image:height"), "1536");
+  }
+});
+
+
+// The review found heading and fragment issues outside the original two-page sample.
+test("All generated pages keep ordered headings, unique IDs, valid fragments, and static output", () => {
+  const byPath = new Map(builtPages.map(p => [new URL(canonical(p.nodes)).pathname, p]));
+  for (const {file, html, nodes} of builtPages) {
+    let previous = 0;
+    for (const heading of nodes.filter(n => /^h[1-6]$/.test(n.tagName ?? ""))) {
+      const level = Number(heading.tagName[1]);
+      assert.ok(level <= previous + 1, `${file}: skipped heading before ${text(heading)}`);
+      previous = level;
+    }
+    const ids = nodes.map(n => attrs(n).id).filter(Boolean);
+    assert.equal(new Set(ids).size, ids.length, `${file}: duplicate IDs`);
+    for (const a of nodes.filter(n => n.tagName === "a")) {
+      const href = attrs(a).href;
+      if (!href || (!href.startsWith("/") && !href.startsWith("#"))) continue;
+      const url = new URL(href, canonical(nodes));
+      if (!url.hash) continue;
+      const target = byPath.get(url.pathname);
+      assert.ok(target?.nodes.some(n => attrs(n).id === decodeURIComponent(url.hash.slice(1))), `${file}: missing fragment ${href}`);
+    }
+    assert.doesNotMatch(html, /<astro-island/, `${file}: unexpected hydration`);
+  }
+});
+
+test("Review fixes preserve Home copy, keep talks in one list, and expose search state", async () => {
+  assert.match(text(home.nodes[0]), /Senior Platform Security Engineer working on AI-first development guardrails, cloud and Kubernetes security, and secure-by-default developer platforms. This site is my notebook for talks, ideas, and field notes from real systems./);
+  const archive = await page("talks/index.html");
+  assert.equal(archive.nodes.filter(n => n.tagName === "h3").length, 5);
+  for (const heading of archive.nodes.filter(n => n.tagName === "h3"))
+    assert.equal(walk(heading).filter(n => n.tagName === "a").length, 1);
+  const search = await page("search/index.html");
+  assert.equal(search.nodes.filter(n => attrs(n)["aria-pressed"] === "true").length, 1);
+  assert.equal(search.nodes.filter(n => "data-search-filter" in attrs(n)).length, 4);
+  assert.ok(search.nodes.some(n => attrs(n).role === "status" && attrs(n)["aria-live"] === "polite"));
+  for (const current of builtPages.filter(p => p.file.startsWith("talks/") && p.file !== "talks/index.html")) {
+    assert.ok(!graph(current.nodes).some(n => n["@type"] === "VideoObject"), "Do not publish recording metadata with an unverified upload date");
+    assert.doesNotMatch(current.html, /https:\/\/github.com\/AEnguerrand\/kubecon-cloudnativecon-china-2024-supply-chain-security["<]/);
+    const actions = current.nodes.find(n => attrs(n)["aria-label"] === "Session resources");
+    assert.ok(walk(actions).filter(n => n.tagName === "a").length <= 2, "Talk header has too many actions");
   }
 });

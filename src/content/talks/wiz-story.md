@@ -1,6 +1,7 @@
 ---
 author: ["Enguerrand Allamel"]
 title: "Wiz.io x Ledger: Protecting Ledger's Infrastructure: Cloud Security at Scale for Cryptocurrency Assets"
+displayTitle: "Cloud security at scale at Ledger"
 seoTitle: "Cloud Security at Scale at Ledger"
 date: "2025-02-20"
 event: "Wiz Customer Story Session"
