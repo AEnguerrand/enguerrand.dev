@@ -51,14 +51,13 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "Blog", "What I'm exploring now"]);
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "What I'm exploring now"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
-  assert.match(text(blog), /first article is in progress/i);
-  assert.ok(!walk(blog).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"), "Empty Blog must not offer an empty archive action");
+  assert.equal(blog, undefined, "Home must hide Blog until a post is published");
   const projects = home.nodes.find((n) => attrs(n).id === "projects");
   assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])

@@ -63,7 +63,7 @@ const talkFormats = (talk: typeof talks[number]) => {
     </ul>
   </section>
 
-  <div class="home-content-columns">
+  <div class:list={["home-content-columns", { "home-content-columns-single": posts.length === 0 }]}>
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
       <div class="home-section-heading">
         <h2 id="projects-title">Projects</h2>
@@ -94,10 +94,10 @@ const talkFormats = (talk: typeof talks[number]) => {
       <a class="home-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowRight size={18} aria-hidden="true" /></a>
     </section>
 
-    <section id="blog" class="home-blog" aria-labelledby="blog-title">
-      <h2 id="blog-title">Blog</h2>
-      <p class="home-section-description">Notes on security, AI, and life in Canada.</p>
-      {posts.length ? (
+    {posts.length > 0 && (
+      <section id="blog" class="home-blog" aria-labelledby="blog-title">
+        <h2 id="blog-title">Blog</h2>
+        <p class="home-section-description">Notes on security, AI, and life in Canada.</p>
         <>
           <ul class="home-list">
             {posts.map((post) => (
@@ -110,14 +110,8 @@ const talkFormats = (talk: typeof talks[number]) => {
           </ul>
           <a class="home-link home-archive-link" href="/blog/">All posts <ArrowRight size={18} aria-hidden="true" /></a>
         </>
-      ) : (
-        <div class="home-blog-status">
-          <p class="home-entry-status">Writing now</p>
-          <p>The first article is in progress. Until then, you can read my latest security notes.</p>
-          <a class="home-link" href="/talks/meetup-owasp-france-chapter-10-2025/">Read the npm security notes <ArrowRight size={18} aria-hidden="true" /></a>
-        </div>
-      )}
-    </section>
+      </section>
+    )}
   </div>
 
   <section class="home-exploring" aria-labelledby="exploring-title">

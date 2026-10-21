@@ -32,6 +32,7 @@
 .home-talk-link:hover,
 .home-talk-link:focus-visible { background: hsl(var(--primary) / .035); }
 .home-content-columns { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .72fr); align-items: start; gap: 56px; padding: 56px 0 48px; }
+.home-content-columns-single { grid-template-columns: minmax(0, 1fr); }
 .home-projects { min-width: 0; }
 .home-entry { padding: 24px 0; }
 .home-project-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
@@ -49,10 +50,6 @@
 .home-empty { border-top: 1px solid hsl(var(--border)); margin-top: 24px; padding-top: 24px; max-width: 48ch; color: hsl(var(--muted-foreground)); font-size: 17px; line-height: 1.65; }
 .home-archive-link { margin-top: 20px; }
 .home-blog { min-width: 0; padding-left: 40px; border-left: 1px solid hsl(var(--border)); }
-.home-blog-status { margin-top: 20px; padding: 16px 0; border-top: 1px solid hsl(var(--border)); }
-.home-blog-status .home-entry-status { color: hsl(var(--primary)); font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
-.home-blog-status > p:not(.home-entry-status) { margin-top: 6px; color: hsl(var(--muted-foreground)); line-height: 1.55; }
-.home-blog-status .home-link { margin-top: 10px; }
 .home-exploring { padding: 38px 0 0; border-top: 1px solid hsl(var(--border)); }
 .home-exploring h2 { font-size: 30px; }
 .home-exploring-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; }

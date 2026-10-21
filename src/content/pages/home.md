@@ -12,7 +12,7 @@ projects:
   - title: "Foliobruma"
     description: "A private archive for family letters, research notes, and the paper records I want to preserve."
     url: "https://foliobruma.com"
-    status: "Private alpha · By invitation"
+    status: "WIP"
     action: "Visit Foliobruma"
 currentExploringTitle: "What I'm exploring now"
 currentExploringDescription: "Topics I'm spending time on lately."
