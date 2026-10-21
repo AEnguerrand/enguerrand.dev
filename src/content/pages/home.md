@@ -3,7 +3,7 @@ title: "Home"
 # Add selected public projects here: title, description, and url.
 projects:
   - title: "Foliobruma Scanner"
-    description: "An offline macOS app that turns books and paper documents into PDFs. It works without an account."
+    description: "An offline macOS app that turns books and paper documents into PDFs."
     url: "https://github.com/AEnguerrand/foliobruma-scanner"
     status: "Open source · macOS"
     action: "Source and downloads"
