@@ -1,56 +1,101 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Hero } from "@/components/sections/Hero";
-import { ContactCard } from "@/components/sections/ContactCard";
-import { TalksSpotlight } from "@/components/sections/TalksSpotlight";
 import { getCollection, getEntry } from "astro:content";
-import { ShieldCheck, Radar, Workflow } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { formatPostDate, getPosts, postHref } from "@/lib/posts";
+import "@/styles/home.css";
 
-const allTalks = (await getCollection("talks"))
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-const featured = allTalks.find((talk) => talk.id === "kubecon-na-2024");
-const talks = [featured, ...allTalks.filter((talk) => talk.id !== featured?.id).slice(0, 2)]
+const allTalks = await getCollection("talks");
+const talks = ["meetup-owasp-france-chapter-10-2025", "kubecon-na-2024"]
+  .map((id) => allTalks.find((talk) => talk.id === id))
   .filter((talk): talk is NonNullable<typeof talk> => Boolean(talk));
 const homePage = await getEntry("pages", "home");
-const exploringIcons = [ShieldCheck, Radar, Workflow];
+const posts = (await getPosts()).slice(0, 3);
+const projects = homePage?.data.projects ?? [];
+const eventLabels: Record<string, string> = {
+  "meetup-owasp-france-chapter-10-2025": "OWASP France",
+  "kubecon-na-2024": "KubeCon North America",
+};
+const monthYear = (date: string) => new Intl.DateTimeFormat("en-CA", {
+  month: "long", year: "numeric", timeZone: "UTC",
+}).format(new Date(`${date}T00:00:00Z`));
 ---
 
 <BaseLayout
+  home
   title="Platform Security Engineer"
   pageType="ProfilePage"
-  description="Enguerrand Allamel, Senior Platform Security Engineer. Talks and field notes on AI development guardrails, cloud security, Kubernetes, and developer platforms."
+  description="Enguerrand Allamel, Senior Platform Security Engineer. Talks, projects, and field notes on AI development guardrails, cloud security, Kubernetes, and developer platforms."
 >
-  <div class="grid gap-6 pt-3 pb-8 sm:pt-6 lg:grid-cols-[1.35fr_1fr]">
-    <Hero />
+  <Hero />
 
-    <section class="lift-card rounded-lg border border-border/70 bg-card/90 p-6 shadow-[0_14px_38px_hsl(var(--foreground)/0.06)]" aria-labelledby="exploring-title">
-      <h2 id="exploring-title" class="text-2xl font-semibold leading-none tracking-tight">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
-      <p class="mt-2 text-sm text-muted-foreground">{homePage?.data.currentExploringDescription}</p>
-      <div class="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-1">
-        {homePage?.data.currentExploring?.map((item, index) => {
-          const Icon = exploringIcons[index % exploringIcons.length];
-          return (
-            <div class="rounded-xl border border-border/70 bg-secondary/55 p-4">
-              <h3 class="mb-2 flex items-start gap-2 font-sans text-sm font-semibold">
-                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                {item.title}
-              </h3>
-              <p class="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+  <section id="selected-talks" class="home-talks" aria-labelledby="talks-title">
+    <div class="home-section-heading">
+      <h2 id="talks-title">Talks</h2>
+      <a class="home-link" href="/talks/">All talks <ArrowRight size={18} aria-hidden="true" /></a>
+    </div>
+    <p class="home-section-description">Recordings, slides, and practical examples.</p>
+    <ul class="home-list home-talk-list">
+      {talks.map((talk) => (
+        <li>
+          <a class="home-talk-link" href={`/talks/${talk.id}/`}>
+            <div>
+              <h3>{talk.data.displayTitle ?? talk.data.title}</h3>
+              <p>{eventLabels[talk.id] ?? talk.data.event} <span aria-hidden="true">·</span> <time datetime={talk.data.date}>{monthYear(talk.data.date)}</time></p>
             </div>
-          );
-        })}
-      </div>
+            <ArrowRight size={22} aria-hidden="true" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="home-content-columns">
+    <section id="blog" aria-labelledby="blog-title">
+      <h2 id="blog-title">Blog</h2>
+      <p class="home-section-description">Notes on security, AI, and life in Canada.</p>
+      {posts.length ? (
+        <ul class="home-list">
+          {posts.map((post) => (
+            <li class="home-entry">
+              <h3><a href={postHref(post.id)}>{post.data.title}</a></h3>
+              {post.data.publishDate && <time datetime={post.data.publishDate}>{formatPostDate(post.data.publishDate)}</time>}
+              <p>{post.data.description}</p>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="home-empty">No posts published yet. This is where my latest notes will appear.</p>}
+      <a class="home-link home-archive-link" href="/blog/">All posts <ArrowRight size={18} aria-hidden="true" /></a>
+    </section>
+
+    <section id="projects" aria-labelledby="projects-title">
+      <h2 id="projects-title">Projects</h2>
+      <p class="home-section-description">Things I build, test, and learn from.</p>
+      {projects.length ? (
+        <ul class="home-list">
+          {projects.map((project) => (
+            <li class="home-entry">
+              <h3><a href={project.url}>{project.title}</a></h3>
+              <p>{project.description}</p>
+              <a class="home-link" href={project.url} aria-label={`View ${project.title}`}>View project <ArrowRight size={18} aria-hidden="true" /></a>
+            </li>
+          ))}
+        </ul>
+      ) : <p class="home-empty">Project write-ups are on the way. In the meantime, you can explore my public work on GitHub.</p>}
+      <a class="home-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowRight size={18} aria-hidden="true" /></a>
     </section>
   </div>
 
-  <TalksSpotlight talks={talks} />
-
-  <section class="mt-8 rounded-lg border border-border/70 bg-card/90 p-6 shadow-sm" aria-labelledby="writing-title">
-    <h2 id="writing-title" class="text-2xl">Writing</h2>
-    <p class="mt-2 text-sm text-muted-foreground">Notes on security, AI, and life in Canada.</p>
-    <a href="/blog/" class="mt-2 inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline">Browse the blog →</a>
+  <section class="home-exploring" aria-labelledby="exploring-title">
+    <h2 id="exploring-title">Currently exploring</h2>
+    <div class="home-exploring-grid">
+      {homePage?.data.currentExploring?.map((item) => (
+        <details>
+          <summary>{item.title}</summary>
+          <p>{item.description}</p>
+        </details>
+      ))}
+    </div>
   </section>
-
-
-  <ContactCard />
 </BaseLayout>

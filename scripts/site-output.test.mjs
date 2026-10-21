@@ -45,20 +45,22 @@ for (const [name, { html, nodes }] of [
   });
 }
 
-test("Home keeps a short introduction, three linked talks, and the approved section order", () => {
+test("Home shows talks first, clear titles, and real content states", () => {
   const selected = home.nodes.find((n) => attrs(n).id === "selected-talks");
-  assert.equal(walk(selected).filter((n) => n.tagName === "h3").length, 3);
-  const intro = home.nodes.find((n) => attrs(n)["aria-label"] === "Introduction");
-  assert.deepEqual(walk(intro).filter((n) => n.tagName === "a").map((n) => text(n).trim()), ["Explore talks", "Read resume"]);
-  const headings = home.nodes.filter((n) => n.tagName === "h2").map(text);
-  assert.deepEqual(headings, ["What I'm exploring now", "Selected talks", "Writing", "Let's connect"]);
-  assert.doesNotMatch(text(selected), /Read details/);
-  assert.equal(walk(selected).filter((n) => n.tagName === "a" && attrs(n).href?.startsWith("/topics/")).length, 0);
-  for (const heading of walk(selected).filter((n) => n.tagName === "h3"))
-    assert.ok(walk(heading).some((n) => n.tagName === "a" && attrs(n).href?.startsWith("/talks/")));
+  const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
+  assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
+  assert.ok(links.includes("/talks/kubecon-na-2024/"));
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Blog", "Projects", "Currently exploring"]);
+  assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
-  assert.match(text(selected), /Nov 15, 2024/);
+  assert.match(text(selected), /November 2024/);
+  assert.match(text(home.nodes.find((n) => attrs(n).id === "blog")), /No posts published yet/);
+  const projects = home.nodes.find((n) => attrs(n).id === "projects");
+  assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+    assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
+  assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {

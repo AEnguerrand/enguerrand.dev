@@ -27,6 +27,12 @@ npm run test:site
 
 The checks cover generated HTML, headings, links, resources, dates, Stars data, and blog publication. Also inspect phone, tablet, and desktop layouts.
 
+## Edit homepage projects
+
+Edit `projects` in `src/content/pages/home.md`. Each entry has a `title`, a short `description`, and an HTTP(S) `url`. Keep entries in the order they should appear. The homepage links directly to each project; its navigation scrolls to this section. Set `projects: []` to show the empty state.
+
+The homepage shows Talks first, then Blog and Projects. Blog automatically displays up to three published posts, excluding drafts and future dates. Exploration details stay in the same Home content file.
+
 ## Write a blog post
 
 Create a file such as `src/content/posts/my-first-post.md`. Its file name becomes `/blog/my-first-post/`.
