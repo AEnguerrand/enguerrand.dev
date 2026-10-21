@@ -4,7 +4,7 @@ export function Hero() {
   return (
     <section className="home-intro" aria-label="Introduction">
       <div className="home-intro-copy">
-        <h1>Hi, I&apos;m Enguerrand.</h1>
+        <h1>Hi, I&apos;m <span className="home-name">Enguerrand.</span></h1>
         <p className="home-intro-statement">I build secure and reliable cloud platforms.</p>
         <p className="home-intro-description">
           I&apos;m a Senior Platform Security Engineer based in Vancouver. Here I

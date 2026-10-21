@@ -12,6 +12,7 @@ final result: passed
 - Supporting captures: `output/homepage-improvements-qa/implementation-blog.jpg` and `output/homepage-improvements-qa/implementation-talk.jpg`.
 - State: two selected talks, two real projects, no published Blog posts, exploration items collapsed.
 - The source and final desktop images, then the source and final mobile images, were inspected together in one comparison result. Neither image was stretched.
+- The later personality pass was compared before and after at identical 1440 × 1000 and 390 × 844 viewports.
 - Full-page comparison was sufficient because the changed areas are visible at their native width and use one continuous layout. Focused crops were not needed.
 
 ## Comparison history
@@ -20,11 +21,13 @@ final result: passed
 2. The implementation moved Projects before Blog, made the empty Blog state compact, shared the main navigation and footer across pages, shortened the supporting introduction, added project status and specific actions, and added talk material and language labels.
 3. The first browser pass showed that the talk material list had a generic accessible label. Removed that label so assistive technology can use the visible values in the talk link name. P2 fixed.
 4. The final same-input comparison shows a shorter page with clear section priority. Projects has the larger desktop column and comes before Blog on phones. The first talk is visible sooner on phones. No actionable P0, P1, or P2 finding remains.
+5. User feedback found the simplified page too restrained. A first colour pass used accent words, numbered sections, coloured metadata, and a large footer statement. The result was too strong. P2.
+6. The final revision keeps the gradient name, a small brand dot, one coloured talk label, and a smaller footer statement. Section numbers and extra red content accents were removed. Same-input desktop and phone comparisons confirmed the quieter balance. No actionable P0, P1, or P2 finding remains.
 
 ## Required surfaces
 
 - Fonts: existing Fraunces Variable and Space Grotesk Variable remain in use. The heading and body hierarchy is unchanged.
-- Colours: existing background, text, accent, rule, and focus tokens remain in use.
+- Colours: existing background, text, accent, rule, and focus tokens remain in use. Colour emphasis is limited to the name, small brand mark, talk availability label, project status, and the first footer phrase.
 - Images: the real `/avatar.webp` remains sharp, circular, and proportionate at phone and desktop widths.
 - Spacing: the introduction is shorter, talk rows remain easy to scan, and the Projects/Blog columns have clear visual weight. The phone layout keeps consistent section spacing.
 - Copy: the introduction states role, location, and site purpose. Project status and destination labels are specific. The empty Blog state does not offer an empty archive. Talk cards state notes, video, slides, lab, and language when available.
@@ -40,6 +43,7 @@ final result: passed
 - The first keyboard stop is the skip link and it has a visible 2-pixel outline.
 - Project and talk links retain their destinations. The KubeCon page shows `Watch talk`, `Read notes`, an embedded video, and `Sources and resources`.
 - Browser console: no errors observed during the final route and interaction checks.
+- The final personality revision has one H1 and zero horizontal overflow at 390 and 1440 CSS pixels.
 
 ## Source validation
 
