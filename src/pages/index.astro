@@ -65,7 +65,10 @@ const talkFormats = (talk: typeof talks[number]) => {
 
   <div class="home-content-columns">
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
-      <h2 id="projects-title">Projects</h2>
+      <div class="home-section-heading">
+        <h2 id="projects-title">Projects</h2>
+        <a class="home-link" href="/projects/">All projects <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
       <p class="home-section-description">I’m building tools to scan and preserve paper records.</p>
       {projects.length ? (
         <ul class="home-list">

@@ -17,6 +17,7 @@ const page = async (path) => {
 };
 const home = await page("index.html");
 const talk = await page("talks/kubecon-na-2024/index.html");
+const projectsPage = await page("projects/index.html");
 
 for (const [name, { html, nodes }] of [
   ["Home", home],
@@ -64,6 +65,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
     assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
   assert.match(text(projects), /Source and downloads/);
   assert.match(text(projects), /Visit Foliobruma/);
+  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   assert.match(text(selected), /Notes.*French/s);
   assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
   const homeText = text(home.nodes[0]);
@@ -196,8 +198,18 @@ test("Primary navigation is consistent across Home, Blog, and talks", async () =
   for (const current of [home, blog, talk]) {
     const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
     assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
-    assert.ok(walk(nav).some((n) => n.tagName === "a" && attrs(n).href.endsWith("#projects")));
+    assert.ok(walk(nav).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   }
+});
+
+test("Projects has a dedicated page with the public project list", () => {
+  assert.equal(projectsPage.nodes.filter((n) => n.tagName === "h1").length, 1);
+  assert.deepEqual(
+    projectsPage.nodes.filter((n) => n.tagName === "h2" && attrs(n).id !== "project-list-heading").map(text),
+    ["Foliobruma Scanner", "Foliobruma"],
+  );
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+    assert.ok(projectsPage.nodes.some((n) => n.tagName === "a" && attrs(n).href === url));
 });
 
 // Check the public search contract against every built page, not just source templates.

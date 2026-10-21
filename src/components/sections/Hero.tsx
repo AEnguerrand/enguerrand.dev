@@ -14,7 +14,7 @@ export function Hero() {
           <a className="site-action-button site-action-button-primary" href="#selected-talks">
             Talks <ArrowRight size={15} aria-hidden="true" />
           </a>
-          <a className="site-action-button site-action-button-secondary" href="#projects">
+          <a className="site-action-button site-action-button-secondary" href="/projects/">
             Projects <ArrowRight size={15} aria-hidden="true" />
           </a>
         </div>

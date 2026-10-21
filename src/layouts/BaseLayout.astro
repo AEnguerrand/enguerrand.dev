@@ -149,11 +149,11 @@ const jsonLd = {
     <div class="site-page relative isolate min-h-screen">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+        class="site-orb site-orb-primary pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
       />
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
+        class="site-orb site-orb-accent pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
       />
 
       <header class="site-header site-shell">
@@ -162,7 +162,7 @@ const jsonLd = {
           <div class="site-nav-links">
             <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
             <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>
-            <a href={home ? "#projects" : "/#projects"}>Projects</a>
+            <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
             <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
         </nav>

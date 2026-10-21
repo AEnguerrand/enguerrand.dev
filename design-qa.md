@@ -37,6 +37,8 @@ final result: passed
 16. The exploration copy was restored to its original four topics and descriptions. The four items use a stable two-by-two desktop layout and a one-column phone layout. A source regression test now protects every topic and description.
 17. The full website now uses the same open editorial system as Home. Talks, talk details, Topics, Blog, Search, About, Resume, GitHub Stars, Radar, Privacy, and 404 use the shared shell, page title scale, dividers, list rows, links, and compact actions. Raised card containers were removed from route content. The talk video keeps its responsive frame and now has a visible source fallback.
 18. The skip link now moves focus to a zero-height target at the start of the main content. The verified focus target is `main-content`, its top is 87 CSS pixels, and the page stays at scroll position 0 instead of jumping into Home content.
+19. Projects now has a dedicated `/projects/` page with the complete public project list. The main navigation and Home hero link to this page, while Home keeps a shorter project preview. The decorative dot beside the header name was removed because it did not communicate a state or action.
+20. A restrained motion layer adds slow movement to the background colour fields, small arrow movement on hover, and a slight lift and rotation on project artwork. All three effects are disabled by `prefers-reduced-motion`.
 
 ## Required surfaces
 

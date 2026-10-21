@@ -229,6 +229,29 @@
 .site-list-row:hover,
 .site-list-row:focus-within { background: hsl(var(--primary) / .035); }
 
+/* Slow ambient motion adds personality without competing with the content. */
+.site-orb { animation: site-orb-drift 18s ease-in-out infinite alternate; will-change: transform; }
+.site-orb-accent { animation-delay: -7s; animation-direction: alternate-reverse; }
+@keyframes site-orb-drift {
+  from { transform: translate3d(-8px, -4px, 0) scale(.96); }
+  to { transform: translate3d(18px, 14px, 0) scale(1.08); }
+}
+.project-art-motion { display: block; transition: transform 220ms ease, filter 220ms ease; }
+.project-art-motion:hover,
+.project-art-motion:focus-visible { transform: rotate(-2deg) translateY(-3px) scale(1.03); filter: saturate(1.08); }
+.site-link .lucide-arrow-right,
+.site-link .lucide-arrow-up-right,
+.site-action .lucide-arrow-right,
+.site-action .lucide-arrow-up-right,
+.site-action-button .lucide-arrow-right,
+.site-action-button .lucide-arrow-up-right { transition: transform 180ms ease; }
+.site-link:hover .lucide-arrow-right,
+.site-link:hover .lucide-arrow-up-right,
+.site-action:hover .lucide-arrow-right,
+.site-action:hover .lucide-arrow-up-right,
+.site-action-button:hover .lucide-arrow-right,
+.site-action-button:hover .lucide-arrow-up-right { transform: translateX(3px); }
+
 /* Shared action hierarchy: buttons mark primary actions; text links support navigation. */
 .site-action,
 .site-action-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid hsl(var(--primary)); border-radius: 10px; font-size: 14px; font-weight: 650; transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
@@ -249,7 +272,6 @@
 .site-header { position: relative; z-index: 40; padding-top: 32px; }
 .site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 32px; padding-bottom: 10px; border-bottom: 1px solid hsl(var(--border)); }
 .site-brand { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.site-brand::after { content: ""; width: 7px; height: 7px; margin-left: 9px; border-radius: 999px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); box-shadow: 0 0 0 4px hsl(var(--primary) / .08); }
 .site-nav-links { display: flex; flex-wrap: wrap; gap: 0 28px; color: hsl(var(--muted-foreground)); }
 .site-nav-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .site-nav-links a:hover, .site-nav-links a[aria-current="page"] { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
@@ -273,4 +295,20 @@
   .site-list-row { transition: none; }
   .site-action, .site-action-button { transition: none; }
   .site-action:hover, .site-action-button:hover { transform: none; }
+  .site-orb { animation: none; }
+  .project-art-motion,
+  .site-link .lucide-arrow-right,
+  .site-link .lucide-arrow-up-right,
+  .site-action .lucide-arrow-right,
+  .site-action .lucide-arrow-up-right,
+  .site-action-button .lucide-arrow-right,
+  .site-action-button .lucide-arrow-up-right { transition: none; }
+  .project-art-motion:hover,
+  .project-art-motion:focus-visible,
+  .site-link:hover .lucide-arrow-right,
+  .site-link:hover .lucide-arrow-up-right,
+  .site-action:hover .lucide-arrow-right,
+  .site-action:hover .lucide-arrow-up-right,
+  .site-action-button:hover .lucide-arrow-right,
+  .site-action-button:hover .lucide-arrow-up-right { transform: none; }
 }
