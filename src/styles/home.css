@@ -9,9 +9,12 @@
 .home-intro-description { max-width: 65ch; margin-top: 24px; font-size: 18px; line-height: 1.6; color: hsl(var(--muted-foreground)); }
 .home-portrait { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 1px solid hsl(var(--border)); }
 .home-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.home-contact { display: flex; flex-wrap: wrap; gap: 4px 24px; margin-top: 14px; }
-.home-contact a, .home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; color: hsl(var(--primary)); }
-.home-contact svg, .home-link svg { flex-shrink: 0; }
+.home-actions .site-action-button { min-height: 36px; padding-inline: 12px; border-radius: 8px; font-size: 13px; }
+.home-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-top: 12px; }
+.home-contact a { min-height: 34px; font-size: 14px; }
+.home-contact a + a::before { content: ""; width: 3px; height: 3px; margin: 0 14px; border-radius: 999px; background: hsl(var(--muted-foreground) / .65); }
+.home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; color: hsl(var(--primary)); }
+.home-link svg { flex-shrink: 0; }
 .home-page a:not(.site-action-button):hover { text-decoration: underline; text-underline-offset: 4px; }
 .home-page h2 { font-size: 36px; font-weight: 600; line-height: 1.2; }
 .home-page h3 { font-family: var(--font-sans); font-size: 22px; font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; }
