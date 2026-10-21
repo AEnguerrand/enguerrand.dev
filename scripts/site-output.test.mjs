@@ -68,6 +68,11 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.match(text(selected), /Notes.*French/s);
   assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
   const homeText = text(home.nodes[0]);
+  for (const filler of [
+    "Selected talks, notes, recordings, and practical examples.",
+    "I’m building tools to scan and preserve paper records.",
+    "Topics I'm spending time on lately.",
+  ]) assert.ok(!homeText.includes(filler), `Home must omit filler subtitle: ${filler}`);
   for (const value of [
     "AI-first development security",
     "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down.",
@@ -79,6 +84,14 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
   ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
+});
+
+test("Talks and Projects indexes start directly with useful content", async () => {
+  const talksIndex = await page("talks/index.html");
+  const projectsText = text(projectsPage.nodes[0]);
+  const talksText = text(talksIndex.nodes[0]);
+  assert.ok(!projectsText.includes("Software I build to scan, preserve, and organize the paper records that matter."));
+  assert.ok(!talksText.includes("Conference sessions, meetups, and field notes on cloud and software supply chain security."));
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {

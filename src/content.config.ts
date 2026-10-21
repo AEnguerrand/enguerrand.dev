@@ -45,7 +45,6 @@ const pages = defineCollection({
         imageAlt: z.string().trim().min(1).optional(),
       })).default([]),
       currentExploringTitle: z.string().optional(),
-      currentExploringDescription: z.string().optional(),
       currentExploringUpdated: z.string().optional(),
       currentExploring: z
         .array(

@@ -43,7 +43,6 @@ const talkFormats = (talk: typeof talks[number]) => {
       <h2 id="talks-title">Talks</h2>
       <a class="home-link" href="/talks/">All talks <ArrowRight size={18} aria-hidden="true" /></a>
     </div>
-    <p class="home-section-description">Selected talks, notes, recordings, and practical examples.</p>
     <ul class="home-list home-talk-list">
       {talks.map((talk) => (
         <li>
@@ -69,7 +68,6 @@ const talkFormats = (talk: typeof talks[number]) => {
         <h2 id="projects-title">Projects</h2>
         <a class="home-link" href="/projects/">All projects <ArrowRight size={18} aria-hidden="true" /></a>
       </div>
-      <p class="home-section-description">I’m building tools to scan and preserve paper records.</p>
       {projects.length ? (
         <ul class="home-list">
           {projects.map((project) => (
@@ -97,7 +95,6 @@ const talkFormats = (talk: typeof talks[number]) => {
     {posts.length > 0 && (
       <section id="blog" class="home-blog" aria-labelledby="blog-title">
         <h2 id="blog-title">Blog</h2>
-        <p class="home-section-description">Notes on security, AI, and life in Canada.</p>
         <>
           <ul class="home-list">
             {posts.map((post) => (
@@ -118,7 +115,6 @@ const talkFormats = (talk: typeof talks[number]) => {
     <div class="home-exploring-heading">
       <div>
         <h2 id="exploring-title">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
-        <p class="home-section-description">{homePage?.data.currentExploringDescription ?? "Questions shaping my work right now."}</p>
       </div>
       {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
     </div>

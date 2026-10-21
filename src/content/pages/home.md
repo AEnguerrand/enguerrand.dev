@@ -15,7 +15,6 @@ projects:
     status: "WIP"
     action: "Visit Foliobruma"
 currentExploringTitle: "What I'm exploring now"
-currentExploringDescription: "Topics I'm spending time on lately."
 currentExploring:
   - title: "AI-first development security"
     description: "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down."

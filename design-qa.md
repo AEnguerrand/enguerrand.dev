@@ -40,6 +40,7 @@ final result: passed
 19. Projects now has a dedicated `/projects/` page with the complete public project list. The main navigation and Home hero link to this page, while Home keeps a shorter project preview. The decorative dot beside the header name was removed because it did not communicate a state or action.
 20. A restrained motion layer adds slow movement to the background colour fields, small arrow movement on hover, and a slight lift and rotation on project artwork. All three effects are disabled by `prefers-reduced-motion`.
 21. Home now omits the Blog section when there are no published posts. Projects uses the available width, and the Blog route remains available from the main navigation.
+22. Generic subtitles were removed below the Home section titles and the Talks and Projects page titles. Project descriptions, talk summaries, dates, formats, and links remain because they help visitors choose what to open.
 
 ## Required surfaces
 

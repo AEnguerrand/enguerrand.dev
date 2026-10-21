@@ -19,8 +19,7 @@
 .home-page h3 { font-family: var(--font-sans); font-size: 22px; font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .home-talks { border-top: 1px solid hsl(var(--border)); padding-top: 36px; }
 .home-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.home-section-description { margin-top: 8px; font-size: 18px; line-height: 1.5; color: hsl(var(--muted-foreground)); }
-.home-list { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid hsl(var(--border)); }
+.home-list { list-style: none; margin: 20px 0 0; padding: 0; border-top: 1px solid hsl(var(--border)); }
 .home-list > li { border-bottom: 1px solid hsl(var(--border)); }
 .home-talk-link { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 4px; }
 .home-talk-link > svg { flex-shrink: 0; color: hsl(var(--primary)); }
@@ -75,7 +74,6 @@
   .home-page h2 { font-size: 30px; }
   .home-page h3 { font-size: 20px; }
   .home-talks { padding-top: 28px; }
-  .home-section-description { font-size: 16px; }
   .home-talk-link { padding: 20px 0; gap: 16px; }
   .home-talk-link p { font-size: 14px; }
   .home-talk-meta { font-size: 12px; }
