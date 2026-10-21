@@ -1,8 +1,13 @@
 ---
 import "../styles/global.css";
+import CommandPalette from "@/components/CommandPalette.astro";
+import { getCollection, getEntry } from "astro:content";
+import { getPosts, postHref } from "@/lib/posts";
 import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib/seo";
+import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 
 interface Props {
+  home?: boolean;
   title?: string;
   description?: string;
   image?: string;
@@ -17,6 +22,7 @@ interface Props {
 }
 
 const {
+  home = false,
   title,
   description,
   image = siteImage,
@@ -99,6 +105,52 @@ const jsonLd = {
   ...defaultStructuredData,
   "@graph": [...defaultStructuredData["@graph"], ...extraStructuredData],
 };
+const [talks, posts, homePage] = await Promise.all([
+  getCollection("talks"),
+  getPosts(),
+  getEntry("pages", "home"),
+]);
+const commandItems = [
+  { id: "page-home", title: "Home", href: "/", kind: "Page", keywords: "Enguerrand Allamel platform security" },
+  { id: "page-talks", title: "Talks", href: "/talks/", kind: "Page", keywords: "conference workshops videos slides" },
+  { id: "page-projects", title: "Projects", href: "/projects/", kind: "Page", keywords: "software open source" },
+  { id: "page-radar", title: "Radar", href: "/radar/", kind: "Page", keywords: "technical library github stars" },
+  { id: "page-blog", title: "Blog", href: "/blog/", kind: "Page", keywords: "articles field notes" },
+  { id: "page-about", title: "About", href: "/about/", kind: "Page", keywords: "Enguerrand Allamel biography" },
+  { id: "page-resume", title: "Resume", href: "/resume/", kind: "Page", keywords: "experience work cv" },
+  { id: "page-stars", title: "GitHub Stars", href: "/github-stars/", kind: "Page", keywords: "repositories lists bookmarks" },
+  { id: "page-topics", title: "Topics", href: "/topics/", kind: "Page", keywords: "talk subjects tags" },
+  { id: "page-search", title: "Full search", href: "/search/", kind: "Page", keywords: "site search" },
+  { id: "page-privacy", title: "Privacy", href: "/privacy/", kind: "Page", keywords: "analytics data" },
+  ...(homePage?.data.projects ?? []).map((project, index) => ({
+    id: `project-${index}`,
+    title: project.title,
+    href: project.url,
+    kind: "Project",
+    keywords: `${project.description} ${project.status}`,
+  })),
+  ...talks.map((talk) => ({
+    id: `talk-${talk.id}`,
+    title: talk.data.displayTitle ?? talk.data.title,
+    href: `/talks/${talk.id}/`,
+    kind: "Talk",
+    keywords: [talk.data.title, talk.data.event, talk.data.summary, ...(talk.data.tags ?? [])].filter(Boolean).join(" "),
+  })),
+  ...posts.map((post) => ({
+    id: `post-${post.id}`,
+    title: post.data.title,
+    href: postHref(post.id),
+    kind: "Post",
+    keywords: `${post.data.description} ${post.data.tags.join(" ")}`,
+  })),
+  ...starsGroups.map((group) => ({
+    id: `stars-${group.slug}`,
+    title: starsListName(group.name),
+    href: starsListHref(group.slug),
+    kind: "Radar list",
+    keywords: `${group.description ?? ""} ${group.slug.replaceAll("-", " ")}`,
+  })),
+];
 ---
 <!doctype html>
 <html lang="en">
@@ -142,51 +194,53 @@ const jsonLd = {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
-  <body class="min-h-screen bg-background font-sans text-foreground antialiased">
+  <body class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <a href="#main-content" class="skip-link">Skip to content</a>
-    <div class="relative isolate min-h-screen">
+    <div class="site-page relative isolate min-h-screen">
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
+        class="site-orb site-orb-primary pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
       />
       <div
         aria-hidden="true"
-        class="pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
+        class="site-orb site-orb-accent pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
       />
 
-      <header class="sticky top-4 z-40 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <nav class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-background/95 px-5 py-3 shadow-[0_10px_28px_hsl(var(--foreground)/0.08)]">
-          <a class="text-sm font-semibold tracking-[0.12em] text-foreground uppercase" href="/">Enguerrand Allamel</a>
-          <div class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground sm:gap-2 sm:text-sm">
-            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>
-            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
-            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/topics/" aria-current={Astro.url.pathname.startsWith("/topics/") ? "page" : undefined}>Topics</a>
-            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") ? "page" : undefined}>Radar</a>
-            <a class="nav-pill rounded-full border border-transparent px-2 py-1 sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/resume/" aria-current={Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>Resume</a>
-            <a href="/search/" aria-label="Search" aria-current={Astro.url.pathname === "/search/" ? "page" : undefined} class="nav-pill rounded-full border border-transparent px-2 py-1 hover:border-border hover:bg-secondary/70 hover:text-foreground">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
-            </a>
-            <a class="nav-pill hidden rounded-full border border-transparent px-2 py-1 sm:inline-flex sm:px-3 sm:py-1.5 hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/#contact">Contact</a>
+      <header class="site-header site-shell">
+        <nav class="site-nav" aria-label="Main navigation">
+          <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Enguerrand Allamel</a>
+          <div class="site-nav-links">
+            <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
+            <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>
+            <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
+            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") ? "page" : undefined}>Radar</a>
+            <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
         </nav>
       </header>
 
-      <main id="main-content" tabindex="-1" class="mx-auto w-full max-w-6xl px-4 pb-20 pt-0 sm:px-6 lg:px-8">
+      <main class="site-main site-shell">
+        <span id="main-content" tabindex="-1" class="skip-target" aria-label="Main content"></span>
         <slot />
       </main>
 
-      <footer class="mx-auto w-full max-w-6xl px-4 pb-10 text-xs text-muted-foreground sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card/80 px-5 py-4">
-          <span class="tracking-[0.16em] uppercase">Security. SRE. Platform.</span>
-          <div class="flex items-center gap-3">
-            <span>Based in Vancouver, BC, Canada 🇨🇦</span>
-            <a class="nav-pill rounded-full border border-transparent px-3 py-1.5 text-xs hover:border-border hover:bg-secondary/70 hover:text-foreground" href="/privacy/">
-              Privacy
-            </a>
+      <footer class="site-footer site-shell">
+        <div class="site-footer-message">
+          <p class="site-footer-kicker">Based in Vancouver, BC, Canada <span aria-hidden="true">🇨🇦</span></p>
+        </div>
+        <div class="site-footer-bottom">
+          <a class="site-footer-email" href="mailto:hello@enguerrand.dev">hello@enguerrand.dev</a>
+          <div class="site-footer-links">
+            <a href="/github-stars/">GitHub Stars</a>
+            <a href="/topics/">Topics</a>
+            <a href="/radar/">Radar</a>
+            <a href="/search/">Search</a>
+            <a href="/privacy/">Privacy</a>
           </div>
         </div>
       </footer>
     </div>
+    <CommandPalette items={commandItems} />
     <script is:inline>
       (() => {
         const isEditableTarget = (target) => {
@@ -361,15 +415,7 @@ const jsonLd = {
 
           event.preventDefault();
 
-          const pathname = window.location.pathname.replace(/\/+$/, "");
-          if (pathname === "/search") {
-            window.dispatchEvent(new CustomEvent("site-search:focus"));
-            return;
-          }
-
-          const searchUrl = new URL("/search/", window.location.origin);
-          searchUrl.searchParams.set("focus", "1");
-          window.location.assign(searchUrl.toString());
+          window.dispatchEvent(new CustomEvent("site-command:open"));
         });
       })();
     </script>

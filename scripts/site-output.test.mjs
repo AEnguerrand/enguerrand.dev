@@ -17,6 +17,7 @@ const page = async (path) => {
 };
 const home = await page("index.html");
 const talk = await page("talks/kubecon-na-2024/index.html");
+const projectsPage = await page("projects/index.html");
 
 for (const [name, { html, nodes }] of [
   ["Home", home],
@@ -45,20 +46,52 @@ for (const [name, { html, nodes }] of [
   });
 }
 
-test("Home keeps a short introduction, three linked talks, and the approved section order", () => {
+test("Home shows talks first, clear titles, and real content states", () => {
   const selected = home.nodes.find((n) => attrs(n).id === "selected-talks");
-  assert.equal(walk(selected).filter((n) => n.tagName === "h3").length, 3);
-  const intro = home.nodes.find((n) => attrs(n)["aria-label"] === "Introduction");
-  assert.deepEqual(walk(intro).filter((n) => n.tagName === "a").map((n) => text(n).trim()), ["Explore talks", "Read resume"]);
-  const headings = home.nodes.filter((n) => n.tagName === "h2").map(text);
-  assert.deepEqual(headings, ["What I'm exploring now", "Selected talks", "Writing", "Let's connect"]);
-  assert.doesNotMatch(text(selected), /Read details/);
-  assert.equal(walk(selected).filter((n) => n.tagName === "a" && attrs(n).href?.startsWith("/topics/")).length, 0);
-  for (const heading of walk(selected).filter((n) => n.tagName === "h3"))
-    assert.ok(walk(heading).some((n) => n.tagName === "a" && attrs(n).href?.startsWith("/talks/")));
+  const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
+  assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
+  assert.ok(links.includes("/talks/kubecon-na-2024/"));
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "What I'm exploring now"]);
+  assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
-  assert.match(text(selected), /Nov 15, 2024/);
+  assert.match(text(selected), /November 2024/);
+  const blog = home.nodes.find((n) => attrs(n).id === "blog");
+  assert.equal(blog, undefined, "Home must hide Blog until a post is published");
+  const projects = home.nodes.find((n) => attrs(n).id === "projects");
+  assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+    assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
+  assert.match(text(projects), /Source and downloads/);
+  assert.match(text(projects), /Visit Foliobruma/);
+  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
+  assert.match(text(selected), /Notes.*French/s);
+  assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
+  const homeText = text(home.nodes[0]);
+  for (const filler of [
+    "Selected talks, notes, recordings, and practical examples.",
+    "I’m building tools to scan and preserve paper records.",
+    "Topics I'm spending time on lately.",
+  ]) assert.ok(!homeText.includes(filler), `Home must omit filler subtitle: ${filler}`);
+  for (const value of [
+    "AI-first development security",
+    "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down.",
+    "Security automation in delivery platforms",
+    "Embedding practical controls across CI/CD pipelines, cloud infrastructure, and Kubernetes platforms so secure defaults are part of the path to production.",
+    "Detection and response",
+    "Improving cloud-native detection, SIEM coverage, and response workflows so incidents are easier to understand and faster to contain.",
+    "Secure-by-default platform patterns",
+    "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
+  ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
+  assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
+});
+
+test("Talks and Projects indexes start directly with useful content", async () => {
+  const talksIndex = await page("talks/index.html");
+  const projectsText = text(projectsPage.nodes[0]);
+  const talksText = text(talksIndex.nodes[0]);
+  assert.ok(!projectsText.includes("Software I build to scan, preserve, and organize the paper records that matter."));
+  assert.ok(!talksText.includes("Conference sessions, meetups, and field notes on cloud and software supply chain security."));
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {
@@ -88,12 +121,20 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
     /November 15, 2024/,
   );
   const topResources = talk.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
-  assert.ok(walk(topResources).some((n) => n.tagName === "a" && attrs(n).class.includes("bg-primary")), "Primary resource link lost its button style");
+  assert.ok(
+    walk(topResources).some(
+      (n) =>
+        n.tagName === "a" &&
+        attrs(n).class.split(" ").includes("site-action") &&
+        attrs(n).class.split(" ").includes("site-action-primary"),
+    ),
+    "Primary resource link lost its button style",
+  );
   const aws = await page("talks/aws-summit-paris-2025/index.html");
   for (const current of [talk, aws]) {
     const resources = current.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
     for (const link of walk(resources).filter((n) => n.tagName === "a")) {
-      if (attrs(link).class.split(" ").includes("bg-primary"))
+      if (attrs(link).class.split(" ").includes("site-action-primary"))
         assert.ok(attrs(link).class.split(" ").includes("whitespace-normal"));
       assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
     }
@@ -131,8 +172,13 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
     assert.deepEqual(names, group.repos.map(repo => repo.full_name), `Missing or duplicated repository in ${group.slug}`);
   }
   assert.doesNotMatch(stars, /Starred repositories are unavailable/);
-  assert.ok(radar.includes(`${dataset.total_repos} repos`));
+  assert.ok(radar.includes(`${dataset.total_repos} repositories`));
   assert.ok(radar.includes(`${count} lists`));
+  const radarPage = await page("radar/index.html");
+  for (const slug of ["security", "kubernetes", "supply-chain-security", "ci-cd", "mcp", "aws", "dev", "ai-ml"])
+    assert.ok(radarPage.nodes.some((node) => attrs(node).href === `/github-stars/${slug}/`), `Radar is missing ${slug}`);
+  assert.ok(radarPage.nodes.some((node) => node.tagName === "button" && "data-command-palette-open" in attrs(node)));
+  assert.match(radarPage.html, /⌘ K/);
 });
 
 test("Generated pages have no Once UI assets or markup", async () => {
@@ -143,23 +189,46 @@ test("Generated pages have no Once UI assets or markup", async () => {
   assert.doesNotMatch(lock, /@once-ui-system/);
 });
 
-test("Blog is linked and private drafts stay out of production routes, search, and sitemap", async () => {
+test("Blog is linked, empty, and ready for future posts", async () => {
   const blog = await page("blog/index.html");
-  assert.match(text(blog.nodes[0]), /No posts published yet/);
+  assert.match(text(blog.nodes[0]), /No posts yet\./);
   assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
   assert.ok(home.nodes.some((n) => attrs(n).href === "/blog/"));
   const files = await readdir(output, { recursive: true });
   const postFiles = await readdir(new URL("../src/content/posts/", import.meta.url));
-  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 3);
-  const publicText = (await Promise.all(files.filter((f) => /\.(html|xml|js|json)$/.test(f)).map(load))).join("\n");
-  for (const filename of postFiles.filter((f) => f.endsWith(".md"))) {
-    const slug = filename.slice(0, -3);
-    assert.ok(!files.some((f) => f.startsWith(`blog/${slug}/`)), `Draft route emitted: ${slug}`);
-    const source = await readFile(new URL(`../src/content/posts/${filename}`, import.meta.url), "utf8");
-    const title = source.match(/^title: "(.+)"$/m)[1];
-    assert.ok(!publicText.includes(title), `Draft title leaked: ${title}`);
-    assert.ok(!publicText.includes(`/blog/${slug}/`), `Draft URL leaked: ${slug}`);
+  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 0);
+  assert.ok(!files.some((f) => /^blog\/(ai-development|moving-to-canada|security-guardrails)\//.test(f)));
+});
+
+test("Primary navigation is consistent across Home, Blog, and talks", async () => {
+  const blog = await page("blog/index.html");
+  const expected = ["Talks", "Blog", "Projects", "Radar", "About"];
+  for (const current of [home, blog, talk]) {
+    const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
+    assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
+    assert.ok(walk(nav).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   }
+});
+
+test("Command-K opens a site-wide modal instead of leaving the page", async () => {
+  for (const current of [home, await page("radar/index.html"), talk]) {
+    const dialog = current.nodes.find((node) => node.tagName === "dialog" && attrs(node).id === "site-command-dialog");
+    assert.ok(dialog, "Missing command dialog");
+    assert.ok(walk(dialog).some((node) => node.tagName === "input" && attrs(node)["data-command-input"] !== undefined));
+  }
+  const homeHtml = await load("index.html");
+  assert.match(homeHtml, /site-command:open/);
+  assert.doesNotMatch(homeHtml, /searchParams\.set\("focus", "1"\)/);
+});
+
+test("Projects has a dedicated page with the public project list", () => {
+  assert.equal(projectsPage.nodes.filter((n) => n.tagName === "h1").length, 1);
+  assert.deepEqual(
+    projectsPage.nodes.filter((n) => n.tagName === "h2" && attrs(n).id !== "project-list-heading").map(text),
+    ["Foliobruma Scanner", "Foliobruma"],
+  );
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+    assert.ok(projectsPage.nodes.some((n) => n.tagName === "a" && attrs(n).href === url));
 });
 
 // Check the public search contract against every built page, not just source templates.
@@ -208,7 +277,7 @@ test("SEO: page, profile, and article structured data agree with public URLs", (
     assert.equal(webpage.url, url, file);
     assert.equal(webpage.name, meta(nodes, "og:title"), file);
     websiteDescriptions.add(data.find((n) => n["@type"] === "WebSite").description);
-    if (["index.html", "resume/index.html"].includes(file)) {
+    if (["index.html", "about/index.html", "resume/index.html"].includes(file)) {
       assert.equal(webpage["@type"], "ProfilePage");
       assert.equal(webpage.mainEntity["@id"], "https://enguerrand.dev/#person");
     }
@@ -274,8 +343,8 @@ test("All generated pages keep ordered headings, unique IDs, valid fragments, an
   }
 });
 
-test("Review fixes preserve Home copy, keep talks in one list, and expose search state", async () => {
-  assert.match(text(home.nodes[0]), /Senior Platform Security Engineer working on AI-first development guardrails, cloud and Kubernetes security, and secure-by-default developer platforms. This site is my notebook for talks, ideas, and field notes from real systems./);
+test("Review fixes keep the concise Home introduction, talks list, and search state", async () => {
+  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer based in Vancouver. Here I share talks, notes, and the software I'm building./);
   const archive = await page("talks/index.html");
   assert.equal(archive.nodes.filter(n => n.tagName === "h3").length, 5);
   for (const heading of archive.nodes.filter(n => n.tagName === "h3"))

@@ -18,19 +18,19 @@ const repos = group.repos.slice((pageNumber-1)*starsPageSize,pageNumber*starsPag
 const suffix = pageNumber > 1 ? ` — Page ${pageNumber}` : "";
 ---
 <BaseLayout title={`${name} GitHub Stars${suffix}`} description={`Browse ${name} repositories from my GitHub Stars. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this list.`}>
-  <header class="pt-6 pb-6 sm:pt-8">
-    <a href="/github-stars/" class="text-sm text-muted-foreground hover:text-primary">← All lists</a>
-    <h1 class="mt-3 text-3xl leading-tight sm:text-4xl">{name}</h1>
-    {group.description && <p class="mt-3 max-w-2xl text-muted-foreground">{group.description}</p>}
+  <header class="site-page-header">
+    <a href="/github-stars/" class="site-link text-sm">← All lists</a>
+    <h1 class="site-page-title">{name}</h1>
+    {group.description && <p class="site-lead">{group.description}</p>}
     <p class="mt-2 text-xs text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Snapshot {starsDate(starsDataset.generated_at)}</p>
   </header>
-  <section aria-labelledby="repos-heading">
+  <section class="site-section-divider" aria-labelledby="repos-heading">
     <h2 id="repos-heading" class="sr-only">Repositories</h2>
-    <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{repos.map(repo => <RepoCard repo={repo}/>)}</div>
+    <div class="site-list grid gap-x-6 sm:grid-cols-2 xl:grid-cols-3">{repos.map(repo => <RepoCard repo={repo}/>)}</div>
   </section>
   {pageCount > 1 && <nav aria-label="Repository pages" class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">
-    {pageNumber > 1 ? <a rel="prev" href={starsListHref(group.slug,pageNumber-1)} class="rounded-full border border-border/70 bg-card/80 px-4 py-2 hover:text-primary">← Previous</a> : <span/>}
+    {pageNumber > 1 ? <a rel="prev" href={starsListHref(group.slug,pageNumber-1)} class="site-action site-action-secondary">← Previous</a> : <span/>}
     <span class="text-muted-foreground">Page {pageNumber} of {pageCount}</span>
-    {pageNumber < pageCount ? <a rel="next" href={starsListHref(group.slug,pageNumber+1)} class="rounded-full border border-border/70 bg-card/80 px-4 py-2 hover:text-primary">Next →</a> : <span/>}
+    {pageNumber < pageCount ? <a rel="next" href={starsListHref(group.slug,pageNumber+1)} class="site-action site-action-secondary">Next →</a> : <span/>}
   </nav>}
 </BaseLayout>

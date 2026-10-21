@@ -1,9 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { Linkedin } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 const experience = [
   {
@@ -127,140 +124,117 @@ const skills = [
   pageType="ProfilePage"
   description="Resume of Enguerrand Allamel, a Senior Platform Security Engineer specializing in AI development guardrails, AWS, Kubernetes, SLSA, SRE, and secure CI/CD."
 >
-  <section class="pt-3 pb-8 sm:pt-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_16px_42px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="space-y-3">
-        <Badge variant="secondary" className="w-fit border border-border/70 bg-secondary/65">
-          Resume
-        </Badge>
-        <h1 class="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Enguerrand Allamel — Platform Security Engineer</h1>
-        <CardDescription className="max-w-3xl text-base sm:text-lg">
-          Senior Platform Security Engineer with a strong SRE background and hands-on work
-          across AI-first development, cloud security, Kubernetes, AWS, and CI/CD in
-          production.
-        </CardDescription>
-        <div class="pt-1">
-          <a
-            class="inline-flex h-11 items-center gap-2.5 rounded-md bg-primary px-5 text-base font-medium leading-none text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            href="https://www.linkedin.com/in/enguerrandallamel/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Linkedin className="h-4 w-4 shrink-0" />
-            <span>View LinkedIn Profile</span>
-          </a>
-        </div>
-      </CardHeader>
-    </Card>
-  </section>
-
-  <section class="space-y-6">
-    <div>
-      <h2 class="text-3xl">Work Experience</h2>
+  <header class="site-page-header">
+    <p class="site-eyebrow">Resume</p>
+    <h1 class="site-page-title">Enguerrand Allamel — Platform Security Engineer</h1>
+    <p class="site-lead">
+      Senior Platform Security Engineer with a strong SRE background and hands-on work
+      across AI-first development, cloud security, Kubernetes, AWS, and CI/CD in
+      production.
+    </p>
+    <div class="mt-5">
+      <a
+        class="site-action site-action-primary"
+        href="https://www.linkedin.com/in/enguerrandallamel/"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <Linkedin aria-hidden="true" className="h-4 w-4 shrink-0" />
+        <span>View LinkedIn Profile</span>
+      </a>
     </div>
+  </header>
 
-    {experience.map((company) => (
-      <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-        <CardHeader className="space-y-2">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle as="h3" className="text-2xl">{company.company}</CardTitle>
+  <section class="site-section-divider" aria-labelledby="experience-heading">
+    <h2 id="experience-heading" class="text-3xl">Work Experience</h2>
+    <div class="site-list">
+      {experience.map((company) => (
+        <article class="site-list-row py-7">
+          <div class="flex flex-wrap items-baseline justify-between gap-3">
+            <h3 class="text-2xl font-semibold">{company.company}</h3>
             <span class="text-sm text-muted-foreground">{company.period}</span>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {company.roles.map((role) => (
-            <div class="space-y-3">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h4 class="text-lg font-semibold">{role.title}</h4>
-                <span class="text-sm text-muted-foreground">{role.period}</span>
+          <div class="mt-5 space-y-6">
+            {company.roles.map((role, index) => (
+              <div class:list={["space-y-3", { "border-t border-border/70 pt-6": index > 0 }]}>
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                  <h4 class="text-lg font-semibold">{role.title}</h4>
+                  {role.period && <span class="text-sm text-muted-foreground">{role.period}</span>}
+                </div>
+                <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+                  {role.bullets.map((bullet) => (
+                    <li>{bullet}</li>
+                  ))}
+                </ul>
               </div>
-              <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
-                {role.bullets.map((bullet) => (
-                  <li>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    ))}
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
   </section>
 
-  <Separator className="my-10" />
-
-  <section class="grid gap-6 lg:grid-cols-2">
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Education</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
+  <section class="grid gap-10 py-10 lg:grid-cols-2">
+    <article class="site-section-divider">
+      <h2 class="text-2xl">Education</h2>
+      <div class="site-list">
         {education.map((item) => (
-          <div class="space-y-1">
+          <div class="site-list-row space-y-1 py-4">
             <p class="text-base font-semibold">{item.school}</p>
             <p class="text-sm text-muted-foreground">{item.period}</p>
             <p class="text-sm text-muted-foreground">{item.degree}</p>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Community & Speaking</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <article class="site-section-divider">
+      <h2 class="text-2xl">Community & Speaking</h2>
+      <div class="site-list space-y-3 py-4 text-sm leading-relaxed text-muted-foreground">
         <p>Speaker at KubeCon + CloudNativeCon (North America, China), AWS Summit, and CNCF / OWASP meetups.</p>
         <p>Contributor to open-source and security projects.</p>
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   </section>
 
-  <section class="mt-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Technical Skills</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div class="rounded-2xl border border-primary/30 bg-primary/5 p-4 sm:p-5">
-          <p class="mb-3 text-sm font-semibold tracking-[0.08em] text-primary uppercase">
-            Certifications
+  <section class="site-section-divider" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="text-2xl">Technical Skills</h2>
+    <div class="mt-6">
+      <p class="site-eyebrow">Certifications</p>
+      <div class="site-list grid gap-x-6 sm:grid-cols-2">
+        <article class="site-list-row flex items-center gap-3 py-4">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
+            alt="Kubernetes official logo"
+            class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="text-sm font-semibold leading-snug text-foreground">
+            CKA: Certified Kubernetes Administrator
           </p>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <article class="flex items-center gap-3 rounded-xl border border-border/70 bg-background/95 p-3 shadow-[0_8px_20px_hsl(var(--foreground)/0.08)] sm:p-4">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
-                alt="Kubernetes official logo"
-                class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
-                loading="lazy"
-                decoding="async"
-              />
-              <p class="text-sm font-semibold leading-snug text-foreground">
-                CKA: Certified Kubernetes Administrator
-              </p>
-            </article>
-            <article class="flex items-center gap-3 rounded-xl border border-border/70 bg-background/95 p-3 shadow-[0_8px_20px_hsl(var(--foreground)/0.08)] sm:p-4">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
-                alt="AWS official logo"
-                class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
-                loading="lazy"
-                decoding="async"
-              />
-              <p class="text-sm font-semibold leading-snug text-foreground">
-                AWS Certified Security – Specialty
-              </p>
-            </article>
-          </div>
+        </article>
+        <article class="site-list-row flex items-center gap-3 py-4">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
+            alt="AWS official logo"
+            class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="text-sm font-semibold leading-snug text-foreground">
+            AWS Certified Security – Specialty
+          </p>
+        </article>
+      </div>
+    </div>
+    <div class="site-list">
+      {skills.map(([label, value]) => (
+        <div class="site-list-row grid gap-1 py-3 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:gap-6">
+          <p class="text-sm font-semibold">{label}</p>
+          <p class="text-sm text-muted-foreground">{value}</p>
         </div>
-        <div class="grid gap-3">
-          {skills.map(([label, value]) => (
-            <div class="rounded-xl border border-border/70 bg-secondary/45 px-4 py-3">
-              <p class="text-sm font-semibold">{label}</p>
-              <p class="text-sm text-muted-foreground">{value}</p>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+      ))}
+    </div>
   </section>
 </BaseLayout>

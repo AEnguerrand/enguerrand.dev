@@ -2,8 +2,6 @@
 import { getPosts, postHref } from "@/lib/posts";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import SiteSearch from "@/components/sections/SiteSearch.astro";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { getCollection, getEntry, render } from "astro:content";
 import { readFile } from "node:fs/promises";
 
@@ -94,16 +92,20 @@ const [
   homePageContent,
   heroSectionContent,
   talksPageContent,
+  projectsPageContent,
   radarPageContent,
   starsPageContent,
+  aboutPageContent,
   resumePageContent,
   privacyPageContent,
 ] = await Promise.all([
   readSearchableAstroFile(new URL("./index.astro", import.meta.url)),
   readSearchableAstroFile(new URL("../components/sections/Hero.tsx", import.meta.url)),
   readSearchableAstroFile(new URL("./talks/index.astro", import.meta.url)),
+  readSearchableAstroFile(new URL("./projects.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./radar.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./github-stars.astro", import.meta.url)),
+  readSearchableAstroFile(new URL("./about.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./resume.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./privacy.astro", import.meta.url)),
 ]);
@@ -123,6 +125,14 @@ const talkItems: SearchItem[] = talks.map((talk) => ({
 const pageItems: SearchItem[] = [
   { id: "page-blog", kind: "page", title: "Blog", href: "/blog/", summary: "Notes on life in Canada, security, and AI." },
   {
+    id: "page-about",
+    kind: "page",
+    title: "About",
+    href: "/about/",
+    summary: "About Enguerrand Allamel, his work, projects, and public resume.",
+    content: aboutPageContent,
+  },
+  {
     id: "page-home",
     kind: "page",
     title: "Home",
@@ -137,6 +147,14 @@ const pageItems: SearchItem[] = [
     href: "/talks/",
     summary: "Conference talks, workshops, resources, and topic index.",
     content: talksPageContent,
+  },
+  {
+    id: "page-projects",
+    kind: "page",
+    title: "Projects",
+    href: "/projects/",
+    summary: "Independent software for scanning, preserving, and organizing paper records.",
+    content: projectsPageContent,
   },
   {
     id: "page-radar",
@@ -181,18 +199,18 @@ const PageContent = renderedPage?.Content;
 ---
 
 <BaseLayout title={page.data.title ?? "Search"} noindex={true}>
-  <header class="pt-6 pb-6 sm:pt-8">
-    <h1 class="text-3xl sm:text-4xl">{page.data.title ?? "Search"}</h1>
-    <p class="mt-3 text-muted-foreground">Find a talk, post, or page.</p>
+  <header class="site-page-header">
+    <h1 class="site-page-title">{page.data.title ?? "Search"}</h1>
+    <p class="site-lead">Find a talk, post, or page.</p>
   </header>
 
   <SiteSearch items={searchItems} placeholder={placeholder} />
 
   {hasBodyContent && PageContent && (
-    <Card className="mt-6 border-border/70 bg-card/90 shadow-[0_12px_34px_hsl(var(--foreground)/0.05)]">
-      <CardContent className="prose max-w-none pt-8">
+    <section class="site-section-divider mt-8">
+      <div class="prose max-w-none">
         <PageContent />
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   )}
 </BaseLayout>

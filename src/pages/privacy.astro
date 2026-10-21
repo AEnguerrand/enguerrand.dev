@@ -1,55 +1,47 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const lastUpdated = "February 7, 2026";
 ---
 
 <BaseLayout title="Privacy" description="Privacy notice for enguerrand.dev, including how contact requests, hosting logs, cookies, analytics, and visitor rights are handled.">
-  <header class="pt-6 pb-6 sm:pt-8">
-    <h1 class="text-3xl sm:text-4xl">Privacy Notice</h1>
-    <p class="mt-3 max-w-3xl text-muted-foreground">This page explains what data is processed when you browse this website.</p>
+  <header class="site-page-header">
+    <h1 class="site-page-title">Privacy Notice</h1>
+    <p class="site-lead">This page explains what data is processed when you browse this website.</p>
     <p class="mt-2 text-xs text-muted-foreground">Last updated: {lastUpdated}</p>
   </header>
 
-  <section class="space-y-6">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Controller</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+  <div>
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Controller</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           This website is operated by Enguerrand Allamel.
         </p>
         <p>
-          Contact: <a href="mailto:hello@enguerrand.dev" class="font-medium text-primary hover:underline">hello@enguerrand.dev</a>
+          Contact: <a href="mailto:hello@enguerrand.dev" class="site-link font-medium">hello@enguerrand.dev</a>
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Data Processed</CardTitle>
-        <CardDescription>
-          Minimal data is processed to deliver pages and requested content.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Data Processed</h2>
+      <p class="mt-2 text-sm text-muted-foreground">
+        Minimal data is processed to deliver pages and requested content.
+      </p>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           Basic technical request data (for example IP address, user-agent, request time, and requested path) may be processed by the hosting platform and CDN for delivery, reliability, and abuse prevention.
         </p>
         <p>
           No user account, comment system, or on-site form submission is used on this website at this time.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Third-Party Requests</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Third-Party Requests</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           Some pages can load content from third-party services when you visit them:
         </p>
@@ -60,63 +52,55 @@ const lastUpdated = "February 7, 2026";
         <p>
           These providers may receive your IP address and standard browser request metadata.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Legal Basis (GDPR Context)</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Legal Basis (GDPR Context)</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           Where GDPR applies, processing needed to operate, secure, and deliver the website is based on legitimate interests.
         </p>
         <p>
           If non-essential analytics or tracking is introduced later, it will be based on consent where required.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Retention and International Transfers</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Retention and International Transfers</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           This website does not maintain visitor accounts or user profiles. Operational request logs may be retained by the hosting/CDN provider for security and reliability purposes under that provider&apos;s policies.
         </p>
         <p>
           Third-party services linked or embedded on this site may process data outside your country of residence.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">Cookies and Analytics</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">Cookies and Analytics</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           This site does not currently run first-party analytics scripts and does not set non-essential first-party tracking cookies.
         </p>
         <p>
           If analytics is added in the future, this notice will be updated and consent controls will be implemented where required (including GDPR/ePrivacy contexts).
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader>
-        <CardTitle as="h2" className="text-2xl">GDPR Rights (EEA/UK Visitors)</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+    <section class="site-section-divider pb-8">
+      <h2 class="text-2xl">GDPR Rights (EEA/UK Visitors)</h2>
+      <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
         <p>
           If GDPR or equivalent laws apply to your visit, you may have rights such as access, correction, deletion, restriction, objection, and complaint to your supervisory authority.
         </p>
         <p>
-          To exercise rights or ask a privacy question, email <a href="mailto:hello@enguerrand.dev" class="font-medium text-primary hover:underline">hello@enguerrand.dev</a>.
+          To exercise rights or ask a privacy question, email <a href="mailto:hello@enguerrand.dev" class="site-link font-medium">hello@enguerrand.dev</a>.
         </p>
-      </CardContent>
-    </Card>
-  </section>
+      </div>
+    </section>
+  </div>
 </BaseLayout>

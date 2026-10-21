@@ -1,7 +1,20 @@
 ---
 title: "Home"
+# Add selected public projects here: title, description, and url.
+projects:
+  - title: "Foliobruma Scanner"
+    description: "An offline macOS app that turns books and paper documents into PDFs."
+    url: "https://github.com/AEnguerrand/foliobruma-scanner"
+    status: "Open source · macOS"
+    action: "Source and downloads"
+    image: "/projects/foliobruma-scanner-icon.png"
+    imageAlt: "Foliobruma Scanner app icon"
+  - title: "Foliobruma"
+    description: "A private archive for family letters, research notes, and the paper records I want to preserve."
+    url: "https://foliobruma.com"
+    status: "WIP"
+    action: "Visit Foliobruma"
 currentExploringTitle: "What I'm exploring now"
-currentExploringDescription: "Topics I'm spending time on lately."
 currentExploring:
   - title: "AI-first development security"
     description: "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down."

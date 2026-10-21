@@ -1,0 +1,71 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { ArrowUpRight } from "lucide-react";
+import { getEntry } from "astro:content";
+
+const homePage = await getEntry("pages", "home");
+const projects = homePage?.data.projects ?? [];
+
+const structuredData = {
+  "@type": "CollectionPage",
+  "@id": "https://enguerrand.dev/projects/#collection",
+  url: "https://enguerrand.dev/projects/",
+  name: "Projects by Enguerrand Allamel",
+  description: "Independent software for scanning, preserving, and organizing paper records.",
+  isPartOf: { "@id": "https://enguerrand.dev/#website" },
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: projects.length,
+    itemListElement: projects.map((project, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: project.title,
+      url: project.url,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="Projects"
+  description="Independent software by Enguerrand Allamel for scanning, preserving, and organizing paper records."
+  structuredData={structuredData}
+>
+  <header class="site-page-header">
+    <p class="site-eyebrow">Independent work</p>
+    <h1 class="site-page-title">Projects</h1>
+  </header>
+
+  <section aria-labelledby="project-list-heading">
+    <h2 id="project-list-heading" class="sr-only">Project list</h2>
+    <div class="site-list mt-0">
+      {projects.map((project) => (
+        <article class="site-list-row grid gap-5 py-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-10">
+          <div class="flex min-w-0 gap-5">
+            {project.image && project.imageAlt && (
+              <a class="project-art-motion h-16 w-16 shrink-0 rounded-xl sm:h-20 sm:w-20" href={project.url} aria-label={`Open ${project.title}`}>
+                <img
+                  src={project.image}
+                  alt={project.imageAlt}
+                  width="80"
+                  height="80"
+                  loading="lazy"
+                  decoding="async"
+                  class="h-full w-full rounded-xl object-cover shadow-[0_10px_24px_hsl(var(--foreground)/0.1)]"
+                />
+              </a>
+            )}
+            <div class="min-w-0">
+              <p class="site-eyebrow">{project.status}</p>
+              <h2 class="mt-1 text-2xl font-semibold"><a href={project.url} class="hover:text-primary">{project.title}</a></h2>
+              <p class="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{project.description}</p>
+            </div>
+          </div>
+          <a class="site-link font-medium md:mt-5" href={project.url}>
+            {project.action} <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -15,14 +15,14 @@ const { sectionLinks, showAllTalks = true, showBackHome = true } = Astro.props;
 
 <nav
   aria-label="Talks section navigation"
-  class="talks-subnav static top-24 sm:sticky z-30 mb-8 rounded-2xl border border-border/70 bg-background/90 px-4 py-3 shadow-[0_12px_34px_hsl(var(--foreground)/0.08)] backdrop-blur sm:px-5"
+  class="talks-subnav static top-24 z-30 mb-8 border-y border-border/70 bg-background/90 py-3 backdrop-blur sm:sticky"
 >
   <div class="flex flex-wrap items-center justify-between gap-3">
     <div class="flex flex-wrap items-center gap-2">
       {sectionLinks.map((item) => (
         <a
           href={item.href}
-          class="talks-subnav-link rounded-full border border-border/70 bg-secondary/55 px-3 py-1.5 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground hover:border-border hover:bg-secondary/80 hover:text-foreground"
+          class="talks-subnav-link inline-flex min-h-10 items-center px-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground hover:text-foreground"
         >
           {item.label}
         </a>
@@ -33,7 +33,7 @@ const { sectionLinks, showAllTalks = true, showBackHome = true } = Astro.props;
       {showAllTalks && (
         <a
           href="/talks/"
-          class="rounded-full border border-border/70 bg-card/70 px-3 py-1.5 font-medium text-foreground hover:bg-card"
+          class="site-text-link px-1 font-medium text-foreground"
         >
           All talks
         </a>
@@ -41,7 +41,7 @@ const { sectionLinks, showAllTalks = true, showBackHome = true } = Astro.props;
       {showBackHome && (
         <a
           href="/"
-          class="rounded-full border border-border/70 bg-card/70 px-3 py-1.5 font-medium text-foreground hover:bg-card"
+          class="site-text-link px-1 font-medium text-foreground"
         >
           Home
         </a>

@@ -1,11 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getCollection, render } from "astro:content";
 import { getTalkPresentation } from "@/lib/talk-presentation";
 import { topicHref, topicTitle } from "@/lib/topics";
-import { cn } from "@/lib/utils";
 
 export async function getStaticPaths() {
   return (await getCollection("talks")).map(talk => ({ params: {slug: talk.id}, props: {talk} }));
@@ -14,57 +11,45 @@ const {talk} = Astro.props;
 const {Content} = await render(talk);
 const {formattedDate,resources,videoResource,videoEmbedUrl,talkMetadata,structuredData} = getTalkPresentation(talk,Astro.site);
 const slides = resources.find(resource => /slides/i.test(resource.label));
-const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#resources",label:"Resources"};
+const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:"Read notes"};
+const secondary = primary.url !== "#content" ? {url:"#content",label:"Read notes ↓"} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
 const sectionClass = "mx-auto mt-6 w-full max-w-5xl scroll-mt-40";
+const notesSectionClass = "mx-auto mt-6 w-full max-w-4xl scroll-mt-40";
 ---
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
-  <header class="mx-auto w-full max-w-5xl pt-6">
-    <a href="/talks/" class="text-sm text-muted-foreground hover:text-primary">← All talks</a>
-    <Card className="mt-3 border-border/70 bg-card/85 shadow-[0_16px_44px_hsl(var(--foreground)/0.06)]">
-      <CardContent className="space-y-3 p-5 sm:p-7">
-        <p class="text-xs text-muted-foreground"><time datetime={talk.data.date}>{formattedDate}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
-        <h1 class="text-3xl leading-tight sm:text-4xl">{talk.data.displayTitle ?? talk.data.title}</h1>
-        {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground">{talk.data.summary}</p>}
-        <div class="flex flex-wrap items-center gap-4 pt-1" aria-label="Session resources">
-          <a href={primary.url} class={cn(buttonVariants(), "h-auto min-h-10 max-w-full whitespace-normal text-center")}>{primary.label}</a>
-          {videoEmbedUrl && <a href="#content" class="text-sm font-medium hover:text-primary">Read notes ↓</a>}
-        </div>
-        <details id="overview" class="pt-1 text-sm">
-          <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>
-          <div class="space-y-3 pt-3">
-            <p class="text-sm">{talk.data.title}</p>
-            {talk.data.author && <p class="text-muted-foreground">By {talk.data.author.join(", ")}</p>}
-            <dl class="grid gap-2 sm:grid-cols-2">{talkMetadata.map(item => <div><dt class="text-xs text-muted-foreground">{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
-            <div class="flex flex-wrap gap-2">{(talk.data.tags ?? []).map(tag => <a href={topicHref(tag)} class="rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-xs hover:text-primary">{topicTitle(tag)}</a>)}</div>
-          </div>
-        </details>
-      </CardContent>
-    </Card>
+  <header class="site-page-header mx-auto w-full max-w-5xl">
+    <a href="/talks/" class="site-text-link">← All talks</a>
+    <p class="mt-6 text-xs text-muted-foreground"><time datetime={talk.data.date}>{formattedDate}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
+    <h1 class="site-page-title">{talk.data.displayTitle ?? talk.data.title}</h1>
+    {talk.data.summary && <p class="site-lead">{talk.data.summary}</p>}
+    <div class="mt-6 flex flex-wrap items-center gap-4" aria-label="Session resources">
+      <a href={primary.url} class="site-action site-action-primary h-auto min-h-10 max-w-full whitespace-normal text-center">{primary.label}</a>
+      {secondary && <a href={secondary.url} class="site-text-link text-sm font-medium">{secondary.label}</a>}
+    </div>
+    <details id="overview" class="mt-5 border-t border-border pt-4 text-sm">
+      <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>
+      <div class="space-y-3 pt-3">
+        <p class="text-sm">{talk.data.title}</p>
+        {talk.data.author && <p class="text-muted-foreground">By {talk.data.author.join(", ")}</p>}
+        <dl class="grid gap-2 sm:grid-cols-2">{talkMetadata.map(item => <div><dt class="text-xs text-muted-foreground">{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
+        <div class="flex flex-wrap gap-x-4 gap-y-2">{(talk.data.tags ?? []).map(tag => <a href={topicHref(tag)} class="text-xs font-medium text-primary hover:underline">{topicTitle(tag)}</a>)}</div>
+      </div>
+    </details>
   </header>
   {videoEmbedUrl && (
-    <section id="video" class={sectionClass} aria-labelledby="video-heading">
-      <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-        <CardHeader className="pb-3"><h2 id="video-heading" class="text-2xl">Watch talk</h2></CardHeader>
-        <CardContent>
-          <div class="overflow-hidden rounded-xl border border-border/70 bg-background/65">
-            <iframe class="aspect-video w-full" src={videoEmbedUrl} title={`Video recording for ${talk.data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
-          </div>
-          {videoResource && <a href={videoResource.url} class="mt-3 inline-flex text-sm font-medium hover:text-primary">Open video source ↗</a>}
-        </CardContent>
-      </Card>
+    <section id="video" class={`${sectionClass} site-section-divider`} aria-labelledby="video-heading">
+      <h2 id="video-heading" class="text-2xl">Watch talk</h2>
+      <div class="mt-5 overflow-hidden rounded-xl border border-border/70 bg-background/65">
+        <iframe class="aspect-video w-full" src={videoEmbedUrl} title={`Video recording for ${talk.data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
+      </div>
+      {videoResource && <p class="mt-3 text-sm text-muted-foreground">Video not loading? <a href={videoResource.url} class="font-medium text-primary hover:underline">Open video source ↗</a></p>}
     </section>
   )}
-  <section id="content" class={sectionClass} aria-label="Talk notes">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardContent className="prose prose-headings:mt-6 prose-p:leading-relaxed max-w-none p-5 sm:p-7"><Content /></CardContent>
-    </Card>
+  <section id="content" class={`${notesSectionClass} site-section-divider`} aria-label="Talk notes">
+    <div class="prose prose-headings:mt-6 prose-p:leading-relaxed max-w-none"><Content /></div>
   </section>
-  <section id="resources" class={sectionClass} aria-labelledby="resources-heading">
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="pb-3"><h2 id="resources-heading" class="text-2xl">Resources</h2></CardHeader>
-      <CardContent>
-        {resources.length ? <ul class="divide-y divide-border/70">{resources.map(resource => <li class="py-3 first:pt-0 last:pb-0"><a href={resource.url} class="text-sm font-medium hover:text-primary">{resource.label} ↗</a></li>)}</ul> : <p class="text-sm text-muted-foreground">No resources listed yet.</p>}
-      </CardContent>
-    </Card>
+  <section id="resources" class={`${sectionClass} site-section-divider`} aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="text-2xl">Sources and resources</h2>
+    {resources.length ? <ul class="site-list">{resources.map(resource => <li class="site-list-row py-3"><a href={resource.url} class="site-text-link text-sm font-medium">{resource.label} ↗</a></li>)}</ul> : <p class="mt-4 text-sm text-muted-foreground">No resources listed yet.</p>}
   </section>
 </BaseLayout>

@@ -35,8 +35,17 @@ const pages = defineCollection({
     .object({
       title: z.string().optional(),
       layout: z.string().optional(),
+      projects: z.array(z.object({
+        title: z.string().trim().min(1),
+        description: z.string().trim().min(1),
+        url: z.url().refine((value) => /^https?:\/\//.test(value), "Use an HTTP or HTTPS project URL."),
+        status: z.string().trim().min(1),
+        action: z.string().trim().min(1),
+        image: z.string().trim().min(1).optional(),
+        imageAlt: z.string().trim().min(1).optional(),
+      })).default([]),
       currentExploringTitle: z.string().optional(),
-      currentExploringDescription: z.string().optional(),
+      currentExploringUpdated: z.string().optional(),
       currentExploring: z
         .array(
           z.object({
