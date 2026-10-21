@@ -10,9 +10,9 @@
 .home-portrait { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 1px solid hsl(var(--border)); }
 .home-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .home-actions .site-action-button { min-height: 36px; padding-inline: 12px; border-radius: 8px; font-size: 13px; }
-.home-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-top: 12px; }
-.home-contact a { min-height: 34px; font-size: 14px; }
-.home-contact a + a::before { content: ""; width: 3px; height: 3px; margin: 0 14px; border-radius: 999px; background: hsl(var(--muted-foreground) / .65); }
+.home-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 20px; margin-top: 12px; }
+.home-contact a { gap: 7px; min-height: 34px; font-size: 14px; }
+.home-contact svg { flex-shrink: 0; }
 .home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; color: hsl(var(--primary)); }
 .home-link svg { flex-shrink: 0; }
 .home-page a:not(.site-action-button):hover { text-decoration: underline; text-underline-offset: 4px; }

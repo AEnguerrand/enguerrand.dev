@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 
 export function Hero() {
   return (
@@ -19,9 +19,9 @@ export function Hero() {
           </a>
         </div>
         <div id="contact" className="home-contact" aria-label="Contact links">
-          <a className="site-text-link" href="mailto:hello@enguerrand.dev" aria-label="Email hello@enguerrand.dev">Email</a>
-          <a className="site-text-link" href="https://github.com/AEnguerrand">GitHub</a>
-          <a className="site-text-link" href="https://www.linkedin.com/in/enguerrandallamel/">LinkedIn</a>
+          <a className="site-text-link" href="mailto:hello@enguerrand.dev" aria-label="Email hello@enguerrand.dev"><Mail size={15} aria-hidden="true" />Email</a>
+          <a className="site-text-link" href="https://github.com/AEnguerrand"><Github size={15} aria-hidden="true" />GitHub</a>
+          <a className="site-text-link" href="https://www.linkedin.com/in/enguerrandallamel/"><Linkedin size={15} aria-hidden="true" />LinkedIn</a>
         </div>
       </div>
       <img src="/avatar.webp" alt="Enguerrand Allamel speaking at a conference" className="home-portrait" width="224" height="224" loading="eager" decoding="async" />

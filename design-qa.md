@@ -29,7 +29,8 @@ final result: passed
 10. Home and About now use one shared action hierarchy. Main actions use the same compact button styles; contact and profile destinations use the same text-link style.
 11. The final composition review found an unfinished empty Blog column and clickable-looking exploration cards. Blog now has a deliberate writing-status panel, while Currently exploring uses a lighter static reading list with no hover affordance. Desktop and phone checks confirm that the sections stay balanced and readable.
 12. The name in the Home title now uses the solid primary blue. The previous blue-to-red text gradient was removed.
-13. The hero action block was still too large at normal viewing scale. The two actions now use shorter labels and 36-pixel buttons, while Email, GitHub, and LinkedIn are compact text links without large icons.
+13. The hero action block was still too large at normal viewing scale. The two actions now use shorter labels and 36-pixel buttons, while Email, GitHub, and LinkedIn use compact text links with small 15-pixel icons.
+14. The footer slogan was removed. The footer now ends with the Vancouver label, email address, and utility links only.
 
 ## Required surfaces
 
