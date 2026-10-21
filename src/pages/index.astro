@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import ProjectLink from "@/components/ProjectLink.astro";
 import { Hero } from "@/components/sections/Hero";
 import { getCollection, getEntry } from "astro:content";
 import { ArrowRight } from "lucide-react";
@@ -84,7 +85,7 @@ const talkFormats = (talk: typeof talks[number]) => {
                 )}
               </div>
               <p>{project.description}</p>
-              <a class="home-link" href={project.url}>{project.action} <ArrowRight size={18} aria-hidden="true" /></a>
+              <ProjectLink class="home-link" href={project.url} label={project.action} />
             </li>
           ))}
         </ul>

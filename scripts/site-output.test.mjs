@@ -62,8 +62,8 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
     assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
-  assert.match(text(projects), /Source and downloads/);
-  assert.match(text(projects), /Visit Foliobruma/);
+  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://github.com/AEnguerrand/foliobruma-scanner" && text(n) === "GitHub"));
+  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://foliobruma.com" && text(n) === "Website"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   assert.match(text(selected), /Notes.*French/s);
   assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
