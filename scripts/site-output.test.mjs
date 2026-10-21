@@ -50,16 +50,22 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Blog", "Projects", "Currently exploring"]);
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "Blog", "Currently exploring"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.match(text(selected), /November 2024/);
-  assert.match(text(home.nodes.find((n) => attrs(n).id === "blog")), /No posts published yet/);
+  const blog = home.nodes.find((n) => attrs(n).id === "blog");
+  assert.match(text(blog), /first note is in progress/i);
+  assert.ok(!walk(blog).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"), "Empty Blog must not offer an empty archive action");
   const projects = home.nodes.find((n) => attrs(n).id === "projects");
   assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
     assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
+  assert.match(text(projects), /Source and downloads/);
+  assert.match(text(projects), /Visit Foliobruma/);
+  assert.match(text(selected), /Notes.*French/s);
+  assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
 });
 
@@ -147,7 +153,8 @@ test("Generated pages have no Once UI assets or markup", async () => {
 
 test("Blog is linked and private drafts stay out of production routes, search, and sitemap", async () => {
   const blog = await page("blog/index.html");
-  assert.match(text(blog.nodes[0]), /No posts published yet/);
+  assert.match(text(blog.nodes[0]), /The first post is in progress/);
+  assert.ok(blog.nodes.some((n) => n.tagName === "a" && attrs(n).href === "/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
   assert.ok(home.nodes.some((n) => attrs(n).href === "/blog/"));
   const files = await readdir(output, { recursive: true });
@@ -161,6 +168,16 @@ test("Blog is linked and private drafts stay out of production routes, search, a
     const title = source.match(/^title: "(.+)"$/m)[1];
     assert.ok(!publicText.includes(title), `Draft title leaked: ${title}`);
     assert.ok(!publicText.includes(`/blog/${slug}/`), `Draft URL leaked: ${slug}`);
+  }
+});
+
+test("Primary navigation is consistent across Home, Blog, and talks", async () => {
+  const blog = await page("blog/index.html");
+  const expected = ["Talks", "Blog", "Projects", "Resume"];
+  for (const current of [home, blog, talk]) {
+    const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
+    assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
+    assert.ok(walk(nav).some((n) => n.tagName === "a" && attrs(n).href.endsWith("#projects")));
   }
 });
 
@@ -276,8 +293,8 @@ test("All generated pages keep ordered headings, unique IDs, valid fragments, an
   }
 });
 
-test("Review fixes preserve Home copy, keep talks in one list, and expose search state", async () => {
-  assert.match(text(home.nodes[0]), /Senior Platform Security Engineer working on AI-first development guardrails, cloud and Kubernetes security, and secure-by-default developer platforms. This site is my notebook for talks, ideas, and field notes from real systems./);
+test("Review fixes keep the concise Home introduction, talks list, and search state", async () => {
+  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer based in Vancouver. Here I share talks, notes, and the software I'm building./);
   const archive = await page("talks/index.html");
   assert.equal(archive.nodes.filter(n => n.tagName === "h3").length, 5);
   for (const heading of archive.nodes.filter(n => n.tagName === "h3"))

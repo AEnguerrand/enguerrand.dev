@@ -3,11 +3,15 @@ title: "Home"
 # Add selected public projects here: title, description, and url.
 projects:
   - title: "Foliobruma Scanner"
-    description: "A free, open-source macOS app that turns books and paper documents into PDFs. Scanning works offline, without an account."
+    description: "An offline macOS app that turns books and paper documents into PDFs. It works without an account."
     url: "https://github.com/AEnguerrand/foliobruma-scanner"
+    status: "Open source · macOS"
+    action: "Source and downloads"
   - title: "Foliobruma"
-    description: "A private archive for family letters, research notes, and paper records. Currently in private alpha, by invitation."
+    description: "A private archive for family letters, research notes, and the paper records I want to preserve."
     url: "https://foliobruma.com"
+    status: "Private alpha · By invitation"
+    action: "Visit Foliobruma"
 currentExploringTitle: "What I'm exploring now"
 currentExploringDescription: "Topics I'm spending time on lately."
 currentExploring:

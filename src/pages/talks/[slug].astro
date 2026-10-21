@@ -14,8 +14,10 @@ const {talk} = Astro.props;
 const {Content} = await render(talk);
 const {formattedDate,resources,videoResource,videoEmbedUrl,talkMetadata,structuredData} = getTalkPresentation(talk,Astro.site);
 const slides = resources.find(resource => /slides/i.test(resource.label));
-const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#resources",label:"Resources"};
+const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:"Read notes"};
+const secondary = primary.url !== "#content" ? {url:"#content",label:"Read notes ↓"} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
 const sectionClass = "mx-auto mt-6 w-full max-w-5xl scroll-mt-40";
+const notesSectionClass = "mx-auto mt-6 w-full max-w-4xl scroll-mt-40";
 ---
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
   <header class="mx-auto w-full max-w-5xl pt-6">
@@ -27,7 +29,7 @@ const sectionClass = "mx-auto mt-6 w-full max-w-5xl scroll-mt-40";
         {talk.data.summary && <p class="max-w-3xl text-base text-muted-foreground">{talk.data.summary}</p>}
         <div class="flex flex-wrap items-center gap-4 pt-1" aria-label="Session resources">
           <a href={primary.url} class={cn(buttonVariants(), "h-auto min-h-10 max-w-full whitespace-normal text-center")}>{primary.label}</a>
-          {videoEmbedUrl && <a href="#content" class="text-sm font-medium hover:text-primary">Read notes ↓</a>}
+          {secondary && <a href={secondary.url} class="text-sm font-medium hover:text-primary">{secondary.label}</a>}
         </div>
         <details id="overview" class="pt-1 text-sm">
           <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>
@@ -54,14 +56,14 @@ const sectionClass = "mx-auto mt-6 w-full max-w-5xl scroll-mt-40";
       </Card>
     </section>
   )}
-  <section id="content" class={sectionClass} aria-label="Talk notes">
+  <section id="content" class={notesSectionClass} aria-label="Talk notes">
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
       <CardContent className="prose prose-headings:mt-6 prose-p:leading-relaxed max-w-none p-5 sm:p-7"><Content /></CardContent>
     </Card>
   </section>
   <section id="resources" class={sectionClass} aria-labelledby="resources-heading">
     <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="pb-3"><h2 id="resources-heading" class="text-2xl">Resources</h2></CardHeader>
+      <CardHeader className="pb-3"><h2 id="resources-heading" class="text-2xl">Sources and resources</h2></CardHeader>
       <CardContent>
         {resources.length ? <ul class="divide-y divide-border/70">{resources.map(resource => <li class="py-3 first:pt-0 last:pb-0"><a href={resource.url} class="text-sm font-medium hover:text-primary">{resource.label} ↗</a></li>)}</ul> : <p class="text-sm text-muted-foreground">No resources listed yet.</p>}
       </CardContent>

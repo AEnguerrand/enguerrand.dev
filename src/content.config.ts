@@ -39,6 +39,8 @@ const pages = defineCollection({
         title: z.string().trim().min(1),
         description: z.string().trim().min(1),
         url: z.url().refine((value) => /^https?:\/\//.test(value), "Use an HTTP or HTTPS project URL."),
+        status: z.string().trim().min(1),
+        action: z.string().trim().min(1),
       })).default([]),
       currentExploringTitle: z.string().optional(),
       currentExploringDescription: z.string().optional(),

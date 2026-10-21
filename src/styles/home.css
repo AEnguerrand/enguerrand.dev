@@ -1,10 +1,5 @@
 /* Home uses the existing font families, colours, and background. */
 .home-page .home-shell { width: min(1160px, 86.2%); max-width: none; padding-inline: 0; }
-.home-page .home-header { position: relative; top: auto; padding-top: 48px; }
-.home-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-bottom: 10px; border-bottom: 1px solid hsl(var(--border)); }
-.home-brand { font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
-.home-nav-links { display: flex; flex-wrap: wrap; gap: 8px 28px; color: hsl(var(--muted-foreground)); }
-.home-nav a, .home-footer a { display: inline-flex; align-items: center; min-height: 44px; }
 .home-page a:hover { color: hsl(var(--primary)); }
 .home-page main.home-shell { padding-top: 0; padding-bottom: 0; }
 .home-intro { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: start; gap: 40px; padding: 48px 0 32px; }
@@ -26,13 +21,20 @@
 .home-talk-link { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 4px; }
 .home-talk-link > svg { flex-shrink: 0; color: hsl(var(--primary)); }
 .home-talk-link p { margin-top: 6px; font-size: 16px; color: hsl(var(--muted-foreground)); }
+.home-talk-meta { display: flex; flex-wrap: wrap; gap: 5px 14px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 13px; color: hsl(var(--muted-foreground)); }
+.home-talk-meta li { position: relative; }
+.home-talk-meta li + li::before { content: "·"; position: absolute; left: -9px; }
 .home-talk-link:hover { background: hsl(var(--primary) / .035); }
 .home-content-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 72px; padding: 56px 0 44px; }
+.home-content-columns-empty-blog { grid-template-columns: minmax(0, 1.5fr) minmax(260px, .7fr); align-items: start; }
 .home-entry { padding: 24px 0; }
 .home-entry p, .home-entry time { display: block; margin-top: 8px; color: hsl(var(--muted-foreground)); line-height: 1.6; }
 .home-entry time { font-size: 14px; }
+.home-entry .home-entry-status { margin-top: 0; color: hsl(var(--primary)); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.home-entry-status + h3 { margin-top: 5px; }
 .home-entry .home-link { margin-top: 8px; }
 .home-empty { border-top: 1px solid hsl(var(--border)); margin-top: 24px; padding-top: 24px; max-width: 48ch; color: hsl(var(--muted-foreground)); font-size: 17px; line-height: 1.65; }
+.home-empty-compact { padding-top: 18px; font-size: 16px; }
 .home-archive-link { margin-top: 20px; }
 .home-exploring { padding: 28px 0; border-top: 1px solid hsl(var(--border)); }
 .home-exploring h2 { font-size: 28px; }
@@ -40,24 +42,22 @@
 .home-exploring summary { cursor: pointer; padding: 12px 0; line-height: 1.5; }
 .home-exploring summary:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 4px; }
 .home-exploring details p { font-size: 15px; line-height: 1.65; padding-bottom: 12px; }
-.home-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-top: 20px; padding-bottom: 32px; border-top: 1px solid hsl(var(--border)); font-size: 13px; color: hsl(var(--muted-foreground)); }
-.home-footer-links { display: flex; flex-wrap: wrap; gap: 0 20px; }
 @media (max-width: 767px) {
   .home-page .home-shell { width: calc(100% - 40px); }
-  .home-page .home-header { padding-top: 20px; }
-  .home-nav { gap: 6px; padding-bottom: 12px; }
-  .home-nav-links { gap: 0 24px; }
-  .home-intro { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 32px 0; }
-  .home-portrait { grid-row: 1; width: 80px; height: 80px; }
+  .home-intro { grid-template-columns: minmax(0, 1fr) 64px; gap: 12px 18px; padding: 24px 0; }
+  .home-intro-copy { grid-column: 1 / -1; }
+  .home-portrait { grid-column: 2; grid-row: 1; width: 64px; height: 64px; align-self: start; }
   .home-intro h1 { font-size: 36px; }
-  .home-intro-description { font-size: 16px; margin-top: 20px; }
-  .home-contact { gap: 4px 20px; margin-top: 16px; }
+  .home-intro-statement { max-width: calc(100% - 82px); margin-top: 10px; font-size: 21px; }
+  .home-intro-description { max-width: 34ch; font-size: 16px; margin-top: 16px; }
+  .home-contact { gap: 2px 20px; margin-top: 12px; }
   .home-page h2 { font-size: 30px; }
   .home-page h3 { font-size: 20px; }
   .home-talks { padding-top: 28px; }
   .home-section-description { font-size: 16px; }
   .home-talk-link { padding: 20px 0; gap: 16px; }
   .home-talk-link p { font-size: 14px; }
+  .home-talk-meta { font-size: 12px; }
   .home-content-columns { grid-template-columns: minmax(0, 1fr); gap: 36px; padding: 36px 0; }
   .home-exploring-grid { grid-template-columns: minmax(0, 1fr); }
   .home-exploring h2 { font-size: 26px; }

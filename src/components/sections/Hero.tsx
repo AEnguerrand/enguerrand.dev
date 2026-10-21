@@ -7,13 +7,11 @@ export function Hero() {
         <h1>Hi, I&apos;m Enguerrand.</h1>
         <p className="home-intro-statement">I build secure and reliable cloud platforms.</p>
         <p className="home-intro-description">
-          Senior Platform Security Engineer working on AI-first development
-          guardrails, cloud and Kubernetes security, and secure-by-default
-          developer platforms. This site is my notebook for talks, ideas, and
-          field notes from real systems.
+          I&apos;m a Senior Platform Security Engineer based in Vancouver. Here I
+          share talks, notes, and the software I&apos;m building.
         </p>
         <div id="contact" className="home-contact">
-          <a href="mailto:hello@enguerrand.dev"><Mail size={20} aria-hidden="true" />hello@enguerrand.dev</a>
+          <a href="mailto:hello@enguerrand.dev" aria-label="Email hello@enguerrand.dev"><Mail size={20} aria-hidden="true" />Email</a>
           <a href="https://github.com/AEnguerrand"><Github size={20} aria-hidden="true" />GitHub</a>
           <a href="https://www.linkedin.com/in/enguerrandallamel/"><Linkedin size={20} aria-hidden="true" />LinkedIn</a>
         </div>
