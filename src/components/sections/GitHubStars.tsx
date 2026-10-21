@@ -1,6 +1,6 @@
 import { ArrowUpRight, Clock3, GitFork, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { type StarredRepository, type StarredDataset, starsListHref, starsListName } from "@/lib/stars";
+import { type StarredRepository, type StarredDataset, starsListHref, starsListName, starsTopicIcon } from "@/lib/stars";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const formatDate = (value: string) => new Date(value).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric",timeZone:"UTC"});
@@ -79,15 +79,15 @@ export function RepoCard({ repo }: { repo: StarredRepository }) {
 }
 
 export function GitHubStars({dataset}: {dataset: StarredDataset | null}) {
-  if (!dataset) return <p>Repository data is unavailable. <a href="https://github.com/AEnguerrand?tab=stars" className="site-link">Browse GitHub Stars</a></p>;
+  if (!dataset) return <p>Repository data is unavailable. <a href="https://github.com/AEnguerrand?tab=stars" className="site-link">Browse my starred repositories</a></p>;
   const groups = dataset.groups.filter(group => group.repos.length > 0);
   return (
-    <section className="site-section-divider" aria-labelledby="stars-lists-heading">
-      <h2 id="stars-lists-heading" className="text-2xl">Browse lists</h2>
+    <section className="site-section-divider" aria-labelledby="stars-topics-heading">
+      <h2 id="stars-topics-heading" className="text-2xl">Topics</h2>
       {groups.length ? <ul className="site-list grid gap-x-6 sm:grid-cols-2">{groups.map(group =>
         <li key={group.slug} id={`list-${group.slug}`} className="site-list-row scroll-mt-40">
           <a href={starsListHref(group.slug)} className="site-link w-full justify-between py-3 font-medium">
-            <span>{starsListName(group.name)}</span><span className="shrink-0 text-xs text-muted-foreground">{group.repos.length} →</span>
+            <span className="flex min-w-0 items-center gap-2"><span aria-hidden="true">{starsTopicIcon(group.slug)}</span><span>{starsListName(group.name)}</span></span><span className="shrink-0 text-xs text-muted-foreground">{group.repos.length} →</span>
           </a>
         </li>
       )}</ul> : <p>No starred repositories yet.</p>}

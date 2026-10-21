@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { RepoCard } from "@/components/sections/GitHubStars";
-import { starsDataset, starsGroups, starsDate, starsListName, starsListHref, starsPageSize, type StarredGroup } from "@/lib/stars";
+import RadarRepositoryFilter from "@/components/sections/RadarRepositoryFilter.astro";
+import { starsDataset, starsGroups, starsDate, starsListName, starsListHref, starsPageSize, starsTopicIcon, type StarredGroup } from "@/lib/stars";
 
 export function getStaticPaths() {
   return starsGroups.flatMap(group => {
@@ -16,19 +17,21 @@ const {group,pageNumber,pageCount} = Astro.props as {group:StarredGroup;pageNumb
 const name = starsListName(group.name);
 const repos = group.repos.slice((pageNumber-1)*starsPageSize,pageNumber*starsPageSize);
 const suffix = pageNumber > 1 ? ` — Page ${pageNumber}` : "";
+const languages = [...new Set(group.repos.map((repo) => repo.language).filter((language): language is string => Boolean(language)))].sort((a, b) => a.localeCompare(b));
 ---
-<BaseLayout title={`${name} GitHub Stars${suffix}`} description={`Browse ${name} repositories from my GitHub Stars. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this list.`}>
+<BaseLayout title={`${name} Radar${suffix}`} description={`Browse ${name} resources in my technical radar. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this topic.`}>
   <header class="site-page-header">
-    <a href="/github-stars/" class="site-link text-sm">← All lists</a>
-    <h1 class="site-page-title">{name}</h1>
+    <a href="/radar/" class="site-link text-sm">← Radar</a>
+    <h1 class="site-page-title flex items-start gap-3"><span class="mt-2 text-[0.62em] leading-none" aria-hidden="true">{starsTopicIcon(group.slug)}</span><span>{name}</span></h1>
     {group.description && <p class="site-lead">{group.description}</p>}
-    <p class="mt-2 text-xs text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Snapshot {starsDate(starsDataset.generated_at)}</p>
+    <p class="mt-3 text-sm text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
   </header>
   <section class="site-section-divider" aria-labelledby="repos-heading">
     <h2 id="repos-heading" class="sr-only">Repositories</h2>
-    <div class="site-list grid gap-x-6 sm:grid-cols-2 xl:grid-cols-3">{repos.map(repo => <RepoCard repo={repo}/>)}</div>
+    <RadarRepositoryFilter languages={languages} pageNumber={pageNumber} slug={group.slug} total={group.repos.length} />
+    <div class="site-list mt-5 grid gap-x-6 sm:grid-cols-2 xl:grid-cols-3" data-radar-default>{repos.map(repo => <RepoCard repo={repo}/>)}</div>
   </section>
-  {pageCount > 1 && <nav aria-label="Repository pages" class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">
+  {pageCount > 1 && <nav aria-label="Repository pages" class="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm" data-radar-pagination>
     {pageNumber > 1 ? <a rel="prev" href={starsListHref(group.slug,pageNumber-1)} class="site-action site-action-secondary">← Previous</a> : <span/>}
     <span class="text-muted-foreground">Page {pageNumber} of {pageCount}</span>
     {pageNumber < pageCount ? <a rel="next" href={starsListHref(group.slug,pageNumber+1)} class="site-action site-action-secondary">Next →</a> : <span/>}
