@@ -1,8 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { topicDescription, topicHref, topicTitle } from "@/lib/topics";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { getCollection } from "astro:content";
 
 const talks = await getCollection("talks");
@@ -44,32 +42,28 @@ const structuredData = {
   description="Browse conference talks and practical resources by cloud security, software supply chain security, Kubernetes, AWS, npm, SLSA, and related topics."
   structuredData={structuredData}
 >
-  <header class="pt-6 pb-6 sm:pt-8">
-    <h1 class="text-3xl sm:text-4xl">Topics</h1>
-    <p class="mt-3 max-w-2xl text-muted-foreground">Cloud security, software supply chains, and dependency security. Choose a topic to find related talks.</p>
+  <header class="site-page-header">
+    <h1 class="site-page-title">Topics</h1>
+    <p class="site-lead">Cloud security, software supply chains, and dependency security. Choose a topic to find related talks.</p>
   </header>
-  <section aria-labelledby="topic-list-heading" class="space-y-5">
+  <section class="site-section-divider" aria-labelledby="topic-list-heading">
     <h2 id="topic-list-heading" class="sr-only">Browse topics</h2>
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div class="site-list mt-0">
       {topics.map((topic) => (
-        <Card className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]">
-          <CardHeader className="space-y-3 pb-3">
-            <div class="flex items-center justify-between gap-3">
-              <h3 class="text-2xl font-semibold tracking-tight">
-                <a class="hover:text-primary" href={topicHref(topic.name)}>{topicTitle(topic.name)}</a>
-              </h3>
-              <span class="whitespace-nowrap rounded-full border border-border/80 bg-secondary/55 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                {topic.count} {topic.count === 1 ? "talk" : "talks"}
-              </span>
+        <article class="site-list-row grid gap-4 py-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10">
+          <div>
+            <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+              <h3 class="text-2xl font-semibold tracking-tight"><a class="hover:text-primary" href={topicHref(topic.name)}>{topicTitle(topic.name)}</a></h3>
+              <span class="whitespace-nowrap text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{topic.count} {topic.count === 1 ? "talk" : "talks"}</span>
             </div>
-            <CardDescription className="leading-relaxed">{topicDescription(topic.name)}</CardDescription>
-          </CardHeader>
-          <CardContent className="mt-auto pt-1">
-            <a class="text-sm font-semibold text-foreground hover:text-primary" href={topicHref(topic.name)}>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{topicDescription(topic.name)}</p>
+          </div>
+          <div>
+            <a class="site-text-link text-sm font-semibold" href={topicHref(topic.name)}>
               Explore {topicTitle(topic.name)} →
             </a>
-          </CardContent>
-        </Card>
+          </div>
+        </article>
       ))}
     </div>
   </section>

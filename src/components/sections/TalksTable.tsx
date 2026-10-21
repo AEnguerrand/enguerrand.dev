@@ -1,9 +1,6 @@
 import * as React from "react";
 import { CalendarDays, ChevronRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { topicHref, topicTitle } from "@/lib/topics";
 
@@ -25,25 +22,25 @@ type TalksTableProps = {
 
 export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps) {
   return (
-    <Card className="border-border/70 bg-card/85 shadow-[0_18px_48px_hsl(var(--foreground)/0.06)]">
-      <CardHeader className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <CardTitle as="h2" className="text-3xl">{title}</CardTitle>
+    <section className="site-section-divider">
+      <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <h2 className="text-3xl">{title}</h2>
         {showViewAll && (
-          <Button asChild variant="outline" size="sm" className="gap-1">
-            <a href="/talks/">
-              View all <ChevronRight className="h-4 w-4" />
-            </a>
-          </Button>
+          <a href="/talks/" className="site-text-link font-medium">
+            View all <ChevronRight className="h-4 w-4" />
+          </a>
         )}
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <Alert className="border-border/80 bg-secondary/55">
+      </header>
+      <div className="mt-5 space-y-6">
+        <aside className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 border-y border-border py-4">
           <CalendarDays className="h-4 w-4" />
-          <AlertTitle className="font-semibold">Speaking archive</AlertTitle>
-          <AlertDescription>
+          <div>
+            <h3 className="font-semibold leading-none">Speaking archive</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Open any talk for full abstracts and resources. New sessions are added as they are published.
-          </AlertDescription>
-        </Alert>
+            </p>
+          </div>
+        </aside>
 
         <Table>
           <TableHeader>
@@ -56,7 +53,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
           </TableHeader>
           <TableBody>
             {talks.map((talk) => (
-              <TableRow key={talk.id} className="hover:bg-secondary/45">
+              <TableRow key={talk.id} className="site-list-row hover:bg-primary/[0.035]">
                 <TableCell className="whitespace-nowrap text-muted-foreground">
                   {new Date(talk.data.date).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -79,7 +76,7 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                         <a
                           key={`${talk.id}-${tag}`}
                           href={topicHref(tag)}
-                          className="rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary hover:text-foreground"
+                          className="text-xs font-semibold text-primary hover:underline"
                         >
                           {topicTitle(tag)}
                         </a>
@@ -90,15 +87,13 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button asChild variant="outline" size="sm">
-                    <a href={`/talks/${talk.id}/`} aria-label={`Details: ${talk.data.title}`}>Details</a>
-                  </Button>
+                  <a href={`/talks/${talk.id}/`} aria-label={`Details: ${talk.data.title}`} className="site-text-link justify-end text-sm font-medium">Details</a>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

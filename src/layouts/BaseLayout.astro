@@ -146,7 +146,7 @@ const jsonLd = {
   </head>
   <body class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <a href="#main-content" class="skip-link">Skip to content</a>
-    <div class="relative isolate min-h-screen">
+    <div class="site-page relative isolate min-h-screen">
       <div
         aria-hidden="true"
         class="pointer-events-none absolute -top-28 left-[6%] -z-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
@@ -156,7 +156,7 @@ const jsonLd = {
         class="pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
       />
 
-      <header class:list={["site-header", { "home-shell": home }]}>
+      <header class="site-header site-shell">
         <nav class="site-nav" aria-label="Main navigation">
           <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Enguerrand Allamel</a>
           <div class="site-nav-links">
@@ -168,11 +168,12 @@ const jsonLd = {
         </nav>
       </header>
 
-      <main id="main-content" tabindex="-1" class:list={["mx-auto w-full max-w-6xl px-4 pb-20 pt-0 sm:px-6 lg:px-8", { "home-shell": home }]}>
+      <main class="site-main site-shell">
+        <span id="main-content" tabindex="-1" class="skip-target" aria-label="Main content"></span>
         <slot />
       </main>
 
-      <footer class:list={["site-footer", { "home-shell": home }]}>
+      <footer class="site-footer site-shell">
         <div class="site-footer-message">
           <p class="site-footer-kicker">Based in Vancouver, BC, Canada <span aria-hidden="true">🇨🇦</span></p>
         </div>

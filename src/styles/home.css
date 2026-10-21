@@ -1,7 +1,4 @@
-/* Home uses the existing font families, colours, and background. */
-.home-page .home-shell { width: min(1160px, 86.2%); max-width: none; padding-inline: 0; }
-.home-page a:not(.site-action-button):hover { color: hsl(var(--primary)); }
-.home-page main.home-shell { padding-top: 0; padding-bottom: 0; }
+/* Home uses the shared shell, font families, colours, and background. */
 .home-intro { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: start; gap: 40px; padding: 48px 0 32px; }
 .home-intro h1 { margin: 0; font-size: clamp(36px, 5.6vw, 58px); line-height: 1.12; font-weight: 600; }
 .home-name { color: hsl(var(--primary)); }
@@ -15,7 +12,9 @@
 .home-contact svg { flex-shrink: 0; }
 .home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; color: hsl(var(--primary)); }
 .home-link svg { flex-shrink: 0; }
-.home-page a:not(.site-action-button):hover { text-decoration: underline; text-underline-offset: 4px; }
+.home-link:hover,
+.home-entry h3 a:hover,
+.home-talk-link:hover h3 { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
 .home-page h2 { font-size: 36px; font-weight: 600; line-height: 1.2; }
 .home-page h3 { font-family: var(--font-sans); font-size: 22px; font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .home-talks { border-top: 1px solid hsl(var(--border)); padding-top: 36px; }
@@ -30,7 +29,8 @@
 .home-talk-meta li { position: relative; }
 .home-talk-meta li:first-child { color: hsl(var(--primary)); font-weight: 600; }
 .home-talk-meta li + li::before { content: "·"; position: absolute; left: -9px; }
-.home-talk-link:hover { background: hsl(var(--primary) / .035); }
+.home-talk-link:hover,
+.home-talk-link:focus-visible { background: hsl(var(--primary) / .035); }
 .home-content-columns { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .72fr); align-items: start; gap: 56px; padding: 56px 0 48px; }
 .home-projects { min-width: 0; }
 .home-entry { padding: 24px 0; }
@@ -51,11 +51,11 @@
 .home-blog-status .home-entry-status { color: hsl(var(--primary)); font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
 .home-blog-status > p:not(.home-entry-status) { margin-top: 6px; color: hsl(var(--muted-foreground)); line-height: 1.55; }
 .home-blog-status .home-link { margin-top: 10px; }
-.home-exploring { padding: 38px 0 44px; border-top: 1px solid hsl(var(--border)); }
+.home-exploring { padding: 38px 0 0; border-top: 1px solid hsl(var(--border)); }
 .home-exploring h2 { font-size: 30px; }
 .home-exploring-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
 .home-exploring-updated { flex-shrink: 0; padding-bottom: 4px; color: hsl(var(--muted-foreground)); font-size: 13px; }
-.home-exploring-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 32px; margin-top: 26px; }
+.home-exploring-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; margin-top: 26px; }
 .home-exploring-card { position: relative; padding: 0 0 0 16px; }
 .home-exploring-card::before { content: ""; position: absolute; top: 9px; left: 0; width: 6px; height: 6px; border-radius: 999px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); }
 .home-exploring-card h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; line-height: 1.35; }
@@ -63,10 +63,8 @@
 @media (max-width: 900px) {
   .home-content-columns { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .home-blog { padding-top: 40px; padding-left: 0; border-top: 1px solid hsl(var(--border)); border-left: 0; }
-  .home-exploring-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
 }
 @media (max-width: 767px) {
-  .home-page .home-shell { width: calc(100% - 40px); }
   .home-intro { grid-template-columns: minmax(0, 1fr) 64px; gap: 12px 18px; padding: 24px 0; }
   .home-intro-copy { display: contents; }
   .home-portrait { grid-column: 2; grid-row: 1; width: 64px; height: 64px; align-self: start; }

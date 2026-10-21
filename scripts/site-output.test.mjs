@@ -50,7 +50,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "Blog", "Currently exploring"]);
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "Blog", "What I'm exploring now"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
@@ -66,6 +66,17 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.match(text(projects), /Visit Foliobruma/);
   assert.match(text(selected), /Notes.*French/s);
   assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
+  const homeText = text(home.nodes[0]);
+  for (const value of [
+    "AI-first development security",
+    "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down.",
+    "Security automation in delivery platforms",
+    "Embedding practical controls across CI/CD pipelines, cloud infrastructure, and Kubernetes platforms so secure defaults are part of the path to production.",
+    "Detection and response",
+    "Improving cloud-native detection, SIEM coverage, and response workflows so incidents are easier to understand and faster to contain.",
+    "Secure-by-default platform patterns",
+    "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
+  ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
 });
 
@@ -96,12 +107,20 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
     /November 15, 2024/,
   );
   const topResources = talk.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
-  assert.ok(walk(topResources).some((n) => n.tagName === "a" && attrs(n).class.includes("bg-primary")), "Primary resource link lost its button style");
+  assert.ok(
+    walk(topResources).some(
+      (n) =>
+        n.tagName === "a" &&
+        attrs(n).class.split(" ").includes("site-action") &&
+        attrs(n).class.split(" ").includes("site-action-primary"),
+    ),
+    "Primary resource link lost its button style",
+  );
   const aws = await page("talks/aws-summit-paris-2025/index.html");
   for (const current of [talk, aws]) {
     const resources = current.nodes.find((n) => attrs(n)["aria-label"] === "Session resources");
     for (const link of walk(resources).filter((n) => n.tagName === "a")) {
-      if (attrs(link).class.split(" ").includes("bg-primary"))
+      if (attrs(link).class.split(" ").includes("site-action-primary"))
         assert.ok(attrs(link).class.split(" ").includes("whitespace-normal"));
       assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
     }

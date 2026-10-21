@@ -1,24 +1,21 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { Card, CardContent } from "@/components/ui/card";
 import starsData from "../../public/data/starred-groups.json";
 const listCount = starsData.groups.filter(group => group.repos.length > 0).length;
 ---
 <BaseLayout title="Technical Radar" description="Useful repositories and a quick search across my talks, notes, and pages.">
-  <header class="pt-6 pb-6 sm:pt-8">
-    <h1 class="text-3xl sm:text-4xl">Radar</h1>
-    <p class="mt-3 text-muted-foreground">Useful repositories and a quick way to find things on this site.</p>
+  <header class="site-page-header">
+    <h1 class="site-page-title">Radar</h1>
+    <p class="site-lead">Useful repositories and a quick way to find things on this site.</p>
   </header>
-  <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-    <CardContent className="divide-y divide-border/70 px-5 py-1 sm:px-6">
-      <section class="py-5">
+  <div class="site-list mt-0">
+      <section class="site-list-row py-6">
         <h2 class="text-2xl"><a href="/github-stars/" class="hover:text-primary">GitHub Stars →</a></h2>
         <p class="mt-2 text-sm text-muted-foreground">Repositories I find useful, organized by topic. {starsData.total_repos} repos · {listCount} lists.</p>
       </section>
-      <section class="py-5">
+      <section class="site-list-row py-6">
         <h2 class="text-2xl"><a href="/search/" class="hover:text-primary">Search →</a></h2>
         <p class="mt-2 text-sm text-muted-foreground">Find a talk, post, or page.</p>
       </section>
-    </CardContent>
-  </Card>
+  </div>
 </BaseLayout>

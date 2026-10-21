@@ -1,6 +1,5 @@
 import { ArrowUpRight, Clock3, GitFork, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { type StarredRepository, type StarredDataset, starsListHref, starsListName } from "@/lib/stars";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value);
@@ -8,8 +7,8 @@ const formatDate = (value: string) => new Date(value).toLocaleDateString("en-US"
 
 export function RepoCard({ repo }: { repo: StarredRepository }) {
   return (
-    <Card className="lift-card border-border/70 bg-card/90 shadow-[0_10px_26px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="space-y-2 p-4 pb-3">
+    <article className="site-list-row flex h-full flex-col py-5">
+      <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           {repo.language && (
             <Badge
@@ -30,33 +29,35 @@ export function RepoCard({ repo }: { repo: StarredRepository }) {
             </Badge>
           )}
         </div>
-        <CardTitle className="min-w-0 text-lg leading-tight sm:text-xl">
+        <h3 className="min-w-0 text-lg font-semibold leading-tight sm:text-xl">
           <a
             href={repo.html_url}
             target="_blank"
             rel="noreferrer"
-            className="flex min-w-0 items-start gap-1.5 text-foreground hover:text-primary"
+            className="site-link min-w-0 items-start text-lg text-foreground sm:text-xl"
           >
             <span className="min-w-0 break-all">{repo.full_name}</span>
-            <ArrowUpRight className="h-4 w-4 shrink-0" />
+            <ArrowUpRight aria-hidden="true" className="h-4 w-4 shrink-0" />
           </a>
-        </CardTitle>
-        <CardDescription className="text-xs leading-relaxed">
+        </h3>
+        <p className="text-xs leading-relaxed text-muted-foreground">
           {repo.description ?? "No description provided."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-2 p-4 pt-0">
+        </p>
+      </header>
+      <div className="mt-auto space-y-2 pt-4">
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
-            <Star className="h-3 w-3" />
+            <Star aria-hidden="true" className="h-3 w-3" />
+            <span className="sr-only">Stars: </span>
             {formatNumber(repo.stargazers_count)}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <GitFork className="h-3 w-3" />
+            <GitFork aria-hidden="true" className="h-3 w-3" />
+            <span className="sr-only">Forks: </span>
             {formatNumber(repo.forks_count)}
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <Clock3 className="h-3 w-3" />
+            <Clock3 aria-hidden="true" className="h-3 w-3" />
             Updated {formatDate(repo.updated_at)}
           </span>
         </div>
@@ -72,26 +73,24 @@ export function RepoCard({ repo }: { repo: StarredRepository }) {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }
 
 export function GitHubStars({dataset}: {dataset: StarredDataset | null}) {
-  if (!dataset) return <p>Repository data is unavailable. <a href="https://github.com/AEnguerrand?tab=stars" className="text-primary underline">Browse GitHub Stars</a></p>;
+  if (!dataset) return <p>Repository data is unavailable. <a href="https://github.com/AEnguerrand?tab=stars" className="site-link">Browse GitHub Stars</a></p>;
   const groups = dataset.groups.filter(group => group.repos.length > 0);
   return (
-    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
-      <CardHeader className="pb-3"><CardTitle as="h2" className="text-2xl">Browse lists</CardTitle></CardHeader>
-      <CardContent>
-        {groups.length ? <ul className="grid gap-x-6 sm:grid-cols-2">{groups.map(group =>
-          <li key={group.slug} id={`list-${group.slug}`} className="scroll-mt-40 border-b border-border/60">
-            <a href={starsListHref(group.slug)} className="flex items-center justify-between gap-3 py-3 text-sm font-medium hover:text-primary">
-              <span>{starsListName(group.name)}</span><span className="shrink-0 text-xs text-muted-foreground">{group.repos.length} →</span>
-            </a>
-          </li>
-        )}</ul> : <p>No starred repositories yet.</p>}
-      </CardContent>
-    </Card>
+    <section className="site-section-divider" aria-labelledby="stars-lists-heading">
+      <h2 id="stars-lists-heading" className="text-2xl">Browse lists</h2>
+      {groups.length ? <ul className="site-list grid gap-x-6 sm:grid-cols-2">{groups.map(group =>
+        <li key={group.slug} id={`list-${group.slug}`} className="site-list-row scroll-mt-40">
+          <a href={starsListHref(group.slug)} className="site-link w-full justify-between py-3 font-medium">
+            <span>{starsListName(group.name)}</span><span className="shrink-0 text-xs text-muted-foreground">{group.repos.length} →</span>
+          </a>
+        </li>
+      )}</ul> : <p>No starred repositories yet.</p>}
+    </section>
   );
 }

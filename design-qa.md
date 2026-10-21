@@ -1,4 +1,4 @@
-# Homepage improvement design QA
+# Site-wide design QA
 
 final result: passed
 
@@ -10,6 +10,8 @@ final result: passed
 - Desktop implementation: `output/homepage-improvements-qa/implementation-desktop.jpg`, 1440 × 1819 pixels, CSS viewport 1440 × 1000, density 1.
 - Mobile implementation: `output/homepage-improvements-qa/implementation-mobile.jpg`, 390 × 2303 pixels, CSS viewport 390 × 844, density 1.
 - Supporting captures: `output/homepage-improvements-qa/implementation-blog.jpg` and `output/homepage-improvements-qa/implementation-talk.jpg`.
+- Site-wide audit reports: `output/pixel-audit-2026-10-21/code/report.md`, `output/pixel-audit-2026-10-21/desktop/report.md`, and `output/pixel-audit-2026-10-21/mobile/report.md`.
+- Site-wide source: the final production build at http://127.0.0.1:4322/ after the open editorial system was applied to every Astro route.
 - State: two selected talks, two real projects, no published Blog posts, exploration items collapsed.
 - The source and final desktop images, then the source and final mobile images, were inspected together in one comparison result. Neither image was stretched.
 - The later personality pass was compared before and after at identical 1440 × 1000 and 390 × 844 viewports.
@@ -31,7 +33,10 @@ final result: passed
 12. The name in the Home title now uses the solid primary blue. The previous blue-to-red text gradient was removed.
 13. The hero action block was still too large at normal viewing scale. The two actions now use shorter labels and 36-pixel buttons, while Email, GitHub, and LinkedIn use compact text links with small 15-pixel icons.
 14. The footer slogan was removed. The footer now ends with the Vancouver label, email address, and utility links only.
-15. The final improvement pass gives Foliobruma Scanner its official app icon, turns the empty Blog area into a compact reading path, and reduces Currently exploring to three dated questions. It also places the portrait beside the name on phones, removes excess project and exploration rules, and darkens the primary blue slightly so small blue text meets AA contrast. Checks at 320, 390, and 1440 CSS pixels show one H1, no horizontal overflow, a loaded 320-pixel project image, and a skip link that stays above the viewport until keyboard focus moves to it.
+15. The next improvement pass gives Foliobruma Scanner its official app icon and turns the empty Blog area into a compact reading path. It also places the portrait beside the name on phones, removes excess project and exploration rules, and darkens the primary blue slightly so small blue text meets AA contrast. Checks at 320, 390, and 1440 CSS pixels show one H1, no horizontal overflow, a loaded 320-pixel project image, and a skip link that stays above the viewport until keyboard focus moves to it.
+16. The exploration copy was restored to its original four topics and descriptions. The four items use a stable two-by-two desktop layout and a one-column phone layout. A source regression test now protects every topic and description.
+17. The full website now uses the same open editorial system as Home. Talks, talk details, Topics, Blog, Search, About, Resume, GitHub Stars, Radar, Privacy, and 404 use the shared shell, page title scale, dividers, list rows, links, and compact actions. Raised card containers were removed from route content. The talk video keeps its responsive frame and now has a visible source fallback.
+18. The skip link now moves focus to a zero-height target at the start of the main content. The verified focus target is `main-content`, its top is 87 CSS pixels, and the page stays at scroll position 0 instead of jumping into Home content.
 
 ## Required surfaces
 
@@ -40,7 +45,7 @@ final result: passed
 - Images: the real `/avatar.webp` remains sharp, circular, and proportionate at phone and desktop widths.
 - Spacing: the introduction is shorter, talk rows remain easy to scan, and the Projects/Blog columns have clear visual weight. The phone layout keeps consistent section spacing.
 - Copy: the introduction states role, location, and site purpose. Project status and destination labels are specific. The empty Blog state does not offer an empty archive. Talk cards state notes, video, slides, lab, and language when available.
-- Secondary pages: Blog and talk pages use the same open header and footer as Home. Talk notes use a narrower reading measure. Talk pages identify notes and source resources clearly.
+- Secondary pages: all routes use the same open header, footer, title scale, section dividers, and action hierarchy as Home. Talk notes use a narrower reading measure. Talk pages identify notes, video fallback, and source resources clearly.
 
 ## Browser and interaction checks
 
@@ -53,12 +58,16 @@ final result: passed
 - Project and talk links retain their destinations. The KubeCon page shows `Watch talk`, `Read notes`, an embedded video, and `Sources and resources`.
 - Browser console: no errors observed during the final route and interaction checks.
 - The final personality revision has one H1 and zero horizontal overflow at 390 and 1440 CSS pixels.
+- The site-wide final desktop pass covered Home, Talks, a talk detail, About, Search, GitHub Stars, Radar, Resume, Privacy, and Topics at 1280 × 720. Every route has one H1 and zero horizontal overflow.
+- The mobile audit covered Home at 320, 390, and 768 CSS pixels and eight representative secondary routes at 390 CSS pixels. It found no horizontal overflow. Its card and spacing findings were fixed in the site-wide conversion.
+- Search remains functional after the redesign: the query `SLSA` returns the two expected talks.
+- The Radar footer reaches the bottom of the 720-pixel viewport on a short page.
 
 ## Source validation
 
 - `npm run check:site`: passed.
 - `npm run build`: passed; 69 pages built.
-- `npm run test:site`: passed; 19 tests.
+- `npm run test:site`: passed; 19 tests, including exact exploration-copy protection.
 - `git diff --check`: passed.
 
 ## Limits
