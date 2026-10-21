@@ -1,6 +1,7 @@
 ---
 author: ["Enguerrand Allamel"]
 title: "KubeCon CloudNativeCon China 2024: Securing the Supply Chain: A Practical Guide to SLSA Compliance from Build to Runtime | 保障供应链安全：从构建到运行的SLSA合规实用指南"
+displayTitle: "Securing the supply chain with SLSA"
 seoTitle: "SLSA Supply Chain Security from Build to Runtime"
 date: "2024-08-21"
 event: "KubeCon + CloudNativeCon + Open Source Summit China 2024"
@@ -17,8 +18,6 @@ resources:
     url: "https://static.sched.com/hosted_files/kccncossaidevchn2024/91/English%20-%20Securing%20the%20Supply%20Chain%20A%20Practical%20Guide%20to%20SLSA%20Compliance%20from%20Build%20to%20Runtime.pdf"
   - label: "Chinese Slides"
     url: "https://static.sched.com/hosted_files/kccncossaidevchn2024/3d/Chinese%20%28Automatic%20Translation%29%20-%20Securing%20the%20Supply%20Chain%20A%20Practical%20Guide%20to%20SLSA%20Compliance%20from%20Build%20to%20Runtime.pdf"
-  - label: "Lab Repository"
-    url: "https://github.com/AEnguerrand/kubecon-cloudnativecon-china-2024-supply-chain-security"
 ---
 
 ## Description

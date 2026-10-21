@@ -1,54 +1,12 @@
-import { ArrowUpRight, ChevronDown, Clock3, GitFork, Star } from "lucide-react";
-
+import { ArrowUpRight, Clock3, GitFork, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { type StarredRepository, type StarredDataset, starsListHref, starsListName } from "@/lib/stars";
 
-type StarredRepository = {
-  id: number;
-  full_name: string;
-  html_url: string;
-  description: string | null;
-  stargazers_count: number;
-  forks_count: number;
-  language: string | null;
-  archived: boolean;
-  fork: boolean;
-  topics: string[];
-  updated_at: string;
-  starred_at: string | null;
-};
+const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value);
+const formatDate = (value: string) => new Date(value).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric",timeZone:"UTC"});
 
-type StarredGroup = {
-  slug: string;
-  name: string;
-  description?: string;
-  repos: StarredRepository[];
-};
-
-type StarredDataset = {
-  username: string;
-  generated_at: string;
-  total_repos: number;
-  groups: StarredGroup[];
-};
-
-type GitHubStarsProps = {
-  dataset: StarredDataset | null;
-};
-
-function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US").format(value);
-}
-
-function formatDate(value: string): string {
-  return new Date(value).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function RepoCard({ repo }: { repo: StarredRepository }) {
+export function RepoCard({ repo }: { repo: StarredRepository }) {
   return (
     <Card className="lift-card border-border/70 bg-card/90 shadow-[0_10px_26px_hsl(var(--foreground)/0.05)]">
       <CardHeader className="space-y-2 p-4 pb-3">
@@ -83,7 +41,7 @@ function RepoCard({ repo }: { repo: StarredRepository }) {
             <ArrowUpRight className="h-4 w-4 shrink-0" />
           </a>
         </CardTitle>
-        <CardDescription className="max-h-10 overflow-hidden text-xs leading-relaxed">
+        <CardDescription className="text-xs leading-relaxed">
           {repo.description ?? "No description provided."}
         </CardDescription>
       </CardHeader>
@@ -119,93 +77,21 @@ function RepoCard({ repo }: { repo: StarredRepository }) {
   );
 }
 
-export function GitHubStars({ dataset }: GitHubStarsProps) {
-  if (!dataset) {
-    return (
-      <Card className="border-border/70 bg-card/85">
-        <CardHeader>
-          <CardTitle className="text-2xl">Starred repositories are unavailable</CardTitle>
-          <CardDescription>
-            The local repository list is unavailable. Browse the original list on GitHub.
-          </CardDescription>
-          <a href="https://github.com/AEnguerrand?tab=stars" className="text-sm font-semibold text-primary underline">Browse GitHub Stars</a>
-        </CardHeader>
-      </Card>
-    );
-  }
-
-  const nonEmptyGroups = dataset.groups.filter((group) => group.repos.length > 0);
-
-  if (nonEmptyGroups.length === 0) {
-    return (
-      <Card className="border-border/70 bg-card/85">
-        <CardHeader>
-          <CardTitle className="text-2xl">No starred repositories yet</CardTitle>
-          <CardDescription>There are no starred repositories to display yet.</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
+export function GitHubStars({dataset}: {dataset: StarredDataset | null}) {
+  if (!dataset) return <p>Repository data is unavailable. <a href="https://github.com/AEnguerrand?tab=stars" className="text-primary underline">Browse GitHub Stars</a></p>;
+  const groups = dataset.groups.filter(group => group.repos.length > 0);
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">
-          Showing {formatNumber(dataset.total_repos)} starred repositories, organized into topic lists.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Last updated {formatDate(dataset.generated_at)}
-        </p>
-      </div>
-
-      <section className="space-y-2">
-        <p className="text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-          Jump to a list
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {nonEmptyGroups.map((group) => (
-            <a
-              key={`quick-${group.slug}`}
-              href={`#list-${group.slug}`}
-              className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-secondary/50 px-3 py-1 text-xs font-semibold text-foreground hover:bg-secondary/70"
-            >
-              <span>{group.name}</span>
-              <span className="rounded-full border border-border/70 bg-card/80 px-2 py-0.5 text-[10px] text-muted-foreground">
-                {formatNumber(group.repos.length)}
-              </span>
+    <Card className="border-border/70 bg-card/90 shadow-[0_14px_36px_hsl(var(--foreground)/0.05)]">
+      <CardHeader className="pb-3"><CardTitle as="h2" className="text-2xl">Browse lists</CardTitle></CardHeader>
+      <CardContent>
+        {groups.length ? <ul className="grid gap-x-6 sm:grid-cols-2">{groups.map(group =>
+          <li key={group.slug} id={`list-${group.slug}`} className="scroll-mt-40 border-b border-border/60">
+            <a href={starsListHref(group.slug)} className="flex items-center justify-between gap-3 py-3 text-sm font-medium hover:text-primary">
+              <span>{starsListName(group.name)}</span><span className="shrink-0 text-xs text-muted-foreground">{group.repos.length} →</span>
             </a>
-          ))}
-        </div>
-      </section>
-
-      {nonEmptyGroups.map((group) => (
-        <section key={group.slug} id={`list-${group.slug}`} className="scroll-mt-32">
-          <details className="group overflow-hidden rounded-xl border border-border/70 bg-card/80 open:bg-card/80">
-            <summary className="flex list-none cursor-pointer flex-wrap items-start justify-between gap-3 bg-card/80 p-4 transition-colors hover:bg-card/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:bg-card/80 [&::-webkit-details-marker]:hidden">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
-                  <h2 className="text-xl sm:text-2xl">{group.name}</h2>
-                </div>
-                {group.description && (
-                  <p className="text-sm text-muted-foreground">{group.description}</p>
-                )}
-              </div>
-              <span className="rounded-full border border-border/80 bg-secondary/55 px-3 py-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground">
-                {formatNumber(group.repos.length)} repos
-              </span>
-            </summary>
-
-            <div className="border-t border-border/70 p-3 sm:p-4">
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {group.repos.map((repo) => (
-                  <RepoCard key={`${group.slug}-${repo.id}`} repo={repo} />
-                ))}
-              </div>
-            </div>
-          </details>
-        </section>
-      ))}
-    </div>
+          </li>
+        )}</ul> : <p>No starred repositories yet.</p>}
+      </CardContent>
+    </Card>
   );
 }
