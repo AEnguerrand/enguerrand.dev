@@ -173,7 +173,7 @@ test("Blog is linked and private drafts stay out of production routes, search, a
 
 test("Primary navigation is consistent across Home, Blog, and talks", async () => {
   const blog = await page("blog/index.html");
-  const expected = ["Talks", "Blog", "Projects", "Resume"];
+  const expected = ["Talks", "Blog", "Projects", "About"];
   for (const current of [home, blog, talk]) {
     const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
     assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
@@ -227,7 +227,7 @@ test("SEO: page, profile, and article structured data agree with public URLs", (
     assert.equal(webpage.url, url, file);
     assert.equal(webpage.name, meta(nodes, "og:title"), file);
     websiteDescriptions.add(data.find((n) => n["@type"] === "WebSite").description);
-    if (["index.html", "resume/index.html"].includes(file)) {
+    if (["index.html", "about/index.html", "resume/index.html"].includes(file)) {
       assert.equal(webpage["@type"], "ProfilePage");
       assert.equal(webpage.mainEntity["@id"], "https://enguerrand.dev/#person");
     }

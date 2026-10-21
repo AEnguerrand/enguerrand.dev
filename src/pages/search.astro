@@ -96,6 +96,7 @@ const [
   talksPageContent,
   radarPageContent,
   starsPageContent,
+  aboutPageContent,
   resumePageContent,
   privacyPageContent,
 ] = await Promise.all([
@@ -104,6 +105,7 @@ const [
   readSearchableAstroFile(new URL("./talks/index.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./radar.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./github-stars.astro", import.meta.url)),
+  readSearchableAstroFile(new URL("./about.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./resume.astro", import.meta.url)),
   readSearchableAstroFile(new URL("./privacy.astro", import.meta.url)),
 ]);
@@ -122,6 +124,14 @@ const talkItems: SearchItem[] = talks.map((talk) => ({
 
 const pageItems: SearchItem[] = [
   { id: "page-blog", kind: "page", title: "Blog", href: "/blog/", summary: "Notes on life in Canada, security, and AI." },
+  {
+    id: "page-about",
+    kind: "page",
+    title: "About",
+    href: "/about/",
+    summary: "About Enguerrand Allamel, his work, projects, and public resume.",
+    content: aboutPageContent,
+  },
   {
     id: "page-home",
     kind: "page",

@@ -23,6 +23,9 @@ final result: passed
 4. The final same-input comparison shows a shorter page with clear section priority. Projects has the larger desktop column and comes before Blog on phones. The first talk is visible sooner on phones. No actionable P0, P1, or P2 finding remains.
 5. User feedback found the simplified page too restrained. A first colour pass used accent words, numbered sections, coloured metadata, and a large footer statement. The result was too strong. P2.
 6. The final revision keeps the gradient name, a small brand dot, one coloured talk label, and a smaller footer statement. Section numbers and extra red content accents were removed. Same-input desktop and phone comparisons confirmed the quieter balance. No actionable P0, P1, or P2 finding remains.
+7. The next review found the quiet hero too flat. The final refinement restores two clear hero buttons with blue and red hover states, keeps contact links secondary, changes the footer label to `Based in Vancouver, BC, Canada 🇨🇦`, and replaces the Resume navigation item with an About page that links to the full resume.
+8. The collapsed Currently exploring rows hid the descriptions. They are now compact cards that show the complete topic and explanation without an extra interaction.
+9. The first restored buttons were too large beside the contact links. Their final size is 40 pixels high with a compact radius and padding; the blue and red hover states remain.
 
 ## Required surfaces
 
@@ -39,7 +42,7 @@ final result: passed
 - KubeCon talk: 390, 768, and 1440 CSS pixels, including video, notes, slides, lab, and resource links.
 - AWS Summit talk and GitHub Stars: 390 CSS pixels for regression coverage.
 - All tested routes have one H1, five header links, and zero horizontal overflow.
-- The Home exploration disclosure opens and shows its description.
+- The Home exploration cards show every description without requiring an extra action.
 - The first keyboard stop is the skip link and it has a visible 2-pixel outline.
 - Project and talk links retain their destinations. The KubeCon page shows `Watch talk`, `Read notes`, an embedded video, and `Sources and resources`.
 - Browser console: no errors observed during the final route and interaction checks.

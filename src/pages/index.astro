@@ -104,12 +104,13 @@ const talkFormats = (talk: typeof talks[number]) => {
 
   <section class="home-exploring" aria-labelledby="exploring-title">
     <h2 id="exploring-title">Currently exploring</h2>
+    <p class="home-section-description">Questions and systems shaping my work right now.</p>
     <div class="home-exploring-grid">
       {homePage?.data.currentExploring?.map((item) => (
-        <details>
-          <summary>{item.title}</summary>
+        <article class="home-exploring-card">
+          <h3>{item.title}</h3>
           <p>{item.description}</p>
-        </details>
+        </article>
       ))}
     </div>
   </section>
