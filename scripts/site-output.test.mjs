@@ -233,8 +233,10 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   }
   const cssFiles = (await readdir(new URL("../dist/_astro/", import.meta.url))).filter((file) => file.endsWith(".css"));
   const css = (await Promise.all(cssFiles.map((file) => load(`_astro/${file}`)))).join("\n");
-  assert.match(css, /scrollbar-gutter:stable/);
-  assert.match(await load("index.html"), /astro-view-transitions/);
+  assert.match(css, /scrollbar-gutter:stable both-edges/);
+  const homeOutput = await load("index.html");
+  assert.match(homeOutput, /astro-view-transitions/);
+  assert.match(homeOutput, /data-astro-transition-persist="site-header"/);
 });
 
 test("Projects has a dedicated page with the public project list", () => {

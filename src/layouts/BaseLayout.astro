@@ -210,7 +210,7 @@ const commandItems = [
         class="site-orb site-orb-accent pointer-events-none absolute top-20 right-[8%] -z-10 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
       />
 
-      <header class="site-header site-shell">
+      <header transition:persist="site-header" class="site-header site-shell">
         <nav class="site-nav" aria-label="Main navigation">
           <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Enguerrand Allamel</a>
           <div class="site-nav-links">
@@ -251,6 +251,22 @@ const commandItems = [
         window.__siteShellController?.abort();
         const siteShellController = new AbortController();
         window.__siteShellController = siteShellController;
+
+        const currentPath = window.location.pathname;
+        document.querySelectorAll(".site-nav a").forEach((link) => {
+          const linkPath = new URL(link.href, window.location.origin).pathname;
+          const isCurrent = linkPath === "/"
+            ? currentPath === "/"
+            : linkPath === "/about/"
+              ? currentPath.startsWith("/about/") || currentPath.startsWith("/resume/")
+              : currentPath.startsWith(linkPath);
+
+          if (isCurrent) {
+            link.setAttribute("aria-current", "page");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        });
 
         const isEditableTarget = (target) => {
           if (!(target instanceof HTMLElement)) {
