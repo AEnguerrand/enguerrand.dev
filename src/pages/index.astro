@@ -63,8 +63,8 @@ const talkFormats = (talk: typeof talks[number]) => {
     </ul>
   </section>
 
-  <div class:list={["home-content-columns", { "home-content-columns-empty-blog": !posts.length }]}>
-    <section id="projects" aria-labelledby="projects-title">
+  <div class="home-content-columns">
+    <section id="projects" class="home-projects" aria-labelledby="projects-title">
       <h2 id="projects-title">Projects</h2>
       <p class="home-section-description">I’m building tools to scan and preserve paper records.</p>
       {projects.length ? (
@@ -82,7 +82,7 @@ const talkFormats = (talk: typeof talks[number]) => {
       <a class="home-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowRight size={18} aria-hidden="true" /></a>
     </section>
 
-    <section id="blog" aria-labelledby="blog-title">
+    <section id="blog" class="home-blog" aria-labelledby="blog-title">
       <h2 id="blog-title">Blog</h2>
       <p class="home-section-description">Notes on security, AI, and life in Canada.</p>
       {posts.length ? (
@@ -98,7 +98,12 @@ const talkFormats = (talk: typeof talks[number]) => {
           </ul>
           <a class="home-link home-archive-link" href="/blog/">All posts <ArrowRight size={18} aria-hidden="true" /></a>
         </>
-      ) : <p class="home-empty home-empty-compact">The first note is in progress.</p>}
+      ) : (
+        <div class="home-blog-status">
+          <p class="home-entry-status">Writing now</p>
+          <p>The first note is in progress.</p>
+        </div>
+      )}
     </section>
   </div>
 
