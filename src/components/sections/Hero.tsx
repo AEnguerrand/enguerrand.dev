@@ -11,7 +11,7 @@ export function Hero() {
           share talks, notes, and the software I&apos;m building.
         </p>
         <div className="home-actions">
-          <a className="site-action-button site-action-button-primary" href="#selected-talks">
+          <a className="site-action-button site-action-button-primary" href="/talks/">
             Talks <ArrowRight size={15} aria-hidden="true" />
           </a>
           <a className="site-action-button site-action-button-secondary" href="/projects/">
