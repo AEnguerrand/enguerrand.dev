@@ -5,8 +5,6 @@
 .home-intro-statement { margin-top: 14px; font-size: clamp(22px, 3.2vw, 30px); line-height: 1.35; letter-spacing: -.025em; }
 .home-intro-description { max-width: 65ch; margin-top: 24px; font-size: 18px; line-height: 1.6; color: hsl(var(--muted-foreground)); }
 .home-portrait { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 1px solid hsl(var(--border)); }
-.home-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.home-actions .site-action-button { min-height: 36px; padding-inline: 12px; border-radius: 8px; font-size: 13px; }
 .home-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 20px; margin-top: 12px; }
 .home-contact a { gap: 7px; min-height: 34px; font-size: 14px; }
 .home-contact svg { flex-shrink: 0; }
@@ -19,6 +17,7 @@
 .home-page h3 { font-family: var(--font-sans); font-size: 22px; font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .home-talks { border-top: 1px solid hsl(var(--border)); padding-top: 36px; }
 .home-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.home-section-action { flex-shrink: 0; min-height: 36px; padding-inline: 12px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
 .home-list { list-style: none; margin: 20px 0 0; padding: 0; border-top: 1px solid hsl(var(--border)); }
 .home-list > li { border-bottom: 1px solid hsl(var(--border)); }
 .home-talk-link { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 4px; }
@@ -69,8 +68,7 @@
   .home-intro h1 { grid-column: 1; grid-row: 1; align-self: center; font-size: 36px; }
   .home-intro-statement { grid-column: 1 / -1; grid-row: 2; max-width: none; margin-top: 2px; font-size: 21px; }
   .home-intro-description { grid-column: 1 / -1; grid-row: 3; max-width: 34ch; font-size: 16px; margin-top: 4px; }
-  .home-actions { grid-column: 1 / -1; grid-row: 4; margin-top: 6px; }
-  .home-contact { grid-column: 1 / -1; grid-row: 5; gap: 2px 18px; margin-top: 0; }
+  .home-contact { grid-column: 1 / -1; grid-row: 4; gap: 2px 18px; margin-top: 0; }
   .home-page h2 { font-size: 30px; }
   .home-page h3 { font-size: 20px; }
   .home-talks { padding-top: 28px; }
