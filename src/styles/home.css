@@ -1,6 +1,6 @@
 /* Home uses the existing font families, colours, and background. */
 .home-page .home-shell { width: min(1160px, 86.2%); max-width: none; padding-inline: 0; }
-.home-page a:not(.home-button):hover { color: hsl(var(--primary)); }
+.home-page a:not(.site-action-button):hover { color: hsl(var(--primary)); }
 .home-page main.home-shell { padding-top: 0; padding-bottom: 0; }
 .home-intro { display: grid; grid-template-columns: minmax(0, 1fr) 180px; align-items: start; gap: 40px; padding: 48px 0 32px; }
 .home-intro h1 { margin: 0; font-size: clamp(36px, 5.6vw, 58px); line-height: 1.12; font-weight: 600; }
@@ -9,15 +9,10 @@
 .home-intro-description { max-width: 65ch; margin-top: 24px; font-size: 18px; line-height: 1.6; color: hsl(var(--muted-foreground)); }
 .home-portrait { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 1px solid hsl(var(--border)); }
 .home-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.home-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid hsl(var(--primary)); border-radius: 10px; font-size: 14px; font-weight: 650; transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
-.home-button-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 8px 20px hsl(var(--primary) / .14); }
-.home-button-secondary { background: hsl(var(--card) / .48); color: hsl(var(--primary)); }
-.home-page .home-button-primary:hover { background: hsl(var(--accent)); border-color: hsl(var(--accent)); color: hsl(var(--accent-foreground)); box-shadow: 0 10px 24px hsl(var(--accent) / .18); transform: translateY(-2px); }
-.home-page .home-button-secondary:hover { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 10px 24px hsl(var(--primary) / .16); transform: translateY(-2px); }
 .home-contact { display: flex; flex-wrap: wrap; gap: 4px 24px; margin-top: 14px; }
-.home-contact a, .home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; font-size: 15px; color: hsl(var(--primary)); }
+.home-contact a, .home-link { display: inline-flex; align-items: center; gap: 9px; min-height: 40px; font-size: 15px; color: hsl(var(--primary)); }
 .home-contact svg, .home-link svg { flex-shrink: 0; }
-.home-page a:not(.home-button):hover { text-decoration: underline; text-underline-offset: 4px; }
+.home-page a:not(.site-action-button):hover { text-decoration: underline; text-underline-offset: 4px; }
 .home-page h2 { font-size: 36px; font-weight: 600; line-height: 1.2; }
 .home-page h3 { font-family: var(--font-sans); font-size: 22px; font-weight: 500; line-height: 1.4; letter-spacing: -.025em; overflow-wrap: anywhere; }
 .home-talks { border-top: 1px solid hsl(var(--border)); padding-top: 36px; }
@@ -77,6 +72,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-button, .home-exploring-card, .home-exploring-card::before { transition: none; }
-  .home-page .home-button:hover, .home-exploring-card:hover { transform: none; }
+  .home-exploring-card, .home-exploring-card::before { transition: none; }
+  .home-exploring-card:hover { transform: none; }
 }

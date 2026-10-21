@@ -26,6 +26,7 @@ final result: passed
 7. The next review found the quiet hero too flat. The final refinement restores two clear hero buttons with blue and red hover states, keeps contact links secondary, changes the footer label to `Based in Vancouver, BC, Canada 🇨🇦`, and replaces the Resume navigation item with an About page that links to the full resume.
 8. The collapsed Currently exploring rows hid the descriptions. They are now compact cards that show the complete topic and explanation without an extra interaction.
 9. The first restored buttons were too large beside the contact links. Their final size is 40 pixels high with a compact radius and padding; the blue and red hover states remain.
+10. Home and About now use one shared action hierarchy. Main actions use the same compact button styles; contact and profile destinations use the same text-link style.
 
 ## Required surfaces
 

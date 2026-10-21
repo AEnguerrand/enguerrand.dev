@@ -204,6 +204,15 @@
 
 .nav-pill[aria-current="page"] { color: hsl(var(--primary)); background: hsl(var(--secondary) / 0.7); }
 
+/* Shared action hierarchy: buttons mark primary actions; text links support navigation. */
+.site-action-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 14px; border: 1px solid hsl(var(--primary)); border-radius: 10px; font-size: 14px; font-weight: 650; transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.site-action-button-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 8px 20px hsl(var(--primary) / .14); }
+.site-action-button-secondary { background: hsl(var(--card) / .48); color: hsl(var(--primary)); }
+.site-action-button-primary:hover { background: hsl(var(--accent)); border-color: hsl(var(--accent)); color: hsl(var(--accent-foreground)); box-shadow: 0 10px 24px hsl(var(--accent) / .18); transform: translateY(-2px); }
+.site-action-button-secondary:hover { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 10px 24px hsl(var(--primary) / .16); transform: translateY(-2px); }
+.site-text-link { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; color: hsl(var(--primary)); font-size: 15px; }
+.site-text-link:hover { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
+
 /* Shared open navigation and footer keep every route in the same visual system. */
 .site-header { position: relative; z-index: 40; margin-inline: auto; width: 100%; max-width: 72rem; padding: 32px 1rem 0; }
 .site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 32px; padding-bottom: 10px; border-bottom: 1px solid hsl(var(--border)); }
@@ -231,4 +240,9 @@
   .site-footer { padding-top: 22px; }
   .site-footer-signoff { max-width: 19ch; font-size: 24px; }
   .site-footer-bottom { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-action-button { transition: none; }
+  .site-action-button:hover { transform: none; }
 }
