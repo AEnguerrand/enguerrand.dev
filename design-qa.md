@@ -41,6 +41,8 @@ final result: passed
 20. A restrained motion layer adds slow movement to the background colour fields, small arrow movement on hover, and a slight lift and rotation on project artwork. All three effects are disabled by `prefers-reduced-motion`.
 21. Home now omits the Blog section when there are no published posts. Projects uses the available width, and the Blog route remains available from the main navigation.
 22. Generic subtitles were removed below the Home section titles and the Talks and Projects page titles. Project descriptions, talk summaries, dates, formats, and links remain because they help visitors choose what to open.
+23. The three placeholder blog drafts were removed. The Blog page now shows a short empty state until a real post is added, while the Home Blog section remains hidden.
+24. Radar is in the main navigation and leads with eight curated technical lists. Search is a compact secondary control that opens the site-wide Command-K modal.
 
 ## Required surfaces
 

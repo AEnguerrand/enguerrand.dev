@@ -283,12 +283,62 @@
 .site-footer a { display: inline-flex; align-items: center; min-height: 44px; }
 .site-footer a:hover { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
 .site-footer-links { display: flex; flex-wrap: wrap; gap: 0 20px; }
+
+/* Command-K opens a focused site-wide search modal. */
+.command-dialog {
+  width: min(calc(100% - 32px), 44rem);
+  max-height: min(76vh, 42rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 18px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  box-shadow:
+    0 30px 90px hsl(var(--foreground) / .28),
+    0 2px 8px hsl(var(--foreground) / .12);
+}
+.command-dialog[open] { animation: command-dialog-in 160ms ease-out; }
+.command-dialog::backdrop {
+  background: hsl(201 100% 8% / .46);
+  backdrop-filter: blur(9px) saturate(.85);
+}
+.command-dialog-shell { display: flex; max-height: min(76vh, 42rem); flex-direction: column; }
+.command-dialog-header { display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 0 16px; border-bottom: 1px solid hsl(var(--border)); }
+.command-dialog-icon { flex: 0 0 auto; color: hsl(var(--primary)); }
+.command-dialog-header input { min-width: 0; flex: 1; border: 0; background: transparent; color: hsl(var(--foreground)); font-size: 1rem; outline: 0; }
+.command-dialog-header input::placeholder { color: hsl(var(--muted-foreground)); opacity: .82; }
+.command-dialog-close { display: inline-flex; min-height: 36px; align-items: center; gap: 5px; padding: 0 9px; border: 1px solid hsl(var(--border)); border-radius: 8px; color: hsl(var(--muted-foreground)); font-size: 11px; transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease; }
+.command-dialog-close:hover { border-color: hsl(var(--primary) / .55); background: hsl(var(--primary) / .07); color: hsl(var(--primary)); }
+.command-dialog-status { padding: 13px 16px 6px; color: hsl(var(--muted-foreground)); font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; }
+.command-dialog-results { min-height: 0; overflow-y: auto; margin: 0; padding: 4px 8px 10px; list-style: none; overscroll-behavior: contain; }
+.command-dialog-result { display: flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 20px; padding: 10px 12px; border-radius: 10px; }
+.command-dialog-result > span:first-child { min-width: 0; font-weight: 600; }
+.command-dialog-result > span:last-child { flex: 0 0 auto; color: hsl(var(--muted-foreground)); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.command-dialog-result:hover,
+.command-dialog-result[data-active] { background: hsl(var(--primary) / .085); color: hsl(var(--primary)); }
+.command-dialog-result:hover > span:last-child,
+.command-dialog-result[data-active] > span:last-child { color: hsl(var(--primary)); }
+.command-dialog-empty { padding: 28px 12px 32px; color: hsl(var(--muted-foreground)); text-align: center; }
+.command-dialog-help { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 10px 16px; border-top: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); font-size: 11px; }
+body:has(.command-dialog[open]) { overflow: hidden; }
+@keyframes command-dialog-in {
+  from { opacity: 0; transform: translateY(-12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 @media (max-width: 767px) {
   .site-header { padding-top: 20px; }
   .site-nav { gap: 4px; padding-bottom: 12px; }
-  .site-nav-links { gap: 0 22px; }
+  .site-nav-links { gap: 0 16px; }
   .site-footer { padding-top: 22px; }
   .site-footer-bottom { align-items: flex-start; }
+}
+@media (max-width: 640px) {
+  .command-dialog { width: calc(100% - 20px); max-height: min(88vh, 42rem); }
+  .command-dialog-shell { max-height: min(88vh, 42rem); }
+  .command-dialog-header { min-height: 60px; padding-inline: 12px; }
+  .command-dialog-help { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -296,6 +346,7 @@
   .site-action, .site-action-button { transition: none; }
   .site-action:hover, .site-action-button:hover { transform: none; }
   .site-orb { animation: none; }
+  .command-dialog[open] { animation: none; }
   .project-art-motion,
   .site-link .lucide-arrow-right,
   .site-link .lucide-arrow-up-right,

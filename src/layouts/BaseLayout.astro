@@ -1,6 +1,10 @@
 ---
 import "../styles/global.css";
+import CommandPalette from "@/components/CommandPalette.astro";
+import { getCollection, getEntry } from "astro:content";
+import { getPosts, postHref } from "@/lib/posts";
 import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib/seo";
+import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 
 interface Props {
   home?: boolean;
@@ -101,6 +105,52 @@ const jsonLd = {
   ...defaultStructuredData,
   "@graph": [...defaultStructuredData["@graph"], ...extraStructuredData],
 };
+const [talks, posts, homePage] = await Promise.all([
+  getCollection("talks"),
+  getPosts(),
+  getEntry("pages", "home"),
+]);
+const commandItems = [
+  { id: "page-home", title: "Home", href: "/", kind: "Page", keywords: "Enguerrand Allamel platform security" },
+  { id: "page-talks", title: "Talks", href: "/talks/", kind: "Page", keywords: "conference workshops videos slides" },
+  { id: "page-projects", title: "Projects", href: "/projects/", kind: "Page", keywords: "software open source" },
+  { id: "page-radar", title: "Radar", href: "/radar/", kind: "Page", keywords: "technical library github stars" },
+  { id: "page-blog", title: "Blog", href: "/blog/", kind: "Page", keywords: "articles field notes" },
+  { id: "page-about", title: "About", href: "/about/", kind: "Page", keywords: "Enguerrand Allamel biography" },
+  { id: "page-resume", title: "Resume", href: "/resume/", kind: "Page", keywords: "experience work cv" },
+  { id: "page-stars", title: "GitHub Stars", href: "/github-stars/", kind: "Page", keywords: "repositories lists bookmarks" },
+  { id: "page-topics", title: "Topics", href: "/topics/", kind: "Page", keywords: "talk subjects tags" },
+  { id: "page-search", title: "Full search", href: "/search/", kind: "Page", keywords: "site search" },
+  { id: "page-privacy", title: "Privacy", href: "/privacy/", kind: "Page", keywords: "analytics data" },
+  ...(homePage?.data.projects ?? []).map((project, index) => ({
+    id: `project-${index}`,
+    title: project.title,
+    href: project.url,
+    kind: "Project",
+    keywords: `${project.description} ${project.status}`,
+  })),
+  ...talks.map((talk) => ({
+    id: `talk-${talk.id}`,
+    title: talk.data.displayTitle ?? talk.data.title,
+    href: `/talks/${talk.id}/`,
+    kind: "Talk",
+    keywords: [talk.data.title, talk.data.event, talk.data.summary, ...(talk.data.tags ?? [])].filter(Boolean).join(" "),
+  })),
+  ...posts.map((post) => ({
+    id: `post-${post.id}`,
+    title: post.data.title,
+    href: postHref(post.id),
+    kind: "Post",
+    keywords: `${post.data.description} ${post.data.tags.join(" ")}`,
+  })),
+  ...starsGroups.map((group) => ({
+    id: `stars-${group.slug}`,
+    title: starsListName(group.name),
+    href: starsListHref(group.slug),
+    kind: "Radar list",
+    keywords: `${group.description ?? ""} ${group.slug.replaceAll("-", " ")}`,
+  })),
+];
 ---
 <!doctype html>
 <html lang="en">
@@ -163,6 +213,7 @@ const jsonLd = {
             <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
             <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>
             <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
+            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") ? "page" : undefined}>Radar</a>
             <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
         </nav>
@@ -189,6 +240,7 @@ const jsonLd = {
         </div>
       </footer>
     </div>
+    <CommandPalette items={commandItems} />
     <script is:inline>
       (() => {
         const isEditableTarget = (target) => {
@@ -363,15 +415,7 @@ const jsonLd = {
 
           event.preventDefault();
 
-          const pathname = window.location.pathname.replace(/\/+$/, "");
-          if (pathname === "/search") {
-            window.dispatchEvent(new CustomEvent("site-search:focus"));
-            return;
-          }
-
-          const searchUrl = new URL("/search/", window.location.origin);
-          searchUrl.searchParams.set("focus", "1");
-          window.location.assign(searchUrl.toString());
+          window.dispatchEvent(new CustomEvent("site-command:open"));
         });
       })();
     </script>

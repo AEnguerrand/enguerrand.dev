@@ -172,8 +172,13 @@ test("Stars and Radar use the checked-in dataset in production output", async ()
     assert.deepEqual(names, group.repos.map(repo => repo.full_name), `Missing or duplicated repository in ${group.slug}`);
   }
   assert.doesNotMatch(stars, /Starred repositories are unavailable/);
-  assert.ok(radar.includes(`${dataset.total_repos} repos`));
+  assert.ok(radar.includes(`${dataset.total_repos} repositories`));
   assert.ok(radar.includes(`${count} lists`));
+  const radarPage = await page("radar/index.html");
+  for (const slug of ["security", "kubernetes", "supply-chain-security", "ci-cd", "mcp", "aws", "dev", "ai-ml"])
+    assert.ok(radarPage.nodes.some((node) => attrs(node).href === `/github-stars/${slug}/`), `Radar is missing ${slug}`);
+  assert.ok(radarPage.nodes.some((node) => node.tagName === "button" && "data-command-palette-open" in attrs(node)));
+  assert.match(radarPage.html, /⌘ K/);
 });
 
 test("Generated pages have no Once UI assets or markup", async () => {
@@ -184,34 +189,36 @@ test("Generated pages have no Once UI assets or markup", async () => {
   assert.doesNotMatch(lock, /@once-ui-system/);
 });
 
-test("Blog is linked and private drafts stay out of production routes, search, and sitemap", async () => {
+test("Blog is linked, empty, and ready for future posts", async () => {
   const blog = await page("blog/index.html");
-  assert.match(text(blog.nodes[0]), /The first post is in progress/);
-  assert.ok(blog.nodes.some((n) => n.tagName === "a" && attrs(n).href === "/talks/meetup-owasp-france-chapter-10-2025/"));
+  assert.match(text(blog.nodes[0]), /No posts yet\./);
   assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
   assert.ok(home.nodes.some((n) => attrs(n).href === "/blog/"));
   const files = await readdir(output, { recursive: true });
   const postFiles = await readdir(new URL("../src/content/posts/", import.meta.url));
-  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 3);
-  const publicText = (await Promise.all(files.filter((f) => /\.(html|xml|js|json)$/.test(f)).map(load))).join("\n");
-  for (const filename of postFiles.filter((f) => f.endsWith(".md"))) {
-    const slug = filename.slice(0, -3);
-    assert.ok(!files.some((f) => f.startsWith(`blog/${slug}/`)), `Draft route emitted: ${slug}`);
-    const source = await readFile(new URL(`../src/content/posts/${filename}`, import.meta.url), "utf8");
-    const title = source.match(/^title: "(.+)"$/m)[1];
-    assert.ok(!publicText.includes(title), `Draft title leaked: ${title}`);
-    assert.ok(!publicText.includes(`/blog/${slug}/`), `Draft URL leaked: ${slug}`);
-  }
+  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 0);
+  assert.ok(!files.some((f) => /^blog\/(ai-development|moving-to-canada|security-guardrails)\//.test(f)));
 });
 
 test("Primary navigation is consistent across Home, Blog, and talks", async () => {
   const blog = await page("blog/index.html");
-  const expected = ["Talks", "Blog", "Projects", "About"];
+  const expected = ["Talks", "Blog", "Projects", "Radar", "About"];
   for (const current of [home, blog, talk]) {
     const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
     assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
     assert.ok(walk(nav).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   }
+});
+
+test("Command-K opens a site-wide modal instead of leaving the page", async () => {
+  for (const current of [home, await page("radar/index.html"), talk]) {
+    const dialog = current.nodes.find((node) => node.tagName === "dialog" && attrs(node).id === "site-command-dialog");
+    assert.ok(dialog, "Missing command dialog");
+    assert.ok(walk(dialog).some((node) => node.tagName === "input" && attrs(node)["data-command-input"] !== undefined));
+  }
+  const homeHtml = await load("index.html");
+  assert.match(homeHtml, /site-command:open/);
+  assert.doesNotMatch(homeHtml, /searchParams\.set\("focus", "1"\)/);
 });
 
 test("Projects has a dedicated page with the public project list", () => {

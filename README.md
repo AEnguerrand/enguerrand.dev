@@ -31,7 +31,7 @@ The checks cover generated HTML, headings, links, resources, dates, Stars data, 
 
 Edit `projects` in `src/content/pages/home.md`. Each entry has a `title`, a short `description`, and an HTTP(S) `url`. Keep entries in the order they should appear. The homepage links directly to each project; its navigation scrolls to this section. Set `projects: []` to show the empty state.
 
-The homepage shows Talks first, then Blog and Projects. Blog automatically displays up to three published posts, excluding drafts and future dates. Exploration details stay in the same Home content file.
+The homepage shows Talks first, followed by Projects. Blog appears on the homepage after the first post is published. It displays up to three published posts and excludes drafts and future dates. Exploration details stay in the same Home content file.
 
 ## Write a blog post
 
@@ -50,9 +50,9 @@ tags: [Security]
 Write your post in Markdown. The page adds the H1 from your title.
 ```
 
-Three draft outlines are ready for Canada, security, and AI. Run `npm run dev` and open `/blog/` to preview drafts locally. Drafts are marked in development. Draft Markdown remains visible to anyone who can read this repository; only the built website excludes it. Production builds exclude drafts and future posts from routes, listings, search, and the sitemap.
+Run `npm run dev` and open `/blog/` to preview a draft locally. Drafts are marked in development. Draft Markdown remains visible to anyone who can read this repository; only the built website excludes it. Production builds exclude drafts and future posts from routes, listings, search, and the sitemap.
 
-To publish, replace the outline with your article, set `draft: false`, and add `publishDate: "YYYY-MM-DD"` with the publication date. Run the checks, then commit and deploy through the normal workflow. Dates use UTC. A future date needs a new build on or after that date; there is no automatic publication scheduler. `npm run preview` shows production output and does not show drafts.
+To publish, write the article, set `draft: false`, and add `publishDate: "YYYY-MM-DD"` with the publication date. Run the checks, then commit and deploy through the normal workflow. Dates use UTC. A future date needs a new build on or after that date; there is no automatic publication scheduler. `npm run preview` shows production output and does not show drafts.
 
 ## Deploy (Cloudflare Workers - Static Assets)
 
