@@ -82,7 +82,7 @@ const structuredData = [
       {talks.map((talk) => (
         <article class="site-list-row grid gap-4 py-6 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-10">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+            <p class="text-xs font-semibold tabular-nums text-muted-foreground">
               {new Date(talk.data.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
               {talk.data.event && ` · ${talk.data.event}`}
             </p>
@@ -94,7 +94,7 @@ const structuredData = [
           <div class="space-y-4 lg:pt-1">
             <div class="flex flex-wrap gap-x-4 gap-y-2">
               {(talk.data.tags ?? []).filter((tag) => tag !== topic).slice(0, 5).map((tag) => (
-                <a class="text-[11px] font-semibold uppercase tracking-[0.06em] text-primary hover:underline" href={topicHref(tag)}>
+                <a class="text-xs font-semibold text-primary hover:underline" href={topicHref(tag)}>
                   {topicTitle(tag)}
                 </a>
               ))}
@@ -116,7 +116,7 @@ const structuredData = [
           <li class="site-list-row">
             <a class="flex min-h-14 items-center justify-between gap-4 py-2 text-sm font-semibold hover:text-primary" href={topicHref(related.name)}>
               <span>{topicTitle(related.name)}</span>
-              <span class="text-xs uppercase tracking-[0.08em] text-muted-foreground">{related.count}</span>
+              <span class="text-xs tabular-nums text-muted-foreground">{related.count}</span>
             </a>
           </li>
         ))}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CalendarDays, ChevronRight } from "lucide-react";
+import { CalendarBlank, CaretRight } from "@phosphor-icons/react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { topicHref, topicTitle } from "@/lib/topics";
@@ -27,13 +27,13 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
         <h2 className="text-3xl">{title}</h2>
         {showViewAll && (
           <a href="/talks/" className="site-text-link font-medium">
-            View all <ChevronRight className="h-4 w-4" />
+            View all <CaretRight className="h-4 w-4" />
           </a>
         )}
       </header>
       <div className="mt-5 space-y-6">
         <aside className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 border-y border-border py-4">
-          <CalendarDays className="h-4 w-4" />
+          <CalendarBlank className="h-4 w-4" />
           <div>
             <h3 className="font-semibold leading-none">Speaking archive</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -45,16 +45,16 @@ export function TalksTable({ title, talks, showViewAll = true }: TalksTableProps
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-[11px] font-semibold tracking-[0.08em] uppercase">Date</TableHead>
-              <TableHead className="text-[11px] font-semibold tracking-[0.08em] uppercase">Talk</TableHead>
-              <TableHead className="text-[11px] font-semibold tracking-[0.08em] uppercase">Tags</TableHead>
-              <TableHead className="text-right text-[11px] font-semibold tracking-[0.08em] uppercase">Link</TableHead>
+              <TableHead className="text-xs font-semibold">Date</TableHead>
+              <TableHead className="text-xs font-semibold">Talk</TableHead>
+              <TableHead className="text-xs font-semibold">Tags</TableHead>
+              <TableHead className="text-right text-xs font-semibold">Link</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {talks.map((talk) => (
               <TableRow key={talk.id} className="site-list-row hover:bg-primary/[0.035]">
-                <TableCell className="whitespace-nowrap text-muted-foreground">
+                <TableCell className="whitespace-nowrap tabular-nums text-muted-foreground">
                   {new Date(talk.data.date).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",

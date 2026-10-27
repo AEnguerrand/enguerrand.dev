@@ -25,17 +25,17 @@ const structuredData = {
 ---
 
 <BaseLayout title="Cloud & Kubernetes Security Talks" description="Conference talks and workshops on cloud security, software supply chain protection, and reliability." structuredData={structuredData}>
-  <header id="overview" class="site-page-header">
+  <header id="overview" class="site-page-header talks-index-header" data-reveal>
     <h1 class="site-page-title">Talks & workshops</h1>
   </header>
   <div id="by-year" class="space-y-10">
     {years.map(year => (
-      <section class="site-section-divider" aria-labelledby={`year-${year}`}>
+      <section class="site-section-divider talks-year" aria-labelledby={`year-${year}`} data-reveal>
         <h2 id={`year-${year}`} class="text-2xl">{year}</h2>
         <div class="site-list">
           {talks.filter(talk => talk.data.date.startsWith(year)).map(talk => (
-            <article class="site-list-row py-5 sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
-              <p class="mb-2 text-xs text-muted-foreground sm:mb-0"><time datetime={talk.data.date}>{new Date(talk.data.date).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"})}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
+            <article class="site-list-row talk-index-row py-5 sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
+              <p class="talk-index-meta mb-2 text-xs tabular-nums text-muted-foreground sm:mb-0"><time datetime={talk.data.date}>{new Date(talk.data.date).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"})}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
               <div>
                 <h3 class="text-xl leading-snug"><a href={`/talks/${talk.id}/`} class="hover:text-primary">{talk.data.displayTitle ?? talk.data.title} <span aria-hidden="true">→</span></a></h3>
                 {talk.data.summary && <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{talk.data.summary}</p>}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowUpRight, CalendarDays } from "lucide-react";
+import { ArrowUpRight, CalendarBlank } from "@phosphor-icons/react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -48,8 +48,8 @@ export function TalksSpotlight({ talks }: TalksSpotlightProps) {
             className="lift-card flex h-full flex-col border-border/70 bg-card/90 shadow-[0_12px_32px_hsl(var(--foreground)/0.05)]"
           >
             <CardHeader className="space-y-2 pb-3">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-muted-foreground">
-                <CalendarDays className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-2 text-xs tabular-nums text-muted-foreground">
+                <CalendarBlank className="h-3.5 w-3.5" />
                 <time dateTime={talk.data.date}>{formatDate(talk.data.date)}</time>
               </div>
               <CardTitle className="text-xl leading-snug"><a href={`/talks/${talk.id}/`} className="hover:text-primary">{talk.data.displayTitle ?? talk.data.seoTitle ?? talk.data.title}</a></CardTitle>

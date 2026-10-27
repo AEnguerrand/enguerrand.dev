@@ -22,7 +22,7 @@ const { sectionLinks, showAllTalks = true, showBackHome = true } = Astro.props;
       {sectionLinks.map((item) => (
         <a
           href={item.href}
-          class="talks-subnav-link inline-flex min-h-10 items-center px-1 text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground hover:text-foreground"
+          class="talks-subnav-link inline-flex min-h-10 items-center px-1 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
           {item.label}
         </a>

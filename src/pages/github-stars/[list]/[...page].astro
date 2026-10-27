@@ -1,8 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { TopicIcon } from "@/components/TopicIcon";
 import { RepoCard } from "@/components/sections/GitHubStars";
 import RadarRepositoryFilter from "@/components/sections/RadarRepositoryFilter.astro";
-import { starsDataset, starsGroups, starsDate, starsListName, starsListHref, starsPageSize, starsTopicIcon, type StarredGroup } from "@/lib/stars";
+import { starsDataset, starsGroups, starsDate, starsListName, starsListHref, starsPageSize, type StarredGroup } from "@/lib/stars";
 
 export function getStaticPaths() {
   return starsGroups.flatMap(group => {
@@ -20,11 +21,11 @@ const suffix = pageNumber > 1 ? ` — Page ${pageNumber}` : "";
 const languages = [...new Set(group.repos.map((repo) => repo.language).filter((language): language is string => Boolean(language)))].sort((a, b) => a.localeCompare(b));
 ---
 <BaseLayout title={`${name} Radar${suffix}`} description={`Browse ${name} resources in my technical radar. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this topic.`}>
-  <header class="site-page-header">
+  <header class="site-page-header" data-reveal>
     <a href="/radar/" class="site-link text-sm">← Radar</a>
-    <h1 class="site-page-title flex items-start gap-3"><span class="mt-2 text-[0.62em] leading-none" aria-hidden="true">{starsTopicIcon(group.slug)}</span><span>{name}</span></h1>
+    <h1 class="site-page-title flex items-start gap-3"><TopicIcon slug={group.slug} className="mt-1 h-8 w-8 shrink-0 text-primary" /><span>{name}</span></h1>
     {group.description && <p class="site-lead">{group.description}</p>}
-    <p class="mt-3 text-sm text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
+    <p class="mt-3 text-sm tabular-nums text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
   </header>
   <section class="site-section-divider" aria-labelledby="repos-heading">
     <h2 id="repos-heading" class="sr-only">Repositories</h2>
