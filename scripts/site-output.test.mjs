@@ -95,6 +95,11 @@ test("Talks and Projects indexes start directly with useful content", async () =
   const talksText = text(talksIndex.nodes[0]);
   assert.ok(!projectsText.includes("Software I build to scan, preserve, and organize the paper records that matter."));
   assert.ok(!talksText.includes("Conference sessions, meetups, and field notes on cloud and software supply chain security."));
+  const globe = talksIndex.nodes.find((node) => node.tagName === "figure" && attrs(node)["aria-label"]?.startsWith("Talk locations:"));
+  assert.ok(globe, "Talks must show the location globe");
+  assert.equal(walk(globe).filter((node) => attrs(node).class?.split(" ").includes("talk-globe-marker")).length, 3);
+  for (const location of ["France", "Hong Kong", "Salt Lake City", "Online"])
+    assert.ok(text(globe).includes(location), `Talk globe must include ${location}`);
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {
@@ -240,6 +245,7 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   assert.match(css, /scrollbar-gutter:stable both-edges/);
   assert.match(css, /cubic-bezier\(\.22,1,\.36,1\)/);
   assert.doesNotMatch(css, /radial-gradient/);
+  assert.doesNotMatch(css, /site-signature-line/);
   const homeOutput = await load("index.html");
   assert.match(homeOutput, /astro-view-transitions/);
   assert.match(homeOutput, /data-astro-transition-persist="site-header"/);

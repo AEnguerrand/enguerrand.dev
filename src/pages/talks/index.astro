@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import TalkGlobe from "@/components/TalkGlobe.astro";
 import { getCollection } from "astro:content";
 
 const talks = (await getCollection("talks")).sort((a,b) => b.data.date.localeCompare(a.data.date));
 const years = [...new Set(talks.map(talk => talk.data.date.slice(0,4)))];
+const talkLocations = talks.map((talk) => talk.data.location).filter((location): location is string => Boolean(location));
 const structuredData = {
   "@type": "CollectionPage",
   "@id": "https://enguerrand.dev/talks/#collection",
@@ -27,6 +29,7 @@ const structuredData = {
 <BaseLayout title="Cloud & Kubernetes Security Talks" description="Conference talks and workshops on cloud security, software supply chain protection, and reliability." structuredData={structuredData}>
   <header id="overview" class="site-page-header talks-index-header" data-reveal>
     <h1 class="site-page-title">Talks & workshops</h1>
+    <TalkGlobe locations={talkLocations} talkCount={talks.length} />
   </header>
   <div id="by-year" class="space-y-10">
     {years.map(year => (

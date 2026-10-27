@@ -1,0 +1,81 @@
+---
+interface Props {
+  locations: string[];
+  talkCount: number;
+}
+
+const { locations, talkCount } = Astro.props;
+const hasFrance = locations.some((location) => location === "France" || location.endsWith(", France"));
+const markers = [
+  { label: "Salt Lake City", x: 68, y: 49 },
+  ...(hasFrance ? [{ label: "France", x: 182, y: 44 }] : []),
+  { label: "Hong Kong", x: 294, y: 68 },
+].filter((marker) => locations.some((location) => location.includes(marker.label)) || marker.label === "France" && hasFrance);
+const displayLocations = [
+  ...(hasFrance ? ["France"] : []),
+  ...(locations.includes("Hong Kong") ? ["Hong Kong"] : []),
+  ...(locations.some((location) => location.startsWith("Salt Lake City")) ? ["Salt Lake City"] : []),
+  ...(locations.includes("Online") ? ["Online"] : []),
+];
+---
+
+<figure class="talk-globe" aria-label={`Talk locations: ${displayLocations.join(", ")}`}>
+  <svg class="talk-globe-visual" viewBox="0 0 360 180" role="img" aria-hidden="true">
+    <defs>
+      <clipPath id="talk-globe-clip">
+        <ellipse cx="180" cy="90" rx="159" ry="79" />
+      </clipPath>
+    </defs>
+    <ellipse class="talk-globe-surface" cx="180" cy="90" rx="159" ry="79" />
+    <g class="talk-globe-grid" clip-path="url(#talk-globe-clip)">
+      <path d="M20 90H340" />
+      <path d="M31 55C105 78 255 78 329 55" />
+      <path d="M31 125C105 102 255 102 329 125" />
+      <path d="M180 11V169" />
+      <path d="M180 11C132 34 132 146 180 169" />
+      <path d="M180 11C228 34 228 146 180 169" />
+    </g>
+    <path class="talk-globe-route" d="M68 49C109 25 147 29 182 44S254 34 294 68" />
+    {markers.map((marker, index) => (
+      <g class="talk-globe-marker" style={`--marker-index: ${index}`} transform={`translate(${marker.x} ${marker.y})`}>
+        <circle class="talk-globe-pulse" r="9" />
+        <circle class="talk-globe-dot" r="4" />
+      </g>
+    ))}
+    <ellipse class="talk-globe-outline" cx="180" cy="90" rx="159" ry="79" />
+  </svg>
+  <figcaption class="talk-globe-caption">
+    <strong>{talkCount} talks</strong>
+    {displayLocations.map((location) => <span>{location}</span>)}
+  </figcaption>
+</figure>
+
+<style>
+  .talk-globe { width: min(100%, 28rem); margin: 0; }
+  .talk-globe-visual { display: block; width: 100%; overflow: visible; }
+  .talk-globe-surface { fill: hsl(var(--primary) / .035); }
+  .talk-globe-grid { fill: none; stroke: hsl(var(--foreground) / .16); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .talk-globe-route { fill: none; stroke: hsl(var(--primary)); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 10; vector-effect: non-scaling-stroke; animation: talk-globe-route 12s linear infinite; }
+  .talk-globe-outline { fill: none; stroke: hsl(var(--border)); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .talk-globe-pulse { fill: hsl(var(--primary) / .12); transform-box: fill-box; transform-origin: center; animation: talk-globe-pulse 2.8s var(--motion-curve) infinite; animation-delay: calc(var(--marker-index) * 360ms); }
+  .talk-globe-dot { fill: hsl(var(--primary)); stroke: hsl(var(--background)); stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .talk-globe-caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; margin-top: 12px; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1rem; }
+  .talk-globe-caption strong { color: hsl(var(--foreground)); font-weight: 600; }
+  .talk-globe-caption span { position: relative; }
+  .talk-globe-caption span::before { content: "·"; position: absolute; left: -9px; color: hsl(var(--primary)); }
+
+  @keyframes talk-globe-route {
+    to { stroke-dashoffset: -170; }
+  }
+
+  @keyframes talk-globe-pulse {
+    0%, 100% { opacity: .2; transform: scale(.65); }
+    45% { opacity: 1; transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .talk-globe-route,
+    .talk-globe-pulse { animation: none; }
+    .talk-globe-pulse { opacity: .7; transform: none; }
+  }
+</style>
