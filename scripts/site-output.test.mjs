@@ -230,6 +230,14 @@ test("Primary navigation is consistent across Home, Blog, and talks", async () =
   }
 });
 
+test("Radar is active on its topic index and nested topic pages before JavaScript", async () => {
+  for (const current of builtPages.filter(p => p.file.startsWith("github-stars/"))) {
+    const nav = current.nodes.find(n => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
+    const active = walk(nav).filter(n => n.tagName === "a" && attrs(n)["aria-current"] === "page");
+    assert.deepEqual(active.map(n => attrs(n).href), ["/radar/"], current.file);
+  }
+});
+
 test("Command-K opens a site-wide modal instead of leaving the page", async () => {
   for (const current of [home, await page("radar/index.html"), talk]) {
     const dialog = current.nodes.find((node) => node.tagName === "dialog" && attrs(node).id === "site-command-dialog");

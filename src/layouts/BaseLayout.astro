@@ -221,7 +221,7 @@ const commandItems = [
             <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
             {posts.length > 0 && <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>}
             <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
-            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") ? "page" : undefined}>Radar</a>
+            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") || Astro.url.pathname.startsWith("/github-stars/") ? "page" : undefined}>Radar</a>
             <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
           <span class="site-nav-indicator" aria-hidden="true" data-site-nav-indicator></span>
@@ -265,6 +265,8 @@ const commandItems = [
             ? currentPath === "/"
             : linkPath === "/about/"
               ? currentPath.startsWith("/about/") || currentPath.startsWith("/resume/")
+              : linkPath === "/radar/"
+                ? currentPath.startsWith("/radar/") || currentPath.startsWith("/github-stars/")
               : currentPath.startsWith(linkPath);
 
           if (isCurrent) {
@@ -287,7 +289,11 @@ const commandItems = [
           }
 
           const currentLink = nav.querySelector('a[aria-current="page"]');
-          if (!(currentLink instanceof HTMLElement)) return;
+          if (!(currentLink instanceof HTMLElement)) {
+            navIndicator.removeAttribute("data-ready");
+            navIndicator.style.removeProperty("--nav-indicator-x");
+            return;
+          }
           const indicatorWidth = 24;
           navIndicator.style.setProperty("--nav-indicator-x", `${currentLink.offsetLeft + (currentLink.offsetWidth - indicatorWidth) / 2}px`);
           navIndicator.setAttribute("data-ready", "");
