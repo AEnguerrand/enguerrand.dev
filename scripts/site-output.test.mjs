@@ -51,14 +51,13 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "Explore"]);
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "What I'm exploring now"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
   assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
-  const workIndex = home.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Explore my work");
-  assert.deepEqual(walk(workIndex).filter((n) => n.tagName === "a").map((n) => attrs(n).href), ["#selected-talks", "#projects", "#explore"]);
+  assert.equal(home.nodes.some((n) => attrs(n).class?.split(" ").includes("home-work-index")), false);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");

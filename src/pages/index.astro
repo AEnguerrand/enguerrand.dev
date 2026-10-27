@@ -43,30 +43,9 @@ const talkFormats = (talk: typeof talks[number]) => {
 >
   <Hero />
 
-  <nav class="home-work-index" aria-label="Explore my work" data-reveal data-reveal-group>
-    <a href="#selected-talks" class="home-work-index-item" data-reveal-item>
-      <span class="home-work-index-number" aria-hidden="true">01</span>
-      <span class="home-work-index-copy"><span>Talks</span><strong>Share</strong></span>
-      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
-    </a>
-    <a href="#projects" class="home-work-index-item" data-reveal-item>
-      <span class="home-work-index-number" aria-hidden="true">02</span>
-      <span class="home-work-index-copy"><span>Projects</span><strong>Build</strong></span>
-      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
-    </a>
-    <a href="#explore" class="home-work-index-item" data-reveal-item>
-      <span class="home-work-index-number" aria-hidden="true">03</span>
-      <span class="home-work-index-copy"><span>Radar</span><strong>Explore</strong></span>
-      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
-    </a>
-  </nav>
-
   <section id="selected-talks" class="home-talks" aria-labelledby="talks-title" data-reveal data-reveal-group>
     <div class="home-section-heading" data-reveal-item>
-      <div class="home-chapter-title">
-        <span aria-hidden="true">01</span>
-        <h2 id="talks-title">Talks</h2>
-      </div>
+      <h2 id="talks-title">Talks</h2>
       <a class="site-action-button site-action-button-secondary home-section-action" href="/talks/">All talks <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
     </div>
     <ul class="home-list home-talk-list">
@@ -91,10 +70,7 @@ const talkFormats = (talk: typeof talks[number]) => {
   <div class:list={["home-content-columns", { "home-content-columns-single": posts.length === 0 }]} data-reveal data-reveal-group>
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
       <div class="home-section-heading" data-reveal-item>
-        <div class="home-chapter-title">
-          <span aria-hidden="true">02</span>
-          <h2 id="projects-title">Projects</h2>
-        </div>
+        <h2 id="projects-title">Projects</h2>
         <a class="site-action-button site-action-button-secondary home-section-action" href="/projects/">All projects <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
       </div>
       {projects.length ? (
@@ -141,25 +117,19 @@ const talkFormats = (talk: typeof talks[number]) => {
     )}
   </div>
 
-  <section id="explore" class="home-explore" aria-labelledby="explore-title" data-reveal data-reveal-group>
+  <section id="explore" class="home-explore" aria-labelledby="exploring-title" data-reveal data-reveal-group>
     <div class="home-section-heading" data-reveal-item>
-      <div class="home-chapter-title">
-        <span aria-hidden="true">03</span>
-        <h2 id="explore-title">Explore</h2>
-      </div>
+      <h2 id="exploring-title">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
       <a class="site-action-button site-action-button-secondary home-section-action" href="/radar/">Open radar <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
     </div>
 
     <div class="home-explore-layout">
       <div class="home-current" data-reveal-item>
-        <div class="home-current-heading">
-          <h3>{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h3>
-          {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
-        </div>
+        {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
         <div class="home-exploring-grid">
           {homePage?.data.currentExploring?.map((item) => (
             <article class="home-exploring-card">
-              <h4>{item.title}</h4>
+              <h3>{item.title}</h3>
               <p>{item.description}</p>
             </article>
           ))}
