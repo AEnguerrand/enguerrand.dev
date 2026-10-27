@@ -55,6 +55,9 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
+  assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
+  assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
+  assert.equal(home.nodes.some((n) => attrs(n).class?.split(" ").includes("home-work-index")), false);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");
@@ -83,6 +86,12 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Secure-by-default platform patterns",
     "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
   ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
+  const exploration = home.nodes.find(n => n.tagName === "exploration-list");
+  const explorationItems = walk(exploration).filter(n => n.tagName === "details");
+  assert.equal(explorationItems.length, 4);
+  assert.ok(explorationItems.every(n => "open" in attrs(n)), "All exploration text must be visible without JavaScript");
+  const homeMain = home.nodes.find(n => n.tagName === "main");
+  assert.ok(!walk(homeMain).some(n => n.tagName === "a" && ["/radar/", "/github-stars/"].includes(attrs(n).href)), "Home content must omit the Radar preview and links");
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
 });
 
@@ -92,6 +101,14 @@ test("Talks and Projects indexes start directly with useful content", async () =
   const talksText = text(talksIndex.nodes[0]);
   assert.ok(!projectsText.includes("Software I build to scan, preserve, and organize the paper records that matter."));
   assert.ok(!talksText.includes("Conference sessions, meetups, and field notes on cloud and software supply chain security."));
+  const globe = talksIndex.nodes.find((node) => node.tagName === "figure" && attrs(node)["aria-label"] === "Talk locations around the world");
+  assert.ok(globe, "Talks must show the location globe");
+  assert.equal(walk(globe).filter((node) => attrs(node).class?.split(" ").includes("talk-globe-marker")).length, 3);
+  for (const location of ["Paris", "Hong Kong", "Salt Lake City", "Online"])
+    assert.ok(text(globe).includes(location), `Talk globe must include ${location}`);
+  assert.ok(walk(globe).some((node) => node.tagName === "svg" && attrs(node).viewBox === "0 0 360 360"));
+  assert.ok(walk(globe).some((node) => attrs(node)["data-globe-land"] !== undefined && attrs(node).d?.length > 1000), "Globe must render coastlines before JavaScript");
+  assert.equal(walk(globe).filter((node) => node.tagName === "a").length, 5, "All talks must remain reachable without globe motion");
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {
@@ -213,6 +230,14 @@ test("Primary navigation is consistent across Home, Blog, and talks", async () =
   }
 });
 
+test("Radar is active on its topic index and nested topic pages before JavaScript", async () => {
+  for (const current of builtPages.filter(p => p.file.startsWith("github-stars/"))) {
+    const nav = current.nodes.find(n => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
+    const active = walk(nav).filter(n => n.tagName === "a" && attrs(n)["aria-current"] === "page");
+    assert.deepEqual(active.map(n => attrs(n).href), ["/radar/"], current.file);
+  }
+});
+
 test("Command-K opens a site-wide modal instead of leaving the page", async () => {
   for (const current of [home, await page("radar/index.html"), talk]) {
     const dialog = current.nodes.find((node) => node.tagName === "dialog" && attrs(node).id === "site-command-dialog");
@@ -237,10 +262,25 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   assert.match(css, /scrollbar-gutter:stable both-edges/);
   assert.match(css, /cubic-bezier\(\.22,1,\.36,1\)/);
   assert.doesNotMatch(css, /radial-gradient/);
+  assert.doesNotMatch(css, /site-signature-line/);
   const homeOutput = await load("index.html");
   assert.match(homeOutput, /astro-view-transitions/);
   assert.match(homeOutput, /data-astro-transition-persist="site-header"/);
   assert.match(homeOutput, /data-site-nav-toggle/);
+  assert.match(homeOutput, /data-site-nav-indicator/);
+  assert.match(homeOutput, /data-reveal-group/);
+});
+
+test("Motion stays prominent on content pages and static on the resume", async () => {
+  const radar = await page("radar/index.html");
+  const resume = await page("resume/index.html");
+  const homeBody = home.nodes.find((node) => node.tagName === "body");
+  const radarBody = radar.nodes.find((node) => node.tagName === "body");
+  const resumeBody = resume.nodes.find((node) => node.tagName === "body");
+  assert.equal(attrs(homeBody)["data-motion"], "full");
+  assert.equal(attrs(radarBody)["data-motion"], "subtle");
+  assert.equal(attrs(resumeBody)["data-motion"], "static");
+  assert.equal(radar.nodes.filter((node) => attrs(node).class?.split(" ").includes("radar-signal")).length, 3);
 });
 
 test("Projects has a dedicated page with the public project list", () => {
@@ -382,6 +422,12 @@ test("Review fixes keep the concise Home introduction, talks list, and search st
     assert.ok(!graph(current.nodes).some(n => n["@type"] === "VideoObject"), "Do not publish recording metadata with an unverified upload date");
     assert.doesNotMatch(current.html, /https:\/\/github.com\/AEnguerrand\/kubecon-cloudnativecon-china-2024-supply-chain-security["<]/);
     const actions = current.nodes.find(n => attrs(n)["aria-label"] === "Session resources");
-    assert.ok(walk(actions).filter(n => n.tagName === "a").length <= 2, "Talk header has too many actions");
+    const actionLinks = walk(actions).filter(n => n.tagName === "a");
+    assert.ok(actionLinks.length <= 4, "Keep notes, recording, slides, and lab actions compact");
+    assert.equal(new Set(actionLinks.map(n => attrs(n).href)).size, actionLinks.length, "Do not repeat a resource in the header");
+    const resources = current.nodes.find(n => attrs(n).id === "resources");
+    for (const link of walk(resources).filter(n => n.tagName === "a" && /slides|presentation|lab/i.test(text(n)))) {
+      assert.ok(actionLinks.some(n => attrs(n).href === attrs(link).href), `Missing direct resource action: ${text(link)}`);
+    }
   }
 });

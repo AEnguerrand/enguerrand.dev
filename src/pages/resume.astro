@@ -121,6 +121,7 @@ const skills = [
 
 <BaseLayout
   title="Platform Security Engineer Resume"
+  motion="static"
   pageType="ProfilePage"
   description="Resume of Enguerrand Allamel, a Senior Platform Security Engineer specializing in AI development guardrails, AWS, Kubernetes, SLSA, SRE, and secure CI/CD."
 >
@@ -161,7 +162,7 @@ const skills = [
                   <h4 class="text-lg font-semibold">{role.title}</h4>
                   {role.period && <span class="text-sm text-muted-foreground">{role.period}</span>}
                 </div>
-                <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+                <ul class="resume-bullets list-disc space-y-2 pl-5 text-muted-foreground">
                   {role.bullets.map((bullet) => (
                     <li>{bullet}</li>
                   ))}

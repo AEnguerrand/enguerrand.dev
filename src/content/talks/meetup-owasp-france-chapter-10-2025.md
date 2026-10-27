@@ -5,7 +5,7 @@ displayTitle: "The September 2025 npm supply chain attacks"
 seoTitle: "September 2025 npm Supply Chain Attacks Explained"
 date: "2025-10-13"
 event: "OWASP France Chapter Meetup (October 2025)"
-location: "France"
+location: "Paris, France"
 language: ["French"]
 sessionType: "Meetup talk"
 summary: "A timeline-driven incident analysis of the September 2025 npm compromise waves and practical controls for safer JavaScript pipelines."

@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ProjectLink from "@/components/ProjectLink.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import ExplorationList from "@/components/ExplorationList.astro";
 import { Hero } from "@/components/sections/Hero";
 import { getCollection, getEntry } from "astro:content";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
 import { formatPostDate, getPosts, postHref } from "@/lib/posts";
 import "@/styles/home.css";
 
@@ -39,14 +41,11 @@ const talkFormats = (talk: typeof talks[number]) => {
 >
   <Hero />
 
-  <section id="selected-talks" class="home-talks" aria-labelledby="talks-title" data-reveal>
-    <div class="home-section-heading">
-      <h2 id="talks-title">Talks</h2>
-      <a class="site-action-button site-action-button-secondary home-section-action" href="/talks/">All talks <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
-    </div>
+  <section id="selected-talks" class="home-talks" aria-labelledby="talks-title" data-reveal data-reveal-group>
+    <SectionHeading id="talks-title" title="Talks" href="/talks/" action="All talks" />
     <ul class="home-list home-talk-list">
       {talks.map((talk) => (
-        <li>
+        <li data-reveal-item>
           <a class="home-talk-link" href={`/talks/${talk.id}/`}>
             <div>
               <h3>{talk.data.displayTitle ?? talk.data.title}</h3>
@@ -63,24 +62,20 @@ const talkFormats = (talk: typeof talks[number]) => {
     </ul>
   </section>
 
-  <div class:list={["home-content-columns", { "home-content-columns-single": posts.length === 0 }]} data-reveal>
+  <div class:list={["home-content-columns", { "home-content-columns-single": posts.length === 0 }]} data-reveal data-reveal-group>
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
-      <div class="home-section-heading">
-        <h2 id="projects-title">Projects</h2>
-        <a class="site-action-button site-action-button-secondary home-section-action" href="/projects/">All projects <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
-      </div>
+      <SectionHeading id="projects-title" title="Projects" href="/projects/" action="All projects" />
       {projects.length ? (
         <ul class="home-list home-project-list">
-          {projects.map((project, index) => (
-            <li class:list={["home-entry home-project-entry", { "home-project-entry-featured": index === 0 }]}>
-              <span class="home-project-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          {projects.map((project) => (
+            <li class="home-entry home-project-entry" data-reveal-item>
               <div class="home-project-heading">
                 <div>
                   <p class="home-entry-status">{project.status}</p>
                   <h3><a href={project.url}>{project.title}</a></h3>
                 </div>
                 {project.image && project.imageAlt && (
-                  <a class="home-project-art" href={project.url} aria-label={`Open ${project.title}`}>
+                  <a class="home-project-art project-art-reveal" href={project.url} aria-label={`Open ${project.title}`}>
                     <img src={project.image} alt={project.imageAlt} width="96" height="96" loading="lazy" decoding="async" />
                   </a>
                 )}
@@ -91,12 +86,12 @@ const talkFormats = (talk: typeof talks[number]) => {
           ))}
         </ul>
       ) : <p class="home-empty">Project write-ups are on the way. In the meantime, you can explore my public work on GitHub.</p>}
-      <a class="home-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
+      <a class="site-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowUpRight size={18} className="motion-arrow motion-arrow-external" aria-hidden="true" /></a>
     </section>
 
     {posts.length > 0 && (
-      <section id="blog" class="home-blog" aria-labelledby="blog-title">
-        <h2 id="blog-title">Blog</h2>
+      <section id="blog" class="home-blog" aria-labelledby="blog-title" data-reveal-item>
+        <SectionHeading id="blog-title" title="Blog" href="/blog/" action="All posts" />
         <>
           <ul class="home-list">
             {posts.map((post) => (
@@ -107,26 +102,17 @@ const talkFormats = (talk: typeof talks[number]) => {
               </li>
             ))}
           </ul>
-          <a class="home-link home-archive-link" href="/blog/">All posts <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
         </>
       </section>
     )}
   </div>
 
-  <section class="home-exploring" aria-labelledby="exploring-title" data-reveal>
-    <div class="home-exploring-heading">
-      <div>
-        <h2 id="exploring-title">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
-      </div>
+  <section id="explore" class="home-explore" aria-labelledby="exploring-title" data-reveal data-reveal-group>
+    <SectionHeading id="exploring-title" title={homePage?.data.currentExploringTitle ?? "Currently exploring"} />
+
+    <div class="home-current" data-reveal-item>
       {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
-    </div>
-    <div class="home-exploring-grid">
-      {homePage?.data.currentExploring?.map((item) => (
-        <article class="home-exploring-card">
-          <h3>{item.title}</h3>
-          <p>{item.description}</p>
-        </article>
-      ))}
+      <ExplorationList items={homePage?.data.currentExploring ?? []} />
     </div>
   </section>
 </BaseLayout>

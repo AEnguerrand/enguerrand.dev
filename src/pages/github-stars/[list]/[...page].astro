@@ -22,10 +22,10 @@ const languages = [...new Set(group.repos.map((repo) => repo.language).filter((l
 ---
 <BaseLayout title={`${name} Radar${suffix}`} description={`Browse ${name} resources in my technical radar. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this topic.`}>
   <header class="site-page-header" data-reveal>
-    <a href="/radar/" class="site-link text-sm">← Radar</a>
+    <a href="/radar/" class="site-back-link">← Radar</a>
     <h1 class="site-page-title flex items-start gap-3"><TopicIcon slug={group.slug} className="mt-1 h-8 w-8 shrink-0 text-primary" /><span>{name}</span></h1>
     {group.description && <p class="site-lead">{group.description}</p>}
-    <p class="mt-3 text-sm tabular-nums text-muted-foreground">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
+    <p class="site-page-meta">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
   </header>
   <section class="site-section-divider" aria-labelledby="repos-heading">
     <h2 id="repos-heading" class="sr-only">Repositories</h2>

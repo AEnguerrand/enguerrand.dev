@@ -13,18 +13,19 @@ const {formattedDate,resources,videoResource,videoEmbedUrl,talkMetadata,structur
 const slides = resources.find(resource => /slides/i.test(resource.label));
 const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:"Read notes"};
 const secondary = primary.url !== "#content" ? {url:"#content",label:"Read notes ↓"} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
-const sectionClass = "mx-auto mt-6 w-full max-w-5xl scroll-mt-40";
-const notesSectionClass = "mx-auto mt-6 w-full max-w-4xl scroll-mt-40";
+const quickResources = resources.filter(resource => /slides|presentation|lab/i.test(resource.label) && resource.url !== primary.url);
+const sectionClass = "site-article-section site-section-divider scroll-mt-40";
 ---
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
-  <header class="site-page-header mx-auto w-full max-w-5xl">
-    <a href="/talks/" class="site-text-link">← All talks</a>
-    <p class="mt-6 text-xs text-muted-foreground"><time datetime={talk.data.date}>{formattedDate}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
+  <header class="site-page-header">
+    <a href="/talks/" class="site-back-link">← All talks</a>
+    <p class="site-page-meta"><time datetime={talk.data.date}>{formattedDate}</time>{talk.data.event && <span>· {talk.data.event}</span>}</p>
     <h1 class="site-page-title">{talk.data.displayTitle ?? talk.data.title}</h1>
     {talk.data.summary && <p class="site-lead">{talk.data.summary}</p>}
-    <div class="mt-6 flex flex-wrap items-center gap-4" aria-label="Session resources">
+    <div class="site-action-row" aria-label="Session resources">
       <a href={primary.url} class="site-action site-action-primary h-auto min-h-10 max-w-full whitespace-normal text-center">{primary.label}</a>
       {secondary && <a href={secondary.url} class="site-text-link text-sm font-medium">{secondary.label}</a>}
+      {quickResources.map(resource => <a href={resource.url} class="site-text-link font-medium">{/lab/i.test(resource.label) ? "Lab" : /english|chinese/i.test(resource.label) ? resource.label : "Slides"} ↗</a>)}
     </div>
     <details id="overview" class="mt-5 border-t border-border pt-4 text-sm">
       <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>
@@ -37,19 +38,19 @@ const notesSectionClass = "mx-auto mt-6 w-full max-w-4xl scroll-mt-40";
     </details>
   </header>
   {videoEmbedUrl && (
-    <section id="video" class={`${sectionClass} site-section-divider`} aria-labelledby="video-heading">
-      <h2 id="video-heading" class="text-2xl">Watch talk</h2>
+    <section id="video" class={sectionClass} aria-labelledby="video-heading">
+      <h2 id="video-heading" class="site-section-title">Watch talk</h2>
       <div class="mt-5 overflow-hidden rounded-xl border border-border/70 bg-background/65">
         <iframe class="aspect-video w-full" src={videoEmbedUrl} title={`Video recording for ${talk.data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
       </div>
       {videoResource && <p class="mt-3 text-sm text-muted-foreground">Video not loading? <a href={videoResource.url} class="font-medium text-primary hover:underline">Open video source ↗</a></p>}
     </section>
   )}
-  <section id="content" class={`${notesSectionClass} site-section-divider`} aria-label="Talk notes">
-    <div class="prose prose-headings:mt-6 prose-p:leading-relaxed max-w-none"><Content /></div>
+  <section id="content" class={sectionClass} aria-label="Talk notes">
+    <div class="prose site-reading-measure prose-headings:mt-6 prose-p:leading-relaxed"><Content /></div>
   </section>
-  <section id="resources" class={`${sectionClass} site-section-divider`} aria-labelledby="resources-heading">
-    <h2 id="resources-heading" class="text-2xl">Sources and resources</h2>
+  <section id="resources" class={sectionClass} aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="site-section-title">Sources and resources</h2>
     {resources.length ? <ul class="site-list">{resources.map(resource => <li class="site-list-row py-3"><a href={resource.url} class="site-text-link text-sm font-medium">{resource.label} ↗</a></li>)}</ul> : <p class="mt-4 text-sm text-muted-foreground">No resources listed yet.</p>}
   </section>
 </BaseLayout>

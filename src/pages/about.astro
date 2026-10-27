@@ -8,7 +8,7 @@ import { ArrowRight, FileText, GithubLogo, LinkedinLogo } from "@phosphor-icons/
   pageType="ProfilePage"
   description="About Enguerrand Allamel, a Senior Platform Security Engineer in Vancouver who builds secure cloud platforms and practical software."
 >
-  <section class="site-page-header about-intro mx-auto max-w-4xl" data-reveal>
+  <section class="site-page-header about-intro" data-reveal>
     <p class="site-eyebrow">About me</p>
     <h1 class="site-page-title max-w-3xl">
       I build secure platforms and practical tools.
@@ -18,6 +18,14 @@ import { ArrowRight, FileText, GithubLogo, LinkedinLogo } from "@phosphor-icons/
         <p>
           I’m Enguerrand Allamel, a Senior Platform Security Engineer based in Vancouver, BC. My work connects cloud security, reliability, and developer platforms.
         </p>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <a class="site-action site-action-primary group" href="/resume/">
+            <FileText className="h-4 w-4" aria-hidden="true" /> Read my resume
+            <ArrowRight className="motion-arrow h-4 w-4" aria-hidden="true" />
+          </a>
+          <a class="site-link" href="https://github.com/AEnguerrand"><GithubLogo className="h-4 w-4" aria-hidden="true" /> GitHub</a>
+          <a class="site-link" href="https://www.linkedin.com/in/enguerrandallamel/"><LinkedinLogo className="h-4 w-4" aria-hidden="true" /> LinkedIn</a>
+        </div>
         <p>
           I focus on controls that help teams ship safely: AI development guardrails, AWS and Kubernetes security, software supply chain security, and useful automation.
         </p>
@@ -36,25 +44,11 @@ import { ArrowRight, FileText, GithubLogo, LinkedinLogo } from "@phosphor-icons/
       />
     </div>
 
-    <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2">
-      <a class="site-action site-action-primary group" href="/resume/">
-        <FileText className="h-4 w-4" aria-hidden="true" />
-        Read my resume
-        <ArrowRight className="motion-arrow h-4 w-4" aria-hidden="true" />
-      </a>
-      <a class="site-link" href="https://github.com/AEnguerrand">
-        <GithubLogo className="h-4 w-4" aria-hidden="true" /> GitHub
-      </a>
-      <a class="site-link" href="https://www.linkedin.com/in/enguerrandallamel/">
-        <LinkedinLogo className="h-4 w-4" aria-hidden="true" /> LinkedIn
-      </a>
-    </div>
   </section>
 
-  <section class="site-section-divider about-focus mx-auto max-w-4xl" aria-labelledby="about-focus-title" data-reveal>
+  <section class="site-section-divider about-focus" aria-labelledby="about-focus-title" data-reveal>
     <div class="about-focus-heading">
-      <p class="site-eyebrow">Areas of focus</p>
-      <h2 id="about-focus-title">Where my work connects.</h2>
+      <h2 id="about-focus-title" class="site-section-title">Areas of focus</h2>
     </div>
     <div class="about-focus-list">
       <a class="about-focus-item" href="/radar/">

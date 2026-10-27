@@ -7,7 +7,7 @@ import { starsDataset, starsGroups, starsDate } from "@/lib/stars";
   <header class="site-page-header">
     <p class="site-eyebrow">Technical radar</p>
     <h1 class="site-page-title">All topics</h1>
-    <p class="mt-4 text-sm text-muted-foreground">{starsGroups.length} topics · {starsDataset.total_repos} repositories · Updated {starsDate(starsDataset.generated_at)}</p>
+    <p class="site-page-meta">{starsGroups.length} topics · {starsDataset.total_repos} repositories · Updated {starsDate(starsDataset.generated_at)}</p>
   </header>
   <GitHubStars dataset={starsDataset} />
 </BaseLayout>

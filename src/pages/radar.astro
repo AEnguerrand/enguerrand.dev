@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -79,7 +80,7 @@ const topicIcons = {
   <header class="site-page-header radar-header" data-reveal>
     <p class="site-eyebrow">Selected technical resources</p>
     <h1 class="site-page-title">Radar</h1>
-    <p class="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+    <p class="site-page-meta">
       <span>{starsGroups.length} topics</span>
       <span aria-hidden="true">·</span>
       <span>Updated {starsDate(starsDataset.generated_at)}</span>
@@ -87,16 +88,16 @@ const topicIcons = {
   </header>
 
   {signals.length > 0 && (
-    <section class="site-section-divider" aria-labelledby="radar-signals-title" data-reveal>
-      <h2 id="radar-signals-title" class="text-2xl">Current signals</h2>
+    <section class="site-section-divider radar-section" aria-labelledby="radar-signals-title" data-reveal data-reveal-group>
+      <h2 id="radar-signals-title" class="site-section-title" data-reveal-item>Current signals</h2>
       <div class="radar-signals mt-5">
-        {signals.map((signal, index) => (
-          <article class:list={["radar-signal", { "radar-signal-featured": index === 0 }]}>
+        {signals.map((signal) => (
+          <article class="radar-signal" data-reveal-item>
             <p class="site-eyebrow">{signal.category}</p>
             <h3 class="radar-signal-title">
               <a class="site-link items-start text-foreground" href={signal.href} target="_blank" rel="noreferrer">
                 <span class="break-all">{signal.title}</span>
-                <ArrowUpRight size={18} className="motion-arrow shrink-0" aria-hidden="true" />
+                <ArrowUpRight size={18} className="motion-arrow motion-arrow-external shrink-0" aria-hidden="true" />
               </a>
             </h3>
             <p class="radar-signal-note">{signal.note}</p>
@@ -106,11 +107,8 @@ const topicIcons = {
     </section>
   )}
 
-  <section class="site-section-divider" aria-labelledby="radar-topics-title" data-reveal>
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <h2 id="radar-topics-title" class="text-2xl">Explore by topic</h2>
-      <a class="site-link" href="/github-stars/">All topics <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
-    </div>
+  <section class="site-section-divider radar-section" aria-labelledby="radar-topics-title" data-reveal>
+    <SectionHeading id="radar-topics-title" title="Explore by topic" href="/github-stars/" action="All topics" />
 
     <ul class="mt-5 grid border-t border-border sm:grid-cols-2 sm:gap-x-8">
       {featuredGroups.map((group) => {

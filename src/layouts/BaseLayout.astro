@@ -9,6 +9,7 @@ import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 
 interface Props {
   home?: boolean;
+  motion?: "full" | "subtle" | "static";
   title?: string;
   description?: string;
   image?: string;
@@ -24,6 +25,7 @@ interface Props {
 
 const {
   home = false,
+  motion,
   title,
   description,
   image = siteImage,
@@ -36,6 +38,7 @@ const {
   noindex = false,
   structuredData,
 } = Astro.props;
+const pageMotion = motion ?? (home ? "full" : "subtle");
 const pageDescription = description ?? siteDescription;
 const pageTitle = title ? `${title} | Enguerrand Allamel` : "Enguerrand Allamel | Platform Security Engineer";
 const siteUrl = Astro.site ?? new URL("https://enguerrand.dev");
@@ -197,7 +200,7 @@ const commandItems = [
     <script is:inline>document.documentElement.classList.add("js");</script>
     <ClientRouter fallback="swap" />
   </head>
-  <body transition:animate="none" class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
+  <body transition:animate="none" data-motion={pageMotion} class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="site-page relative isolate min-h-screen">
       <header transition:persist="site-header" class="site-header site-shell">
@@ -218,9 +221,10 @@ const commandItems = [
             <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
             {posts.length > 0 && <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>}
             <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
-            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") ? "page" : undefined}>Radar</a>
+            <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") || Astro.url.pathname.startsWith("/github-stars/") ? "page" : undefined}>Radar</a>
             <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
+          <span class="site-nav-indicator" aria-hidden="true" data-site-nav-indicator></span>
         </nav>
       </header>
 
@@ -238,7 +242,6 @@ const commandItems = [
           <div class="site-footer-links">
             <a href="/github-stars/">Radar topics</a>
             <a href="/topics/">Topics</a>
-            <a href="/radar/">Radar</a>
             <a href="/search/">Search</a>
             <a href="/privacy/">Privacy</a>
           </div>
@@ -262,6 +265,8 @@ const commandItems = [
             ? currentPath === "/"
             : linkPath === "/about/"
               ? currentPath.startsWith("/about/") || currentPath.startsWith("/resume/")
+              : linkPath === "/radar/"
+                ? currentPath.startsWith("/radar/") || currentPath.startsWith("/github-stars/")
               : currentPath.startsWith(linkPath);
 
           if (isCurrent) {
@@ -274,7 +279,25 @@ const commandItems = [
         const nav = document.querySelector("[data-site-nav]");
         const navToggle = document.querySelector("[data-site-nav-toggle]");
         const navLinks = document.querySelector("[data-site-nav-links]");
+        const navIndicator = document.querySelector("[data-site-nav-indicator]");
         const mobileNavigation = window.matchMedia("(max-width: 767px)");
+
+        const syncNavIndicator = () => {
+          if (!(nav instanceof HTMLElement) || !(navIndicator instanceof HTMLElement) || mobileNavigation.matches) {
+            navIndicator?.removeAttribute("data-ready");
+            return;
+          }
+
+          const currentLink = nav.querySelector('a[aria-current="page"]');
+          if (!(currentLink instanceof HTMLElement)) {
+            navIndicator.removeAttribute("data-ready");
+            navIndicator.style.removeProperty("--nav-indicator-x");
+            return;
+          }
+          const indicatorWidth = 24;
+          navIndicator.style.setProperty("--nav-indicator-x", `${currentLink.offsetLeft + (currentLink.offsetWidth - indicatorWidth) / 2}px`);
+          navIndicator.setAttribute("data-ready", "");
+        };
 
         const setNavigationOpen = (open) => {
           if (!(nav instanceof HTMLElement) || !(navToggle instanceof HTMLButtonElement) || !(navLinks instanceof HTMLElement)) {
@@ -308,13 +331,29 @@ const commandItems = [
           if (event.target instanceof HTMLAnchorElement) setNavigationOpen(false);
         }, { signal: siteShellController.signal });
         mobileNavigation.addEventListener("change", syncNavigationMode, { signal: siteShellController.signal });
+        window.addEventListener("resize", syncNavIndicator, { signal: siteShellController.signal });
         syncNavigationMode();
+        window.requestAnimationFrame(syncNavIndicator);
 
-        document.querySelectorAll(".site-page-header, .site-main > .site-section-divider").forEach((item) => {
-          item.setAttribute("data-reveal", "");
+        document.querySelectorAll("[data-reveal-group]").forEach((group) => {
+          group.querySelectorAll("[data-reveal-item]").forEach((item, index) => {
+            if (item instanceof HTMLElement) item.style.setProperty("--reveal-index", String(index));
+          });
         });
+
+        const hero = document.querySelector("[data-hero-motion]");
+        if (hero instanceof HTMLElement) {
+          window.requestAnimationFrame(() => hero.classList.add("is-visible"));
+        }
+
+        const motionMode = document.body.dataset.motion ?? "subtle";
+        if (motionMode !== "static") {
+          document.querySelectorAll(".site-page-header, .site-main > .site-section-divider").forEach((item) => {
+            item.setAttribute("data-reveal", "");
+          });
+        }
         const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+        if (motionMode === "static" || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
           revealItems.forEach((item) => item.classList.add("is-visible"));
         } else {
           const revealObserver = new IntersectionObserver((entries) => {
@@ -323,9 +362,23 @@ const commandItems = [
               entry.target.classList.add("is-visible");
               revealObserver.unobserve(entry.target);
             }
-          }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+          }, { threshold: 0.05, rootMargin: "0px 0px -4% 0px" });
           revealItems.forEach((item) => revealObserver.observe(item));
           window.__siteRevealObserver = revealObserver;
+        }
+
+        window.__siteStoryObserver?.disconnect();
+        const storyItems = Array.from(document.querySelectorAll("[data-motion-story]"));
+        if (motionMode === "static" || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+          storyItems.forEach((item) => item.removeAttribute("data-motion-active"));
+        } else {
+          const storyObserver = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+              entry.target.toggleAttribute("data-motion-active", entry.isIntersecting);
+            }
+          }, { threshold: 0.2 });
+          storyItems.forEach((item) => storyObserver.observe(item));
+          window.__siteStoryObserver = storyObserver;
         }
 
         const isEditableTarget = (target) => {
@@ -453,6 +506,18 @@ const commandItems = [
             launchConfettiBurst({ xRatio: 0.66, yRatio: 0.56, particleCount: 80 });
           }, 230);
         };
+
+        document.querySelectorAll("[data-confetti-trigger]").forEach((trigger) => {
+          trigger.addEventListener("click", () => {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            const bounds = trigger.getBoundingClientRect();
+            launchConfettiBurst({
+              xRatio: (bounds.left + bounds.width / 2) / window.innerWidth,
+              yRatio: (bounds.top + bounds.height / 2) / window.innerHeight,
+              particleCount: 90,
+            });
+          }, { signal: siteShellController.signal });
+        });
 
         const updateSecretSequence = (event) => {
           if (isEditableTarget(event.target)) {
