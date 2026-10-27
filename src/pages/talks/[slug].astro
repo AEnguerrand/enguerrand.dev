@@ -13,6 +13,7 @@ const {formattedDate,resources,videoResource,videoEmbedUrl,talkMetadata,structur
 const slides = resources.find(resource => /slides/i.test(resource.label));
 const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:"Read notes"};
 const secondary = primary.url !== "#content" ? {url:"#content",label:"Read notes ↓"} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
+const quickResources = resources.filter(resource => /slides|presentation|lab/i.test(resource.label) && resource.url !== primary.url);
 const sectionClass = "site-article-section site-section-divider scroll-mt-40";
 ---
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
@@ -24,6 +25,7 @@ const sectionClass = "site-article-section site-section-divider scroll-mt-40";
     <div class="site-action-row" aria-label="Session resources">
       <a href={primary.url} class="site-action site-action-primary h-auto min-h-10 max-w-full whitespace-normal text-center">{primary.label}</a>
       {secondary && <a href={secondary.url} class="site-text-link text-sm font-medium">{secondary.label}</a>}
+      {quickResources.map(resource => <a href={resource.url} class="site-text-link font-medium">{/lab/i.test(resource.label) ? "Lab" : /english|chinese/i.test(resource.label) ? resource.label : "Slides"} ↗</a>)}
     </div>
     <details id="overview" class="mt-5 border-t border-border pt-4 text-sm">
       <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>

@@ -95,11 +95,14 @@ test("Talks and Projects indexes start directly with useful content", async () =
   const talksText = text(talksIndex.nodes[0]);
   assert.ok(!projectsText.includes("Software I build to scan, preserve, and organize the paper records that matter."));
   assert.ok(!talksText.includes("Conference sessions, meetups, and field notes on cloud and software supply chain security."));
-  const globe = talksIndex.nodes.find((node) => node.tagName === "figure" && attrs(node)["aria-label"]?.startsWith("Talk locations:"));
+  const globe = talksIndex.nodes.find((node) => node.tagName === "figure" && attrs(node)["aria-label"] === "Talk locations around the world");
   assert.ok(globe, "Talks must show the location globe");
   assert.equal(walk(globe).filter((node) => attrs(node).class?.split(" ").includes("talk-globe-marker")).length, 3);
   for (const location of ["France", "Hong Kong", "Salt Lake City", "Online"])
     assert.ok(text(globe).includes(location), `Talk globe must include ${location}`);
+  assert.ok(walk(globe).some((node) => node.tagName === "svg" && attrs(node).viewBox === "0 0 360 360"));
+  assert.ok(walk(globe).some((node) => attrs(node)["data-globe-land"] !== undefined && attrs(node).d?.length > 1000), "Globe must render coastlines before JavaScript");
+  assert.equal(walk(globe).filter((node) => node.tagName === "a").length, 5, "All talks must remain reachable without globe motion");
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {
@@ -263,7 +266,7 @@ test("Motion stays prominent on content pages and static on the resume", async (
   assert.equal(attrs(homeBody)["data-motion"], "full");
   assert.equal(attrs(radarBody)["data-motion"], "subtle");
   assert.equal(attrs(resumeBody)["data-motion"], "static");
-  assert.ok(radar.nodes.some((node) => attrs(node).class?.split(" ").includes("motion-card")));
+  assert.equal(radar.nodes.filter((node) => attrs(node).class?.split(" ").includes("radar-signal")).length, 3);
 });
 
 test("Projects has a dedicated page with the public project list", () => {
@@ -405,6 +408,12 @@ test("Review fixes keep the concise Home introduction, talks list, and search st
     assert.ok(!graph(current.nodes).some(n => n["@type"] === "VideoObject"), "Do not publish recording metadata with an unverified upload date");
     assert.doesNotMatch(current.html, /https:\/\/github.com\/AEnguerrand\/kubecon-cloudnativecon-china-2024-supply-chain-security["<]/);
     const actions = current.nodes.find(n => attrs(n)["aria-label"] === "Session resources");
-    assert.ok(walk(actions).filter(n => n.tagName === "a").length <= 2, "Talk header has too many actions");
+    const actionLinks = walk(actions).filter(n => n.tagName === "a");
+    assert.ok(actionLinks.length <= 4, "Keep notes, recording, slides, and lab actions compact");
+    assert.equal(new Set(actionLinks.map(n => attrs(n).href)).size, actionLinks.length, "Do not repeat a resource in the header");
+    const resources = current.nodes.find(n => attrs(n).id === "resources");
+    for (const link of walk(resources).filter(n => n.tagName === "a" && /slides|presentation|lab/i.test(text(n)))) {
+      assert.ok(actionLinks.some(n => attrs(n).href === attrs(link).href), `Missing direct resource action: ${text(link)}`);
+    }
   }
 });

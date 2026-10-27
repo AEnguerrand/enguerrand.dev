@@ -13,6 +13,8 @@
     "src/components/sections/ContactCard.tsx",
     "src/lib/talk-presentation.ts",
     "src/lib/posts.ts",
+    "src/lib/talk-globe.ts",
+    "src/scripts/talk-globe.ts",
     "src/lib/topics.ts",
     "src/lib/seo.ts",
     "src/lib/stars.ts",
