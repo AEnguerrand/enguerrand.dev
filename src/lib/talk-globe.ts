@@ -7,11 +7,10 @@ const world = topology as unknown as Topology<{ land: GeometryCollection }>;
 const land = feature(world, world.objects.land);
 const grid = geoGraticule10();
 
-// France is a country-level marker: one source specifies Paris, another only France.
 export const talkPlaces = [
-  { id: "france", label: "France", coordinates: [2.2, 46.6] as [number, number], matches: (location: string) => /France$/.test(location) },
-  { id: "salt-lake-city", label: "Salt Lake City", coordinates: [-111.89, 40.76] as [number, number], matches: (location: string) => location.startsWith("Salt Lake City") },
-  { id: "hong-kong", label: "Hong Kong", coordinates: [114.17, 22.32] as [number, number], matches: (location: string) => location === "Hong Kong" },
+  { id: "paris", label: "Paris", flag: "🇫🇷", coordinates: [2.3522, 48.8566] as [number, number], matches: (location: string) => location === "Paris, France" },
+  { id: "salt-lake-city", label: "Salt Lake City", flag: "🇺🇸", coordinates: [-111.89, 40.76] as [number, number], matches: (location: string) => location.startsWith("Salt Lake City") },
+  { id: "hong-kong", label: "Hong Kong", flag: "🇭🇰", coordinates: [114.17, 22.32] as [number, number], matches: (location: string) => location === "Hong Kong" },
 ];
 
 export const createGlobeProjection = () => geoOrthographic()

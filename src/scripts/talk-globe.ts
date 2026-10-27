@@ -18,6 +18,8 @@ class TalkGlobe extends HTMLElement {
     let focused = false;
     let raf = 0;
     let last = 0;
+    let drag: { id: number; x: number; y: number; rotation: [number, number, number]; moved: boolean } | null = null;
+    let suppressClick = false;
     let target: { from: [number, number, number]; to: [number, number, number]; start: number } | null = null;
 
     const render = () => {
@@ -28,6 +30,8 @@ class TalkGlobe extends HTMLElement {
         const node = this.querySelector<SVGGElement>(`[data-globe-marker="${marker.id}"]`);
         if (!node) continue;
         node.setAttribute("visibility", marker.visible ? "visible" : "hidden");
+        node.setAttribute("tabindex", marker.visible ? "0" : "-1");
+        node.setAttribute("aria-hidden", String(!marker.visible));
         node.setAttribute("transform", `translate(${marker.x} ${marker.y})`);
         const label = node.querySelector("text");
         label?.setAttribute("x", marker.x > 235 ? "-13" : "13");
@@ -60,21 +64,83 @@ class TalkGlobe extends HTMLElement {
       else if (!raf) raf = requestAnimationFrame(tick);
     };
     button.addEventListener("click", () => { paused = !paused; target = null; sync(); }, { signal: abort.signal });
+    const turnTo = (id: string | undefined) => {
+      const place = talkPlaces.find((place) => place.id === id);
+      if (!place) return;
+      paused = true;
+      const from = projection.rotate();
+      const longitude = from[0] + ((-place.coordinates[0] - from[0] + 540) % 360) - 180;
+      const to: [number, number, number] = [longitude, -place.coordinates[1], 0];
+      if (reduced.matches) { target = null; projection.rotate(to); render(); }
+      else target = { from, to, start: performance.now() };
+      sync();
+    };
     this.querySelectorAll<HTMLDetailsElement>("[data-globe-place]").forEach((details) => {
+      const marker = this.querySelector<SVGGElement>(`[data-globe-marker="${details.dataset.globePlace}"]`);
+      marker?.setAttribute("role", "button");
+      marker?.setAttribute("aria-label", `Show talks in ${talkPlaces.find(place => place.id === details.dataset.globePlace)?.label}`);
+      marker?.setAttribute("aria-controls", details.id);
+      marker?.setAttribute("aria-expanded", String(details.open));
+      const select = () => {
+        if (details.open) turnTo(details.dataset.globePlace);
+        else details.open = true;
+        details.querySelector("summary")?.focus({ preventScroll: true });
+        details.scrollIntoView({ behavior: "instant", block: "nearest" });
+      };
+      marker?.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (!suppressClick) select();
+      }, { signal: abort.signal });
+      marker?.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        select();
+      }, { signal: abort.signal });
       details.addEventListener("toggle", () => {
-        if (!details.open) return;
-        const place = talkPlaces.find((place) => place.id === details.dataset.globePlace);
-        if (!place) return;
-        paused = true;
-        const from = projection.rotate();
-        const longitude = from[0] + ((-place.coordinates[0] - from[0] + 540) % 360) - 180;
-        const to: [number, number, number] = [longitude, -place.coordinates[1], 0];
-        if (reduced.matches) { target = null; projection.rotate(to); render(); }
-        else target = { from, to, start: performance.now() };
-        sync();
+        marker?.setAttribute("aria-expanded", String(details.open));
+        if (details.open) turnTo(details.dataset.globePlace);
       }, { signal: abort.signal });
     });
     const sphere = this.querySelector("svg")!;
+    sphere.dataset.interactive = "";
+    const help = this.querySelector<HTMLElement>("[data-globe-help]");
+    if (help) help.hidden = false;
+    sphere.addEventListener("pointerdown", (event) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      suppressClick = false;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, rotation: projection.rotate(), moved: false };
+    }, { signal: abort.signal });
+    sphere.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+      if (!drag.moved) {
+        drag.moved = true;
+        suppressClick = true;
+        paused = true;
+        target = null;
+        sphere.setPointerCapture(event.pointerId);
+        sphere.dataset.dragging = "";
+        sync();
+      }
+      const degrees = 180 / sphere.getBoundingClientRect().width;
+      projection.rotate([
+        drag.rotation[0] + dx * degrees,
+        Math.max(-85, Math.min(85, drag.rotation[1] - dy * degrees)),
+        0,
+      ]);
+      render();
+    }, { signal: abort.signal });
+    const endDrag = (event: PointerEvent) => {
+      if (!drag || drag.id !== event.pointerId) return;
+      drag = null;
+      delete sphere.dataset.dragging;
+      if (sphere.hasPointerCapture(event.pointerId)) sphere.releasePointerCapture(event.pointerId);
+    };
+    sphere.addEventListener("pointerup", endDrag, { signal: abort.signal });
+    sphere.addEventListener("pointercancel", endDrag, { signal: abort.signal });
+    sphere.addEventListener("lostpointercapture", endDrag, { signal: abort.signal });
     sphere.addEventListener("pointerenter", () => { hovering = true; sync(); }, { signal: abort.signal });
     sphere.addEventListener("pointerleave", () => { hovering = false; sync(); }, { signal: abort.signal });
     this.addEventListener("focusin", (event) => { focused = event.target !== button; sync(); }, { signal: abort.signal });

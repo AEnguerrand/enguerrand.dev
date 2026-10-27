@@ -98,7 +98,7 @@ test("Talks and Projects indexes start directly with useful content", async () =
   const globe = talksIndex.nodes.find((node) => node.tagName === "figure" && attrs(node)["aria-label"] === "Talk locations around the world");
   assert.ok(globe, "Talks must show the location globe");
   assert.equal(walk(globe).filter((node) => attrs(node).class?.split(" ").includes("talk-globe-marker")).length, 3);
-  for (const location of ["France", "Hong Kong", "Salt Lake City", "Online"])
+  for (const location of ["Paris", "Hong Kong", "Salt Lake City", "Online"])
     assert.ok(text(globe).includes(location), `Talk globe must include ${location}`);
   assert.ok(walk(globe).some((node) => node.tagName === "svg" && attrs(node).viewBox === "0 0 360 360"));
   assert.ok(walk(globe).some((node) => attrs(node)["data-globe-land"] !== undefined && attrs(node).d?.length > 1000), "Globe must render coastlines before JavaScript");
