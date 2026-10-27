@@ -37,9 +37,7 @@ const posts = await getPosts({ includeUnpublished: import.meta.env.DEV });
       </>
     ) : (
       <div class="blog-empty-state">
-        <p class="site-eyebrow">No posts yet</p>
-        <h2>Writing will appear here.</h2>
-        <p>I have not published a blog post yet. My talks and technical radar are available now.</p>
+        <h2>No posts yet</h2>
         <div class="blog-empty-actions">
           <a class="site-link" href="/talks/">Browse talks <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
           <a class="site-link" href="/radar/">Explore the radar <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>

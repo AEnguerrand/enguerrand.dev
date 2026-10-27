@@ -1,0 +1,29 @@
+---
+import { CaretDown } from "@phosphor-icons/react";
+interface Props { items: { title: string; description: string }[] }
+const { items } = Astro.props;
+---
+<exploration-list class="home-exploring-grid">
+  {items.map(item => <details class="home-exploring-card" open>
+    <summary><h3>{item.title}</h3><CaretDown size={16} aria-hidden="true" /></summary>
+    <p>{item.description}</p>
+  </details>)}
+</exploration-list>
+
+<script>
+  class ExplorationList extends HTMLElement {
+    private cleanup?: () => void;
+    connectedCallback() {
+      this.cleanup?.();
+      const phone = matchMedia("(max-width: 767px)");
+      const arrange = () => this.querySelectorAll("details").forEach((item, index) => {
+        item.open = !phone.matches || index === 0;
+      });
+      arrange();
+      phone.addEventListener("change", arrange);
+      this.cleanup = () => phone.removeEventListener("change", arrange);
+    }
+    disconnectedCallback() { this.cleanup?.(); }
+  }
+  if (!customElements.get("exploration-list")) customElements.define("exploration-list", ExplorationList);
+</script>

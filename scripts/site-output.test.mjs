@@ -86,6 +86,12 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Secure-by-default platform patterns",
     "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
   ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
+  const exploration = home.nodes.find(n => n.tagName === "exploration-list");
+  const explorationItems = walk(exploration).filter(n => n.tagName === "details");
+  assert.equal(explorationItems.length, 4);
+  assert.ok(explorationItems.every(n => "open" in attrs(n)), "All exploration text must be visible without JavaScript");
+  const homeMain = home.nodes.find(n => n.tagName === "main");
+  assert.ok(!walk(homeMain).some(n => n.tagName === "a" && ["/radar/", "/github-stars/"].includes(attrs(n).href)), "Home content must omit the Radar preview and links");
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
 });
 

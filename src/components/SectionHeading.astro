@@ -1,0 +1,17 @@
+---
+import { ArrowRight } from "@phosphor-icons/react";
+
+interface Props {
+  id: string;
+  title: string;
+  href?: string;
+  action?: string;
+}
+const { id, title, href, action } = Astro.props;
+---
+<div class="site-section-heading">
+  <h2 id={id} class="site-section-title">{title}</h2>
+  {href && action && <a class="site-action site-action-secondary site-section-action" href={href}>
+    {action}<ArrowRight size={16} className="motion-arrow" aria-hidden="true" />
+  </a>}
+</div>
