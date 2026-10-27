@@ -57,7 +57,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
   assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
-  assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-motion-story" in attrs(n)), "Home portrait must keep its visible motion story");
+  assert.ok(home.nodes.some((n) => "data-motion-story" in attrs(n)), "Home security diagram must keep its visible motion story");
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");
