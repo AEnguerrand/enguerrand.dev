@@ -30,11 +30,11 @@ const structuredData = {
   </header>
   <div id="by-year" class="space-y-10">
     {years.map(year => (
-      <section class="site-section-divider talks-year" aria-labelledby={`year-${year}`} data-reveal>
-        <h2 id={`year-${year}`} class="text-2xl">{year}</h2>
+      <section class="site-section-divider talks-year" aria-labelledby={`year-${year}`} data-reveal data-reveal-group>
+        <h2 id={`year-${year}`} class="text-2xl" data-reveal-item>{year}</h2>
         <div class="site-list">
           {talks.filter(talk => talk.data.date.startsWith(year)).map(talk => (
-            <article class="site-list-row talk-index-row py-5 sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6">
+            <article class="site-list-row talk-index-row py-5 sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6" data-reveal-item>
               <p class="talk-index-meta mb-2 text-xs tabular-nums text-muted-foreground sm:mb-0"><time datetime={talk.data.date}>{new Date(talk.data.date).toLocaleDateString("en-US", {month:"short",day:"numeric",timeZone:"UTC"})}</time>{talk.data.event && ` · ${talk.data.event}`}</p>
               <div>
                 <h3 class="text-xl leading-snug"><a href={`/talks/${talk.id}/`} class="hover:text-primary">{talk.data.displayTitle ?? talk.data.title} <span aria-hidden="true">→</span></a></h3>

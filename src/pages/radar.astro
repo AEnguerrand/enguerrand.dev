@@ -87,11 +87,11 @@ const topicIcons = {
   </header>
 
   {signals.length > 0 && (
-    <section class="site-section-divider" aria-labelledby="radar-signals-title" data-reveal>
-      <h2 id="radar-signals-title" class="text-2xl">Current signals</h2>
+    <section class="site-section-divider" aria-labelledby="radar-signals-title" data-reveal data-reveal-group>
+      <h2 id="radar-signals-title" class="text-2xl" data-reveal-item>Current signals</h2>
       <div class="radar-signals mt-5">
         {signals.map((signal, index) => (
-          <article class:list={["radar-signal", { "radar-signal-featured": index === 0 }]}>
+          <article class:list={["radar-signal", { "radar-signal-featured": index === 0 }]} data-reveal-item>
             <p class="site-eyebrow">{signal.category}</p>
             <h3 class="radar-signal-title">
               <a class="site-link items-start text-foreground" href={signal.href} target="_blank" rel="noreferrer">

@@ -35,15 +35,15 @@ const structuredData = {
     <h1 class="site-page-title">Projects</h1>
   </header>
 
-  <section class="project-index" aria-labelledby="project-list-heading" data-reveal>
+  <section class="project-index" aria-labelledby="project-list-heading" data-reveal data-reveal-group>
     <h2 id="project-list-heading" class="sr-only">Project list</h2>
     <div class="project-index-list">
       {projects.map((project, index) => (
-        <article class="project-index-row">
+        <article class="project-index-row" data-reveal-item>
           <span class="project-index-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
           <div class="project-index-main">
             {project.image && project.imageAlt && (
-              <a class="project-index-art project-art-motion" href={project.url} aria-label={`Open ${project.title}`}>
+              <a class="project-index-art project-art-motion project-art-reveal" href={project.url} aria-label={`Open ${project.title}`}>
                 <img
                   src={project.image}
                   alt={project.imageAlt}

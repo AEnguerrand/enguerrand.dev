@@ -295,8 +295,11 @@
 .site-brand { display: inline-flex; align-items: center; min-height: 40px; font-size: 14px; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
 .site-nav-links { display: flex; align-items: center; gap: 24px; color: hsl(var(--muted-foreground)); }
 .site-nav-links a { display: inline-flex; align-items: center; min-height: 40px; font-size: 14px; }
-.site-nav-links a:hover, .site-nav-links a[aria-current="page"] { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 4px; }
+.site-nav-links a:hover, .site-nav-links a[aria-current="page"] { color: hsl(var(--primary)); }
+.site-nav-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
 .site-nav-toggle { display: none; }
+.site-nav-indicator { position: absolute; bottom: 4px; left: 0; width: 24px; height: 2px; border-radius: 999px; background: hsl(var(--primary)); opacity: 0; pointer-events: none; transform: translateX(var(--nav-indicator-x, 0)); transition: opacity var(--motion-color) var(--motion-curve), transform var(--motion-layout) var(--motion-curve); }
+.site-nav-indicator[data-ready] { opacity: 1; }
 .site-footer { padding: 24px 0 32px; border-top: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); }
 .site-footer-message { max-width: 760px; }
 .site-footer-kicker { color: hsl(var(--primary)); font-size: 12px; font-weight: 600; letter-spacing: .04em; }
@@ -351,8 +354,12 @@ body:has(.command-dialog[open]) { overflow: hidden; }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.js [data-reveal] { opacity: 0; transform: translateY(32px); transition: opacity var(--motion-color) var(--motion-curve), transform 700ms var(--motion-curve); }
+.js [data-reveal] { opacity: 0; transform: translateY(10px); transition: opacity 600ms var(--motion-curve), transform 700ms var(--motion-curve); }
 .js [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+.js [data-reveal-group] [data-reveal-item] { opacity: 0; filter: blur(2px); transform: translateY(10px); transition: opacity 600ms var(--motion-curve), filter 600ms var(--motion-curve), transform 700ms var(--motion-curve); transition-delay: calc(100ms + var(--reveal-index, 0) * 60ms); }
+.js [data-reveal-group].is-visible [data-reveal-item] { opacity: 1; filter: blur(0); transform: translateY(0); }
+.js [data-reveal] .project-art-reveal { opacity: .25; filter: blur(8px) saturate(.7); transition: opacity 600ms var(--motion-curve), filter 700ms var(--motion-curve), transform var(--motion-layout) var(--motion-curve); }
+.js [data-reveal].is-visible .project-art-reveal { opacity: 1; filter: blur(0) saturate(1); }
 .site-confetti { position: fixed; inset: 0; z-index: 80; pointer-events: none; }
 
 /* Page-specific compositions share the same tokens without sharing the same layout. */
@@ -400,6 +407,7 @@ body:has(.command-dialog[open]) { overflow: hidden; }
   .site-nav[data-open] .site-nav-links a:nth-child(3) { transition-delay: 80ms; }
   .site-nav[data-open] .site-nav-links a:nth-child(4) { transition-delay: 120ms; }
   .site-nav[data-open] .site-nav-links a:nth-child(5) { transition-delay: 160ms; }
+  .site-nav-indicator { display: none; }
   body.site-navigation-open { overflow: hidden; }
   .site-footer { padding-top: 22px; }
   .site-footer-bottom { align-items: flex-start; }
@@ -443,9 +451,16 @@ body:has(.command-dialog[open]) { overflow: hidden; }
   .js [data-reveal].is-visible { opacity: 1; transform: none; transition: none; }
   .site-nav-links,
   .site-nav-links a,
+  .site-nav-indicator,
   .site-nav-toggle-line,
   .project-art-motion,
   .motion-arrow { transition: none; }
+  .js [data-hero-item],
+  .js [data-hero-motion].is-visible [data-hero-item],
+  .js [data-reveal-group] [data-reveal-item],
+  .js [data-reveal-group].is-visible [data-reveal-item],
+  .js [data-reveal] .project-art-reveal,
+  .js [data-reveal].is-visible .project-art-reveal { opacity: 1; filter: none; transform: none; transition: none; }
   .project-art-motion:hover,
   .project-art-motion:focus-visible,
   :where(.site-link, .site-action, .site-action-button, .home-link, .home-talk-link, .about-focus-item):hover .motion-arrow { transform: none; }

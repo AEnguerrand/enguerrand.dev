@@ -55,6 +55,8 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
+  assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
+  assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");
@@ -241,6 +243,8 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   assert.match(homeOutput, /astro-view-transitions/);
   assert.match(homeOutput, /data-astro-transition-persist="site-header"/);
   assert.match(homeOutput, /data-site-nav-toggle/);
+  assert.match(homeOutput, /data-site-nav-indicator/);
+  assert.match(homeOutput, /data-reveal-group/);
 });
 
 test("Projects has a dedicated page with the public project list", () => {
