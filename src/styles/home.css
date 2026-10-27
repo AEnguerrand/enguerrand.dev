@@ -7,7 +7,12 @@
 .home-portrait-trigger { width: 176px; height: 176px; overflow: hidden; border-radius: 50%; transition: transform var(--motion-layout) var(--motion-curve), box-shadow var(--motion-color) var(--motion-curve); }
 .home-portrait-trigger:hover { transform: rotate(1deg) scale(1.02); box-shadow: 0 16px 36px hsl(var(--primary) / .14); }
 .home-portrait-trigger:active { transform: rotate(0) scale(.98); }
+.home-portrait-motion { display: block; width: 100%; height: 100%; }
 .home-portrait { width: 100%; height: 100%; border: 1px solid hsl(var(--border)); border-radius: 50%; object-fit: cover; }
+.js [data-hero-motion] .home-portrait { filter: blur(14px) saturate(.6); transform: scale(.985); transition: filter 800ms cubic-bezier(.33, 1, .68, 1) 300ms, transform 1050ms cubic-bezier(.16, 1, .3, 1) 300ms; }
+.js [data-hero-motion].is-visible .home-portrait { filter: blur(0) saturate(1); transform: scale(1); }
+[data-motion-story] .home-portrait-motion { animation: home-portrait-story 2.8s ease-in-out infinite alternate; animation-play-state: paused; }
+[data-motion-story][data-motion-active] .home-portrait-motion { animation-play-state: running; }
 .js [data-hero-item] { opacity: 0; filter: blur(2px); transform: translateY(6px); transition: opacity 600ms cubic-bezier(.33, 1, .68, 1), filter 600ms cubic-bezier(.33, 1, .68, 1), transform 800ms cubic-bezier(.16, 1, .3, 1); }
 .js [data-hero-motion].is-visible [data-hero-item] { opacity: 1; filter: blur(0); transform: translateY(0); }
 .js [data-hero-motion] h1[data-hero-item] { transition-delay: 60ms; }
@@ -15,6 +20,10 @@
 .js [data-hero-motion] .home-intro-description[data-hero-item] { transition-delay: 180ms; }
 .js [data-hero-motion] .home-contact[data-hero-item] { transition-delay: 240ms; }
 .js [data-hero-motion] .home-portrait-trigger[data-hero-item] { transition-delay: 300ms; }
+@keyframes home-portrait-story {
+  from { transform: translateY(-2.6px) rotate(-.3deg); }
+  to { transform: translateY(2.6px) rotate(.3deg); }
+}
 .home-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 24px; margin-top: 16px; }
 .home-contact a { gap: 8px; min-height: 40px; font-size: .875rem; }
 .home-contact svg,
@@ -115,6 +124,9 @@
   .js [data-hero-motion].is-visible [data-hero-item] { opacity: 1; filter: none; transform: none; transition: none; }
   .home-project-art,
   .home-portrait-trigger { transition: none; }
+  .js [data-hero-motion] .home-portrait,
+  .js [data-hero-motion].is-visible .home-portrait { filter: none; transform: none; transition: none; }
+  [data-motion-story] .home-portrait-motion { animation: none; }
   .home-project-art:hover,
   .home-project-art:focus-visible,
   .home-portrait-trigger:hover,

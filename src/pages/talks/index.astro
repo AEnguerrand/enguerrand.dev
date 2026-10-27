@@ -31,7 +31,7 @@ const structuredData = {
   <div id="by-year" class="space-y-10">
     {years.map(year => (
       <section class="site-section-divider talks-year" aria-labelledby={`year-${year}`} data-reveal data-reveal-group>
-        <h2 id={`year-${year}`} class="text-2xl" data-reveal-item>{year}</h2>
+        <h2 id={`year-${year}`} class="site-section-title" data-reveal-item>{year}</h2>
         <div class="site-list">
           {talks.filter(talk => talk.data.date.startsWith(year)).map(talk => (
             <article class="site-list-row talk-index-row py-5 sm:grid sm:grid-cols-[9rem_minmax(0,1fr)] sm:gap-6" data-reveal-item>

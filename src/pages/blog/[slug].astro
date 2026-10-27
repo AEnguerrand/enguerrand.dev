@@ -34,21 +34,20 @@ const structuredData = published ? {
 ---
 
 <BaseLayout noindex={!published} title={post.data.title} description={post.data.description} type="article" publishedTime={published ? `${publishDate}T00:00:00.000Z` : undefined} structuredData={structuredData}>
-  <article class="mx-auto max-w-3xl pt-6 sm:pt-9">
-    <a href="/blog/" class="site-link font-semibold">← Back to blog</a>
+  <article>
     <header class="site-page-header border-b border-border/70">
+      <a href="/blog/" class="site-back-link">← Back to blog</a>
       {!published && <p class="mb-3 text-sm font-semibold text-primary">Local preview · {post.data.draft ? "Draft" : "Scheduled"}</p>}
-      {publishDate && <time datetime={publishDate} class="text-sm text-muted-foreground">{formatPostDate(publishDate)}</time>}
+      {publishDate && <p class="site-page-meta"><time datetime={publishDate}>{formatPostDate(publishDate)}</time><span>· By Enguerrand Allamel</span></p>}
       <h1 class="site-page-title break-words">{post.data.title}</h1>
       <p class="site-lead">{post.data.description}</p>
-      <p class="mt-3 text-sm text-muted-foreground">By Enguerrand Allamel</p>
       {post.data.tags.length > 0 && (
         <ul aria-label="Tags" class="mt-5 flex flex-wrap gap-2 text-xs text-muted-foreground">
           {post.data.tags.map((tag) => <li class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1">{tag}</li>)}
         </ul>
       )}
     </header>
-    <div class="site-open-surface prose prose-headings:scroll-mt-28 prose-p:leading-relaxed mt-8 max-w-none break-words [overflow-wrap:anywhere] prose-pre:max-w-full prose-pre:overflow-x-auto">
+    <div class="site-open-surface prose site-reading-measure prose-headings:scroll-mt-28 prose-p:leading-relaxed mt-8 break-words [overflow-wrap:anywhere] prose-pre:max-w-full prose-pre:overflow-x-auto">
       <Content />
     </div>
   </article>

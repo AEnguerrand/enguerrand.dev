@@ -14,7 +14,7 @@ const posts = await getPosts({ includeUnpublished: import.meta.env.DEV });
   <section class="site-section-divider" aria-label="Blog posts" data-reveal>
     {posts.length > 0 ? (
       <>
-        <h2 class="mb-4 text-2xl font-semibold tracking-tight">Latest posts</h2>
+        <h2 class="site-section-title mb-4">Latest posts</h2>
         <ul class="site-list">
           {posts.map((post) => (
             <li class="site-list-row">

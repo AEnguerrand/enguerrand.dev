@@ -79,7 +79,7 @@ const topicIcons = {
   <header class="site-page-header radar-header" data-reveal>
     <p class="site-eyebrow">Selected technical resources</p>
     <h1 class="site-page-title">Radar</h1>
-    <p class="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+    <p class="site-page-meta">
       <span>{starsGroups.length} topics</span>
       <span aria-hidden="true">·</span>
       <span>Updated {starsDate(starsDataset.generated_at)}</span>
@@ -88,10 +88,10 @@ const topicIcons = {
 
   {signals.length > 0 && (
     <section class="site-section-divider" aria-labelledby="radar-signals-title" data-reveal data-reveal-group>
-      <h2 id="radar-signals-title" class="text-2xl" data-reveal-item>Current signals</h2>
+      <h2 id="radar-signals-title" class="site-section-title" data-reveal-item>Current signals</h2>
       <div class="radar-signals mt-5">
         {signals.map((signal, index) => (
-          <article class:list={["radar-signal", { "radar-signal-featured": index === 0 }]} data-reveal-item>
+          <article class:list={["radar-signal motion-card", { "radar-signal-featured": index === 0 }]} data-reveal-item>
             <p class="site-eyebrow">{signal.category}</p>
             <h3 class="radar-signal-title">
               <a class="site-link items-start text-foreground" href={signal.href} target="_blank" rel="noreferrer">
@@ -108,7 +108,7 @@ const topicIcons = {
 
   <section class="site-section-divider" aria-labelledby="radar-topics-title" data-reveal>
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <h2 id="radar-topics-title" class="text-2xl">Explore by topic</h2>
+      <h2 id="radar-topics-title" class="site-section-title">Explore by topic</h2>
       <a class="site-link" href="/github-stars/">All topics <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
     </div>
 

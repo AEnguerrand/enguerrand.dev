@@ -16,8 +16,10 @@ export function Hero() {
           <a className="site-text-link" href="https://www.linkedin.com/in/enguerrandallamel/"><LinkedinLogo size={16} aria-hidden="true" />LinkedIn</a>
         </div>
       </div>
-      <button className="home-portrait-trigger" type="button" aria-label="Celebrate" title="Celebrate" data-hero-item data-confetti-trigger>
-        <img src="/avatar.webp" alt="Enguerrand Allamel speaking at a conference" className="home-portrait" width="224" height="224" loading="eager" decoding="async" />
+      <button className="home-portrait-trigger" type="button" aria-label="Celebrate" title="Celebrate" data-hero-item data-confetti-trigger data-motion-story>
+        <span className="home-portrait-motion">
+          <img src="/avatar.webp" alt="Enguerrand Allamel speaking at a conference" className="home-portrait" width="224" height="224" loading="eager" decoding="async" />
+        </span>
       </button>
     </section>
   );

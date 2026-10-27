@@ -9,6 +9,7 @@ import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 
 interface Props {
   home?: boolean;
+  motion?: "full" | "subtle" | "static";
   title?: string;
   description?: string;
   image?: string;
@@ -24,6 +25,7 @@ interface Props {
 
 const {
   home = false,
+  motion,
   title,
   description,
   image = siteImage,
@@ -36,6 +38,7 @@ const {
   noindex = false,
   structuredData,
 } = Astro.props;
+const pageMotion = motion ?? (home ? "full" : "subtle");
 const pageDescription = description ?? siteDescription;
 const pageTitle = title ? `${title} | Enguerrand Allamel` : "Enguerrand Allamel | Platform Security Engineer";
 const siteUrl = Astro.site ?? new URL("https://enguerrand.dev");
@@ -197,7 +200,7 @@ const commandItems = [
     <script is:inline>document.documentElement.classList.add("js");</script>
     <ClientRouter fallback="swap" />
   </head>
-  <body transition:animate="none" class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
+  <body transition:animate="none" data-motion={pageMotion} class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="site-page relative isolate min-h-screen">
       <header transition:persist="site-header" class="site-header site-shell">
@@ -338,11 +341,14 @@ const commandItems = [
           window.requestAnimationFrame(() => hero.classList.add("is-visible"));
         }
 
-        document.querySelectorAll(".site-page-header, .site-main > .site-section-divider").forEach((item) => {
-          item.setAttribute("data-reveal", "");
-        });
+        const motionMode = document.body.dataset.motion ?? "subtle";
+        if (motionMode !== "static") {
+          document.querySelectorAll(".site-page-header, .site-main > .site-section-divider").forEach((item) => {
+            item.setAttribute("data-reveal", "");
+          });
+        }
         const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+        if (motionMode === "static" || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
           revealItems.forEach((item) => item.classList.add("is-visible"));
         } else {
           const revealObserver = new IntersectionObserver((entries) => {
@@ -351,9 +357,23 @@ const commandItems = [
               entry.target.classList.add("is-visible");
               revealObserver.unobserve(entry.target);
             }
-          }, { threshold: 0.25, rootMargin: "0px 0px -8% 0px" });
+          }, { threshold: 0.05, rootMargin: "0px 0px -4% 0px" });
           revealItems.forEach((item) => revealObserver.observe(item));
           window.__siteRevealObserver = revealObserver;
+        }
+
+        window.__siteStoryObserver?.disconnect();
+        const storyItems = Array.from(document.querySelectorAll("[data-motion-story]"));
+        if (motionMode === "static" || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+          storyItems.forEach((item) => item.removeAttribute("data-motion-active"));
+        } else {
+          const storyObserver = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+              entry.target.toggleAttribute("data-motion-active", entry.isIntersecting);
+            }
+          }, { threshold: 0.2 });
+          storyItems.forEach((item) => storyObserver.observe(item));
+          window.__siteStoryObserver = storyObserver;
         }
 
         const isEditableTarget = (target) => {

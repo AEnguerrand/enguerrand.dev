@@ -57,6 +57,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
   assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
+  assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-motion-story" in attrs(n)), "Home portrait must keep its visible motion story");
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");
@@ -245,6 +246,18 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   assert.match(homeOutput, /data-site-nav-toggle/);
   assert.match(homeOutput, /data-site-nav-indicator/);
   assert.match(homeOutput, /data-reveal-group/);
+});
+
+test("Motion stays prominent on content pages and static on the resume", async () => {
+  const radar = await page("radar/index.html");
+  const resume = await page("resume/index.html");
+  const homeBody = home.nodes.find((node) => node.tagName === "body");
+  const radarBody = radar.nodes.find((node) => node.tagName === "body");
+  const resumeBody = resume.nodes.find((node) => node.tagName === "body");
+  assert.equal(attrs(homeBody)["data-motion"], "full");
+  assert.equal(attrs(radarBody)["data-motion"], "subtle");
+  assert.equal(attrs(resumeBody)["data-motion"], "static");
+  assert.ok(radar.nodes.some((node) => attrs(node).class?.split(" ").includes("motion-card")));
 });
 
 test("Projects has a dedicated page with the public project list", () => {
