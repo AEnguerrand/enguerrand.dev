@@ -37,11 +37,6 @@ const online = talks.filter((talk) => talk.location === "Online");
       ))}
     </svg>
     <figcaption>
-      <div class="globe-caption-row">
-        <span>{talks.length} talks around the world</span>
-        <button type="button" class="globe-pause" data-globe-pause hidden>Pause rotation</button>
-      </div>
-      <p class="globe-help" data-globe-help hidden>Drag to rotate · Select a location to see talks</p>
       <div class="globe-locations">
         {groups.map((place) => (
           <details id={`globe-place-${place.id}`} data-globe-place={place.id}>
@@ -71,7 +66,6 @@ const online = talks.filter((talk) => talk.location === "Online");
   .talk-globe-marker:hover .globe-pin-halo,
   .talk-globe-marker:focus-visible .globe-pin-halo { stroke: hsl(var(--primary)); stroke-width: 2; }
   .talk-globe-visual[data-dragging] .talk-globe-marker { cursor: grabbing; }
-  .globe-help { margin: 0 0 12px; color: hsl(var(--muted-foreground)); font-size: .75rem; }
   figcaption { grid-column: 1; grid-row: 2; align-self: start; width: min(100%, 24rem); }
   .globe-ocean { fill: hsl(var(--secondary)); stroke: hsl(var(--border)); }
   .globe-grid { fill: none; stroke: hsl(var(--foreground) / .1); stroke-width: .65; }
@@ -79,8 +73,6 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-pin-halo { fill: hsl(var(--card) / .8); }
   .globe-pin { fill: hsl(var(--primary)); stroke: hsl(var(--card)); stroke-width: 1.5; }
   .globe-label { fill: hsl(var(--foreground)); font-family: var(--font-sans); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: hsl(var(--background)); stroke-width: 3px; stroke-linejoin: round; }
-  .globe-caption-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; color: hsl(var(--muted-foreground)); font-size: .875rem; }
-  .globe-pause { min-height: 44px; color: hsl(var(--primary)); font-size: .75rem; text-decoration: underline; text-underline-offset: 4px; }
   .globe-locations { border-top: 1px solid hsl(var(--border)); }
   .globe-locations details { border-bottom: 1px solid hsl(var(--border)); }
   .globe-locations summary { min-height: 44px; padding: 12px 4px; cursor: pointer; color: hsl(var(--primary)); font-size: .875rem; }

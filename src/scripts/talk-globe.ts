@@ -8,8 +8,7 @@ class TalkGlobe extends HTMLElement {
     const projection = createGlobeProjection();
     const land = this.querySelector<SVGPathElement>("[data-globe-land]");
     const grid = this.querySelector<SVGPathElement>("[data-globe-grid]");
-    const button = this.querySelector<HTMLButtonElement>("[data-globe-pause]");
-    if (!land || !grid || !button) return;
+    if (!land || !grid) return;
     const abort = new AbortController();
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let paused = false;
@@ -18,6 +17,7 @@ class TalkGlobe extends HTMLElement {
     let focused = false;
     let raf = 0;
     let last = 0;
+    let rotationEndsAt = 0;
     let drag: { id: number; x: number; y: number; rotation: [number, number, number]; moved: boolean } | null = null;
     let suppressClick = false;
     let target: { from: [number, number, number]; to: [number, number, number]; start: number } | null = null;
@@ -49,21 +49,23 @@ class TalkGlobe extends HTMLElement {
         projection.rotate(target.from.map((value, index) => value + (target!.to[index] - value) * eased) as [number, number, number]);
         if (progress === 1) target = null;
       } else {
-        const rotation = projection.rotate();
-        rotation[0] += Math.min(last ? now - last : 0, 64) * .004;
-        projection.rotate(rotation);
+        // Without a pause control, keep automatic motion to one short introduction.
+        if (!rotationEndsAt) rotationEndsAt = now + 4000;
+        if (now >= rotationEndsAt) paused = true;
+        else {
+          const rotation = projection.rotate();
+          rotation[0] += Math.min(last ? now - last : 0, 64) * .004;
+          projection.rotate(rotation);
+        }
       }
       last = now;
       render();
       if (canRun()) raf = requestAnimationFrame(tick);
     };
     const sync = () => {
-      button.hidden = reduced.matches;
-      button.textContent = paused ? "Resume rotation" : "Pause rotation";
       if (!canRun()) { cancelAnimationFrame(raf); raf = 0; last = 0; }
       else if (!raf) raf = requestAnimationFrame(tick);
     };
-    button.addEventListener("click", () => { paused = !paused; target = null; sync(); }, { signal: abort.signal });
     const turnTo = (id: string | undefined) => {
       const place = talkPlaces.find((place) => place.id === id);
       if (!place) return;
@@ -103,8 +105,6 @@ class TalkGlobe extends HTMLElement {
     });
     const sphere = this.querySelector("svg")!;
     sphere.dataset.interactive = "";
-    const help = this.querySelector<HTMLElement>("[data-globe-help]");
-    if (help) help.hidden = false;
     sphere.addEventListener("pointerdown", (event) => {
       if (!event.isPrimary || event.button !== 0) return;
       suppressClick = false;
@@ -143,8 +143,8 @@ class TalkGlobe extends HTMLElement {
     sphere.addEventListener("lostpointercapture", endDrag, { signal: abort.signal });
     sphere.addEventListener("pointerenter", () => { hovering = true; sync(); }, { signal: abort.signal });
     sphere.addEventListener("pointerleave", () => { hovering = false; sync(); }, { signal: abort.signal });
-    this.addEventListener("focusin", (event) => { focused = event.target !== button; sync(); }, { signal: abort.signal });
-    this.addEventListener("focusout", (event) => { focused = event.relatedTarget !== button && event.relatedTarget instanceof Node && this.contains(event.relatedTarget); sync(); }, { signal: abort.signal });
+    this.addEventListener("focusin", () => { focused = true; sync(); }, { signal: abort.signal });
+    this.addEventListener("focusout", (event) => { focused = event.relatedTarget instanceof Node && this.contains(event.relatedTarget); sync(); }, { signal: abort.signal });
     document.addEventListener("visibilitychange", sync, { signal: abort.signal });
     reduced.addEventListener("change", () => {
       if (reduced.matches && target) { projection.rotate(target.to); target = null; render(); }

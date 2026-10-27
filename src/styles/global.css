@@ -410,8 +410,8 @@ body:has(.command-dialog[open]) { overflow: hidden; }
 
 .talk-index-meta { line-height: 1.25rem; }
 .talk-index-row h3 a { transition: color var(--motion-color) var(--motion-curve); }
-.talks-index-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem); align-items: center; gap: 16px 64px; padding-bottom: 48px; }
-.talks-index-header > h1 { align-self: end; }
+.talks-index-header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem); grid-template-rows: auto 1fr; align-items: start; gap: 16px 64px; padding-bottom: 48px; }
+.talks-index-header > h1 { align-self: start; }
 .talk-index-meta { font-size: .875rem; }
 .resume-bullets { max-width: 65ch; font-size: 1rem; line-height: 1.6; }
 body[data-motion="static"] :is(.site-action, .site-action-button, .site-link) { transition: none; }
@@ -451,7 +451,7 @@ body[data-motion="static"] :is(.site-action, .site-action-button):is(:hover, :ac
   .project-index-link { justify-self: start; }
   .about-focus { grid-template-columns: 1fr; gap: 32px; }
   .about-focus-heading h2 { max-width: 14ch; }
-  .talks-index-header { grid-template-columns: 1fr; gap: 32px; }
+  .talks-index-header { grid-template-columns: 1fr; grid-template-rows: auto; gap: 32px; }
 }
 @media (max-width: 640px) {
   .site-shell { width: min(calc(100% - 32px), 64rem); }
