@@ -31,36 +31,38 @@ const structuredData = {
   description="Independent software by Enguerrand Allamel for scanning, preserving, and organizing paper records."
   structuredData={structuredData}
 >
-  <header class="site-page-header">
+  <header class="site-page-header" data-reveal>
     <h1 class="site-page-title">Projects</h1>
   </header>
 
-  <section aria-labelledby="project-list-heading">
+  <section class="project-index" aria-labelledby="project-list-heading" data-reveal>
     <h2 id="project-list-heading" class="sr-only">Project list</h2>
-    <div class="site-list mt-0">
-      {projects.map((project) => (
-        <article class="site-list-row grid gap-5 py-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-10">
-          <div class="flex min-w-0 gap-5">
+    <div class="project-index-list">
+      {projects.map((project, index) => (
+        <article class="project-index-row">
+          <span class="project-index-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          <div class="project-index-main">
             {project.image && project.imageAlt && (
-              <a class="project-art-motion h-16 w-16 shrink-0 rounded-xl sm:h-20 sm:w-20" href={project.url} aria-label={`Open ${project.title}`}>
+              <a class="project-index-art project-art-motion" href={project.url} aria-label={`Open ${project.title}`}>
                 <img
                   src={project.image}
                   alt={project.imageAlt}
                   width="80"
                   height="80"
-                  loading="lazy"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchpriority={index === 0 ? "high" : undefined}
                   decoding="async"
-                  class="h-full w-full rounded-xl object-cover shadow-[0_10px_24px_hsl(var(--foreground)/0.1)]"
+                  class="h-full w-full object-cover"
                 />
               </a>
             )}
-            <div class="min-w-0">
+            <div class="project-index-copy">
               <p class="site-eyebrow">{project.status}</p>
-              <h2 class="mt-1 text-2xl font-semibold"><a href={project.url} class="hover:text-primary">{project.title}</a></h2>
-              <p class="mt-3 max-w-3xl leading-relaxed text-muted-foreground">{project.description}</p>
+              <h2><a href={project.url}>{project.title}</a></h2>
+              <p>{project.description}</p>
             </div>
           </div>
-          <ProjectLink class="site-link font-medium md:mt-5" href={project.url} label={project.action} />
+          <ProjectLink class="site-link project-index-link" href={project.url} label={project.action} />
         </article>
       ))}
     </div>

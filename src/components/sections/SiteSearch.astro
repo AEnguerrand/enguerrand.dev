@@ -1,4 +1,6 @@
 ---
+import { MagnifyingGlass } from "@phosphor-icons/react";
+
 type SearchItem = {
   id: string;
   kind: "talk" | "page" | "post";
@@ -71,25 +73,12 @@ const getPreview = (item: SearchItem) => {
     <div class="space-y-3">
       <label
         for="site-search-input"
-        class="text-xs font-semibold tracking-[0.08em] uppercase text-muted-foreground"
+        class="text-xs font-semibold text-muted-foreground"
       >
         Query
       </label>
       <div class="relative">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-        </svg>
+        <MagnifyingGlass className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
         <input
           id="site-search-input"
           data-search-input
@@ -105,28 +94,28 @@ const getPreview = (item: SearchItem) => {
       <button
         type="button"
         data-search-filter="all" aria-pressed="true"
-        class="site-action site-action-primary text-xs tracking-[0.08em] uppercase"
+        class="site-action site-action-primary text-xs"
       >
         All
       </button>
       <button
         type="button"
         data-search-filter="talk" aria-pressed="false"
-        class="site-action site-action-secondary text-xs tracking-[0.08em] uppercase"
+        class="site-action site-action-secondary text-xs"
       >
         Talks
       </button>
       <button
         type="button"
         data-search-filter="post" aria-pressed="false"
-        class="site-action site-action-secondary text-xs tracking-[0.08em] uppercase"
+        class="site-action site-action-secondary text-xs"
       >
         Posts
       </button>
       <button
         type="button"
         data-search-filter="page" aria-pressed="false"
-        class="site-action site-action-secondary text-xs tracking-[0.08em] uppercase"
+        class="site-action site-action-secondary text-xs"
       >
         Pages
       </button>
@@ -145,7 +134,7 @@ const getPreview = (item: SearchItem) => {
           class="block px-2 py-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <div class="mb-1.5 flex flex-wrap items-center gap-2">
-            <span class="inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground">
+            <span class="inline-flex items-center rounded-md border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
               {item.kind === "talk" ? "Talk" : item.kind === "post" ? "Post" : "Page"}
             </span>
             {formatDate(item.date) && (
@@ -160,7 +149,7 @@ const getPreview = (item: SearchItem) => {
           {(item.tags ?? []).length > 0 && (
             <div class="mt-2 flex flex-wrap gap-1.5">
               {(item.tags ?? []).slice(0, 4).map((tag) => (
-                <span class="rounded-full border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground">
+                <span class="rounded-md border border-border/80 bg-secondary/50 px-2 py-0.5 text-xs font-medium text-muted-foreground">
                   {tag}
                 </span>
               ))}
@@ -314,7 +303,7 @@ const getPreview = (item: SearchItem) => {
       const topRow = createTag("div", "mb-1.5 flex flex-wrap items-center gap-2");
       const kind = createTag(
         "span",
-        "inline-flex items-center rounded-full border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-secondary-foreground",
+        "inline-flex items-center rounded-md border border-border/70 bg-secondary/60 px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground",
         item.kind === "talk" ? "Talk" : item.kind === "post" ? "Post" : "Page"
       );
       topRow.appendChild(kind);
@@ -348,7 +337,7 @@ const getPreview = (item: SearchItem) => {
           tagsRow.appendChild(
             createTag(
               "span",
-              "rounded-full border border-border/80 bg-secondary/50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] uppercase text-muted-foreground",
+              "rounded-md border border-border/80 bg-secondary/50 px-2 py-0.5 text-xs font-medium text-muted-foreground",
               tag
             )
           );

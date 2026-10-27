@@ -1,5 +1,5 @@
 ---
-import { Github, Globe2 } from "lucide-react";
+import { GithubLogo, GlobeHemisphereWest } from "@phosphor-icons/react";
 
 interface Props {
   href: string;
@@ -9,10 +9,10 @@ interface Props {
 
 const { href, label, class: className } = Astro.props;
 const isGitHub = new URL(href).hostname === "github.com";
-const Icon = isGitHub ? Github : Globe2;
+const Icon = isGitHub ? GithubLogo : GlobeHemisphereWest;
 ---
 
 <a class={className} href={href}>
-  <Icon size={18} aria-hidden="true" />
+  <Icon size={18} weight="regular" aria-hidden="true" />
   <span>{label}</span>
 </a>

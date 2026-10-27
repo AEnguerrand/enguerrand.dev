@@ -1,5 +1,5 @@
 ---
-import { Search, X } from "lucide-react";
+import { MagnifyingGlass, X } from "@phosphor-icons/react";
 
 type CommandItem = {
   id: string;
@@ -16,7 +16,7 @@ const initialItems = items.slice(0, 8);
 <dialog id="site-command-dialog" class="command-dialog" aria-labelledby="command-dialog-title">
   <div class="command-dialog-shell">
     <header class="command-dialog-header">
-      <Search size={20} className="command-dialog-icon" aria-hidden="true" />
+      <MagnifyingGlass size={20} className="command-dialog-icon" aria-hidden="true" />
       <label id="command-dialog-title" class="sr-only" for="command-dialog-input">Search this site</label>
       <input
         id="command-dialog-input"

@@ -191,11 +191,12 @@ test("Generated pages have no Once UI assets or markup", async () => {
   assert.doesNotMatch(lock, /@once-ui-system/);
 });
 
-test("Blog is linked, empty, and ready for future posts", async () => {
+test("Blog is honest, empty, and hidden from primary navigation until content exists", async () => {
   const blog = await page("blog/index.html");
-  assert.match(text(blog.nodes[0]), /No posts yet\./);
+  assert.match(text(blog.nodes[0]), /No posts yet/);
   assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
-  assert.ok(home.nodes.some((n) => attrs(n).href === "/blog/"));
+  const homeNav = home.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
+  assert.ok(!walk(homeNav).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"));
   const files = await readdir(output, { recursive: true });
   const postFiles = await readdir(new URL("../src/content/posts/", import.meta.url));
   assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 0);
@@ -204,7 +205,7 @@ test("Blog is linked, empty, and ready for future posts", async () => {
 
 test("Primary navigation is consistent across Home, Blog, and talks", async () => {
   const blog = await page("blog/index.html");
-  const expected = ["Talks", "Blog", "Projects", "Radar", "About"];
+  const expected = ["Talks", "Projects", "Radar", "About"];
   for (const current of [home, blog, talk]) {
     const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
     assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);
@@ -234,9 +235,12 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   const cssFiles = (await readdir(new URL("../dist/_astro/", import.meta.url))).filter((file) => file.endsWith(".css"));
   const css = (await Promise.all(cssFiles.map((file) => load(`_astro/${file}`)))).join("\n");
   assert.match(css, /scrollbar-gutter:stable both-edges/);
+  assert.match(css, /cubic-bezier\(\.22,1,\.36,1\)/);
+  assert.doesNotMatch(css, /radial-gradient/);
   const homeOutput = await load("index.html");
   assert.match(homeOutput, /astro-view-transitions/);
   assert.match(homeOutput, /data-astro-transition-persist="site-header"/);
+  assert.match(homeOutput, /data-site-nav-toggle/);
 });
 
 test("Projects has a dedicated page with the public project list", () => {
@@ -247,6 +251,9 @@ test("Projects has a dedicated page with the public project list", () => {
   );
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
     assert.ok(projectsPage.nodes.some((n) => n.tagName === "a" && attrs(n).href === url));
+  const firstProjectImage = projectsPage.nodes.find((n) => n.tagName === "img" && attrs(n).src === "/projects/foliobruma-scanner-icon.png");
+  assert.equal(attrs(firstProjectImage).loading, "eager");
+  assert.equal(attrs(firstProjectImage).fetchpriority, "high");
 });
 
 // Check the public search contract against every built page, not just source templates.

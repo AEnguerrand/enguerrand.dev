@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
 
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
@@ -17,15 +17,15 @@ export function ContactCard() {
         </CardHeader>
         <CardContent className="flex flex-wrap gap-x-6">
           <a href="mailto:hello@enguerrand.dev" className={linkClass}>
-            <Mail className="h-4 w-4" aria-hidden="true" />
+            <EnvelopeSimple className="h-4 w-4" aria-hidden="true" />
             hello@enguerrand.dev
           </a>
           <a href="https://www.linkedin.com/in/enguerrandallamel/" target="_blank" rel="noreferrer" className={linkClass}>
-            <Linkedin className="h-4 w-4" aria-hidden="true" />
+            <LinkedinLogo className="h-4 w-4" aria-hidden="true" />
             LinkedIn
           </a>
           <a href="https://github.com/AEnguerrand" target="_blank" rel="noreferrer" className={linkClass}>
-            <Github className="h-4 w-4" aria-hidden="true" />
+            <GithubLogo className="h-4 w-4" aria-hidden="true" />
             GitHub
           </a>
         </CardContent>

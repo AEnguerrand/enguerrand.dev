@@ -1,16 +1,17 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { ArrowRight } from "@phosphor-icons/react";
 import { formatPostDate, getPosts, isPublishedPost, postHref } from "@/lib/posts";
 
 const posts = await getPosts({ includeUnpublished: import.meta.env.DEV });
 ---
 
-<BaseLayout noindex={import.meta.env.DEV} title="Security, AI & Canada Blog" description="Notes on life in Canada, security, and AI by Enguerrand Allamel.">
-  <section class="site-page-header" aria-labelledby="blog-title">
+<BaseLayout noindex={import.meta.env.DEV} title="Blog" description="Notes on platform security, software delivery, and practical tools by Enguerrand Allamel.">
+  <section class="site-page-header" aria-labelledby="blog-title" data-reveal>
     <h1 id="blog-title" class="site-page-title">Blog</h1>
   </section>
 
-  <section class="site-section-divider" aria-label="Blog posts">
+  <section class="site-section-divider" aria-label="Blog posts" data-reveal>
     {posts.length > 0 ? (
       <>
         <h2 class="mb-4 text-2xl font-semibold tracking-tight">Latest posts</h2>
@@ -35,7 +36,15 @@ const posts = await getPosts({ includeUnpublished: import.meta.env.DEV });
         </ul>
       </>
     ) : (
-      <p class="py-8 text-lg text-muted-foreground">No posts yet.</p>
+      <div class="blog-empty-state">
+        <p class="site-eyebrow">No posts yet</p>
+        <h2>Writing will appear here.</h2>
+        <p>I have not published a blog post yet. My talks and technical radar are available now.</p>
+        <div class="blog-empty-actions">
+          <a class="site-link" href="/talks/">Browse talks <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
+          <a class="site-link" href="/radar/">Explore the radar <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
+        </div>
+      </div>
     )}
   </section>
 </BaseLayout>

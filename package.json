@@ -23,6 +23,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@fontsource-variable/fraunces": "^5.2.9",
     "@fontsource-variable/space-grotesk": "^5.2.10",
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-label": "^2.1.1",
@@ -31,7 +32,6 @@
     "astro": "^7.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.469.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4"
