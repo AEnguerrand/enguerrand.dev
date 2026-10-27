@@ -5,6 +5,7 @@ import { Hero } from "@/components/sections/Hero";
 import { getCollection, getEntry } from "astro:content";
 import { ArrowRight } from "@phosphor-icons/react";
 import { formatPostDate, getPosts, postHref } from "@/lib/posts";
+import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 import "@/styles/home.css";
 
 const allTalks = await getCollection("talks");
@@ -14,6 +15,9 @@ const talks = ["meetup-owasp-france-chapter-10-2025", "kubecon-na-2024"]
 const homePage = await getEntry("pages", "home");
 const posts = (await getPosts()).slice(0, 3);
 const projects = homePage?.data.projects ?? [];
+const radarTopics = ["personal", "ai-ml", "kubernetes", "supply-chain-security"]
+  .map((slug) => starsGroups.find((group) => group.slug === slug))
+  .filter((group): group is NonNullable<typeof group> => Boolean(group));
 const eventLabels: Record<string, string> = {
   "meetup-owasp-france-chapter-10-2025": "OWASP France",
   "kubecon-na-2024": "KubeCon North America",
@@ -39,9 +43,30 @@ const talkFormats = (talk: typeof talks[number]) => {
 >
   <Hero />
 
+  <nav class="home-work-index" aria-label="Explore my work" data-reveal data-reveal-group>
+    <a href="#selected-talks" class="home-work-index-item" data-reveal-item>
+      <span class="home-work-index-number" aria-hidden="true">01</span>
+      <span class="home-work-index-copy"><span>Talks</span><strong>Share</strong></span>
+      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
+    </a>
+    <a href="#projects" class="home-work-index-item" data-reveal-item>
+      <span class="home-work-index-number" aria-hidden="true">02</span>
+      <span class="home-work-index-copy"><span>Projects</span><strong>Build</strong></span>
+      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
+    </a>
+    <a href="#explore" class="home-work-index-item" data-reveal-item>
+      <span class="home-work-index-number" aria-hidden="true">03</span>
+      <span class="home-work-index-copy"><span>Radar</span><strong>Explore</strong></span>
+      <ArrowRight size={24} className="motion-arrow" aria-hidden="true" />
+    </a>
+  </nav>
+
   <section id="selected-talks" class="home-talks" aria-labelledby="talks-title" data-reveal data-reveal-group>
     <div class="home-section-heading" data-reveal-item>
-      <h2 id="talks-title">Talks</h2>
+      <div class="home-chapter-title">
+        <span aria-hidden="true">01</span>
+        <h2 id="talks-title">Talks</h2>
+      </div>
       <a class="site-action-button site-action-button-secondary home-section-action" href="/talks/">All talks <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
     </div>
     <ul class="home-list home-talk-list">
@@ -66,7 +91,10 @@ const talkFormats = (talk: typeof talks[number]) => {
   <div class:list={["home-content-columns", { "home-content-columns-single": posts.length === 0 }]} data-reveal data-reveal-group>
     <section id="projects" class="home-projects" aria-labelledby="projects-title">
       <div class="home-section-heading" data-reveal-item>
-        <h2 id="projects-title">Projects</h2>
+        <div class="home-chapter-title">
+          <span aria-hidden="true">02</span>
+          <h2 id="projects-title">Projects</h2>
+        </div>
         <a class="site-action-button site-action-button-secondary home-section-action" href="/projects/">All projects <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
       </div>
       {projects.length ? (
@@ -113,20 +141,45 @@ const talkFormats = (talk: typeof talks[number]) => {
     )}
   </div>
 
-  <section class="home-exploring" aria-labelledby="exploring-title" data-reveal data-reveal-group>
-    <div class="home-exploring-heading" data-reveal-item>
-      <div>
-        <h2 id="exploring-title">{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h2>
+  <section id="explore" class="home-explore" aria-labelledby="explore-title" data-reveal data-reveal-group>
+    <div class="home-section-heading" data-reveal-item>
+      <div class="home-chapter-title">
+        <span aria-hidden="true">03</span>
+        <h2 id="explore-title">Explore</h2>
       </div>
-      {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
+      <a class="site-action-button site-action-button-secondary home-section-action" href="/radar/">Open radar <ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></a>
     </div>
-    <div class="home-exploring-grid">
-      {homePage?.data.currentExploring?.map((item) => (
-        <article class="home-exploring-card" data-reveal-item>
-          <h3>{item.title}</h3>
-          <p>{item.description}</p>
-        </article>
-      ))}
+
+    <div class="home-explore-layout">
+      <div class="home-current" data-reveal-item>
+        <div class="home-current-heading">
+          <h3>{homePage?.data.currentExploringTitle ?? "Currently exploring"}</h3>
+          {homePage?.data.currentExploringUpdated && <p class="home-exploring-updated">Updated {homePage.data.currentExploringUpdated}</p>}
+        </div>
+        <div class="home-exploring-grid">
+          {homePage?.data.currentExploring?.map((item) => (
+            <article class="home-exploring-card">
+              <h4>{item.title}</h4>
+              <p>{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <aside class="home-radar-preview" aria-labelledby="radar-preview-title" data-reveal-item>
+        <h3 id="radar-preview-title">Radar</h3>
+        <ul>
+          {radarTopics.map((topic) => (
+            <li>
+              <a href={starsListHref(topic.slug)}>
+                <span>{starsListName(topic.name)}</span>
+                <span>{topic.repos.length}<ArrowRight size={16} className="motion-arrow" aria-hidden="true" /></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a class="home-link home-radar-all" href="/github-stars/">All radar topics <ArrowRight size={18} className="motion-arrow" aria-hidden="true" /></a>
+      </aside>
     </div>
   </section>
 </BaseLayout>
