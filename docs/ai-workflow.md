@@ -27,7 +27,7 @@ git fetch origin
 npm run review:site -- --base origin/main
 ```
 
-The base ref resolves to a full commit before work starts. Use the intended target revision. The command runs `git diff --check`, `check:site`, `build`, and `test:site` once on the candidate. The publication tests make three additional builds in an isolated copy: empty, unpublished, and mixed content. These fixtures never enter the author's posts or the candidate output.
+The base ref resolves to a full commit before work starts. Use the intended target revision. The command checks whitespace across the base-to-HEAD diff and in local working-tree and staged changes, then runs `check:site`, `build`, and `test:site` once on the candidate. The publication tests make three additional builds in an isolated copy: empty, unpublished, and mixed content. These fixtures never enter the author's posts or the candidate output.
 
 The command extracts the base with `git archive`, installs its locked dependencies, and builds it in a temporary directory. It compares that output with the candidate using the same browser, fonts, viewport sizes, locale, time zone, and reduced-motion setting. The temporary baseline is removed when the command ends. The candidate output stays in `dist/`.
 
@@ -37,7 +37,7 @@ Review packages have a unique directory under `artifacts/site-review/`:
 | --- | --- |
 | `review.html` | Image pairs for Home, KubeCon NA 2024, Blog, AWS Summit Paris 2025, and Stars at 390, 768, and 1440 pixels |
 | `summary.md`, `report.json` | Revisions, source hash, working-tree state, check results, changed files, human-review paths, and limits |
-| `text-and-links.diff` | Changes to rendered main text, links, metadata, and structured data across all built pages |
+| `text-and-links.diff` | Changes to rendered main text, exact code-block text, links, metadata, and structured data across all built pages |
 | `base/`, `candidate/` | Output snapshots, JavaScript asset sizes, screenshots, and browser results; candidate traces include each route and viewport |
 | `*.log` | Output from each command, including a failed command |
 | `preview/` | Candidate static output for local review |
@@ -51,7 +51,7 @@ npx playwright show-trace PACKAGE/candidate/home-390.zip
 
 The browser checks one H1, heading order, IDs, local anchors, horizontal overflow, console errors, local HTTP failures, the skip link and its focus outline, search open/query/close behavior (Escape can first clear the native search field), and static talk links without JavaScript. They reject unexpected Astro islands on the tested routes. A feature that needs hydration must make that exception explicit in review.
 
-Review all visible differences. There is no automatic visual-baseline acceptance. The JavaScript inventory records asset bytes on disk; it does not measure network transfer or inline script bytes. The text diff covers generated public pages, so unpublished prose stays out of it.
+Review all visible differences. There is no automatic visual-baseline acceptance. The JavaScript inventory records asset bytes on disk; it does not measure network transfer or inline script bytes. The text diff covers generated public pages, so unpublished prose stays out of it. It preserves code-block indentation, tabs, blank lines, and trailing spaces in a separate `codeBlocks` field. Prose whitespace is normalized. Changed-file lists use NUL delimiters so filenames with accents, spaces, tabs, or newlines reach the human-review classification intact.
 
 ## Interpret results
 

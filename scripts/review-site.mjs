@@ -6,12 +6,13 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { captureBrowser, snapshotOutput } from "./lib/review-browser.mjs";
+import { getChangedFiles, getHumanReviewPaths, getWhitespaceChecks, gitOutput } from "./lib/review-git.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const { values } = parseArgs({ options: { base: { type: "string", default: "origin/main" } } });
-const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
-const base = git("rev-parse", "--verify", `${values.base}^{commit}`);
-const head = git("rev-parse", "HEAD");
+const git = (...args) => gitOutput(root, ...args);
+const base = git("rev-parse", "--verify", `${values.base}^{commit}`).trim();
+const head = git("rev-parse", "HEAD").trim();
 const output = join(root, "artifacts/site-review", `${new Date().toISOString().replaceAll(":", "-")}-${head.slice(0, 8)}`);
 await mkdir(output, { recursive: true });
 const files = git("ls-files", "--cached", "--others", "--exclude-standard", "-z").split("\0").filter(Boolean).sort();
@@ -24,11 +25,11 @@ async function sourceHash() {
   }
   return hash.digest("hex");
 }
-const changedFiles = [...new Set([...git("diff", "--name-only", base, "--").split("\n"), ...git("ls-files", "--others", "--exclude-standard").split("\n")].filter(Boolean))];
+const changedFiles = getChangedFiles(root, base);
 const report = {
   base, head, sourceHash: await sourceHash(), workingTree: git("status", "--porcelain"),
   started: new Date().toISOString(), status: "running", changedFiles,
-  humanReview: changedFiles.filter((file) => /^(src\/content\/|src\/lib\/posts\.ts|src\/content\.config\.ts|src\/pages\/blog\/|src\/layouts\/|scripts\/|\.github\/|AGENTS\.md|package(?:-lock)?\.json|astro\.config\.mjs|wrangler\.toml)/.test(file)),
+  humanReview: getHumanReviewPaths(changedFiles),
   checks: [],
   limits: ["Author content and publication decisions need human review.", "Chromium only; screenshots use reduced motion and fixed viewports.", "External requests are replaced with empty responses; live resources and video playback are not checked.", "Automated keyboard and structure checks do not prove full screen-reader support.", "No merge, deployment, branch-rule update, or content publication is performed."],
 };
@@ -46,8 +47,8 @@ function step(name, command, args, cwd = root) {
 }
 const escape = (value) => String(value).replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 try {
-  await step("diff-check", "git", ["diff", "--check"]);
-  await step("staged-diff-check", "git", ["diff", "--cached", "--check"]);
+  for (const check of getWhitespaceChecks(base, head))
+    await step(check.name, "git", check.args);
   await step("check-site", "npm", ["run", "check:site"]);
   await step("build", "npm", ["run", "build"]);
   await step("test-site", "npm", ["run", "test:site"]);

@@ -23,6 +23,8 @@ export async function snapshotOutput(dist, output) {
       metadata: nodes.filter((n) => n.tagName === "meta" || (n.tagName === "link" && attrs(n).rel === "canonical")).map(attrs),
       structuredData: nodes.filter((n) => attrs(n).type === "application/ld+json").map((n) => JSON.parse(n.childNodes.map((child) => child.value ?? "").join(""))),
       content: text(nodes.find((n) => n.tagName === "main") ?? {}).replace(/\s+/g, " ").trim(),
+      // Code indentation, blank lines, tabs, and trailing spaces can change an example.
+      codeBlocks: nodes.filter((n) => n.tagName === "pre").map(text),
       links: nodes.filter((n) => n.tagName === "a").map((n) => ({ text: text(n).replace(/\s+/g, " ").trim(), href: attrs(n).href })),
     });
   }
