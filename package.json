@@ -20,7 +20,7 @@
     "@astrojs/markdown-satteri": "^0.3.1",
     "@astrojs/mdx": "^7.0.5",
     "@astrojs/react": "^6.0.2",
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/fraunces": "^5.2.9",
     "@fontsource-variable/space-grotesk": "^5.2.10",
     "@phosphor-icons/react": "^2.1.10",
@@ -49,5 +49,8 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "postcss-selector-parser": "6.1.5"
   }
 }
