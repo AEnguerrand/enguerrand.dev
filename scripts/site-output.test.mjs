@@ -62,10 +62,10 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
   assert.equal(blog, undefined, "Home must hide Blog until a post is published");
   const projects = home.nodes.find((n) => attrs(n).id === "projects");
-  assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma"]);
-  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+  assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma", "Chaud à Grospierres"]);
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com", "https://chaudagrospierres.fr"])
     assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === url));
-  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://github.com/AEnguerrand/foliobruma-scanner" && text(n) === "GitHub"));
+  assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://github.com/AEnguerrand/foliobruma-scanner" && text(n) === "View source"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://foliobruma.com" && text(n) === "Website"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
   assert.match(text(selected), /Notes.*French/s);
@@ -287,9 +287,9 @@ test("Projects has a dedicated page with the public project list", () => {
   assert.equal(projectsPage.nodes.filter((n) => n.tagName === "h1").length, 1);
   assert.deepEqual(
     projectsPage.nodes.filter((n) => n.tagName === "h2" && attrs(n).id !== "project-list-heading").map(text),
-    ["Foliobruma Scanner", "Foliobruma"],
+    ["Foliobruma Scanner", "Foliobruma", "Chaud à Grospierres"],
   );
-  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com"])
+  for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com", "https://chaudagrospierres.fr"])
     assert.ok(projectsPage.nodes.some((n) => n.tagName === "a" && attrs(n).href === url));
   const firstProjectImage = projectsPage.nodes.find((n) => n.tagName === "img" && attrs(n).src === "/projects/foliobruma-scanner-icon.png");
   assert.equal(attrs(firstProjectImage).loading, "eager");

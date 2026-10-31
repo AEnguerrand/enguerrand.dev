@@ -5,7 +5,7 @@ import SectionHeading from "@/components/SectionHeading.astro";
 import ExplorationList from "@/components/ExplorationList.astro";
 import { Hero } from "@/components/sections/Hero";
 import { getCollection, getEntry } from "astro:content";
-import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { formatPostDate, getPosts, postHref } from "@/lib/posts";
 import "@/styles/home.css";
 
@@ -86,7 +86,6 @@ const talkFormats = (talk: typeof talks[number]) => {
           ))}
         </ul>
       ) : <p class="home-empty">Project write-ups are on the way. In the meantime, you can explore my public work on GitHub.</p>}
-      <a class="site-link home-archive-link" href="https://github.com/AEnguerrand?tab=repositories">Projects on GitHub <ArrowUpRight size={18} className="motion-arrow motion-arrow-external" aria-hidden="true" /></a>
     </section>
 
     {posts.length > 0 && (
