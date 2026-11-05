@@ -125,17 +125,18 @@ const skills = [
   pageType="ProfilePage"
   description="Resume of Enguerrand Allamel, a Senior Platform Security Engineer specializing in AI development guardrails, AWS, Kubernetes, SLSA, SRE, and secure CI/CD."
 >
-  <header class="site-page-header">
+  <header class="site-page-header resume-header">
     <p class="site-eyebrow">Resume</p>
-    <h1 class="site-page-title">Enguerrand Allamel — Platform Security Engineer</h1>
-    <p class="site-lead">
+    <h1 class="site-page-title">Enguerrand Allamel</h1>
+    <p class="resume-title">Platform Security Engineer</p>
+    <p class="site-lead resume-intro">
       Senior Platform Security Engineer with a strong SRE background and hands-on work
       across AI-first development, cloud security, Kubernetes, AWS, and CI/CD in
       production.
     </p>
     <div class="mt-5">
       <a
-        class="site-action site-action-primary"
+        class="site-action site-action-primary resume-link"
         href="https://www.linkedin.com/in/enguerrandallamel/"
         target="_blank"
         rel="noreferrer"
@@ -146,27 +147,29 @@ const skills = [
     </div>
   </header>
 
-  <section class="site-section-divider" aria-labelledby="experience-heading">
-    <h2 id="experience-heading" class="text-3xl">Work Experience</h2>
-    <div class="site-list">
+  <section class="site-section-divider resume-experience" aria-labelledby="experience-heading">
+    <h2 id="experience-heading" class="resume-section-title">Work Experience</h2>
+    <div class="resume-companies">
       {experience.map((company) => (
-        <article class="site-list-row py-7">
-          <div class="flex flex-wrap items-baseline justify-between gap-3">
-            <h3 class="text-2xl font-semibold">{company.company}</h3>
-            <span class="text-sm text-muted-foreground">{company.period}</span>
+        <article class="resume-company">
+          <div class="resume-company-heading">
+            <h3>{company.company}</h3>
+            {company.roles.length > 1 && <p class="resume-period">{company.period}</p>}
           </div>
-          <div class="mt-5 space-y-6">
-            {company.roles.map((role, index) => (
-              <div class:list={["space-y-3", { "border-t border-border/70 pt-6": index > 0 }]}>
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h4 class="text-lg font-semibold">{role.title}</h4>
-                  {role.period && <span class="text-sm text-muted-foreground">{role.period}</span>}
+          <div class="resume-roles">
+            {company.roles.map((role) => (
+              <div class="resume-role">
+                <p class="resume-period resume-role-period">{role.period ?? company.period}</p>
+                <div class="resume-role-content">
+                <div class="resume-role-heading">
+                  <h4>{role.title}</h4>
                 </div>
-                <ul class="resume-bullets list-disc space-y-2 pl-5 text-muted-foreground">
+                <ul class="resume-bullets">
                   {role.bullets.map((bullet) => (
                     <li>{bullet}</li>
                   ))}
                 </ul>
+                </div>
               </div>
             ))}
           </div>
@@ -175,9 +178,9 @@ const skills = [
     </div>
   </section>
 
-  <section class="grid gap-10 py-10 lg:grid-cols-2">
-    <article class="site-section-divider">
-      <h2 class="text-2xl">Education</h2>
+  <section class="resume-details">
+    <article>
+      <h2 class="resume-section-title">Education</h2>
       <div class="site-list">
         {education.map((item) => (
           <div class="site-list-row space-y-1 py-4">
@@ -189,8 +192,8 @@ const skills = [
       </div>
     </article>
 
-    <article class="site-section-divider">
-      <h2 class="text-2xl">Community & Speaking</h2>
+    <article>
+      <h2 class="resume-section-title">Community & Speaking</h2>
       <div class="site-list space-y-3 py-4 text-sm leading-relaxed text-muted-foreground">
         <p>Speaker at KubeCon + CloudNativeCon (North America, China), AWS Summit, and CNCF / OWASP meetups.</p>
         <p>Contributor to open-source and security projects.</p>
@@ -198,8 +201,8 @@ const skills = [
     </article>
   </section>
 
-  <section class="site-section-divider" aria-labelledby="skills-heading">
-    <h2 id="skills-heading" class="text-2xl">Technical Skills</h2>
+  <section class="site-section-divider resume-skills" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="resume-section-title">Technical Skills</h2>
     <div class="mt-6">
       <p class="site-eyebrow">Certifications</p>
       <div class="site-list grid gap-x-6 sm:grid-cols-2">
@@ -239,3 +242,56 @@ const skills = [
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .resume-header {max-width:760px;padding-bottom:32px;}
+  .resume-header h1 {font-size:clamp(2.25rem,4vw,3.5rem);line-height:1.12;letter-spacing:-.035em;}
+  .resume-title {margin-top:10px;font-size:1.25rem;font-weight:500;color:hsl(var(--primary));}
+  .resume-intro {max-width:68ch;margin-top:20px;font-size:1rem;line-height:1.75;}
+  .resume-link {display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:.875rem;}
+  .resume-section-title {margin:0;font-size:1.5rem;line-height:1.3;}
+  .resume-experience {padding-top:28px;}
+  .resume-companies {margin-top:8px;}
+  .resume-company {display:grid;grid-template-columns:12rem minmax(0,1fr);gap:48px;padding:32px 0;}
+  .resume-company + .resume-company {border-top:1px solid hsl(var(--border));}
+  .resume-company-heading h3 {font-size:1.5rem;line-height:1.3;}
+  .resume-period {margin-top:7px;font-size:.875rem;line-height:1.6;color:hsl(var(--muted-foreground));}
+  .resume-roles {display:contents;}
+  .resume-role {display:grid;grid-template-columns:subgrid;grid-column:1 / -1;gap:0 48px;}
+  .resume-role-content {grid-column:2;}
+  .resume-company-heading {grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;}
+  .resume-role-period {grid-column:1;margin-top:0;}
+  .resume-role + .resume-role {margin-top:32px;}
+  .resume-company {row-gap:16px;}
+  .resume-role h4 {font-family:var(--font-sans);font-size:1.125rem;font-weight:600;line-height:1.5;}
+  .resume-bullets {margin-top:12px;padding-left:18px;max-width:65ch;list-style:disc;font-size:1rem;line-height:1.6;color:hsl(var(--muted-foreground));}
+  .resume-bullets li + li {margin-top:7px;}
+  .resume-bullets li::marker {color:hsl(var(--primary) / .6);}
+  .resume-details {display:grid;grid-template-columns:1fr 1fr;gap:48px;margin:12px 0 36px;padding-top:28px;border-top:1px solid hsl(var(--border));}
+  .resume-details .site-list {margin-top:14px;}
+  .resume-details .site-list-row {border:0;}
+  .resume-details .site-list {border:0;}
+  .resume-skills .site-list-row {border:0;}
+  .resume-skills .site-list {border:0;}
+  .resume-skills {padding-top:28px;}
+  @media (max-width:700px) {
+    .resume-company {grid-template-columns:1fr;gap:18px;padding:26px 0;}
+    .resume-role {display:block;}
+    .resume-role-period {margin-bottom:8px;}
+    .resume-company-heading {display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;}
+    .resume-period {margin-top:4px;}
+    .resume-details {grid-template-columns:1fr;gap:28px;}
+    .resume-header {padding-bottom:24px;}
+  }
+  @media print {
+    .resume-header {padding-bottom:16px;}
+    .resume-header h1 {font-size:26pt;}
+    .resume-title {font-size:13pt;}
+    .resume-link {display:none;}
+    .resume-company {grid-template-columns:140px minmax(0,1fr);gap:24px;padding:18px 0;}
+    .resume-role-heading,.resume-company-heading {break-after:avoid;}
+    .resume-bullets li {break-inside:avoid;}
+    .resume-role + .resume-role {margin-top:18px;}
+    .resume-bullets,.resume-intro {font-size:10pt;line-height:1.5;}
+  }
+</style>

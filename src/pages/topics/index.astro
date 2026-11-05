@@ -12,9 +12,8 @@ for (const talk of talks) {
   }
 }
 
-const topics = ["cloud security", "software supply chain security", "npm"]
-  .map(name => ({name, count: topicCounts.get(name) ?? 0}))
-  .filter(topic => topic.count > 0);
+const topics = Array.from(topicCounts, ([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count || topicTitle(a.name).localeCompare(topicTitle(b.name), "en"));
 
 const structuredData = {
   "@type": "CollectionPage",
@@ -43,8 +42,8 @@ const structuredData = {
   structuredData={structuredData}
 >
   <header class="site-page-header">
-    <h1 class="site-page-title">Topics</h1>
-    <p class="site-lead">Cloud security, software supply chains, and dependency security. Choose a topic to find related talks.</p>
+    <h1 class="site-page-title">Talk topics</h1>
+    <p class="site-lead">Browse {topics.length} topics from conference talks and workshops.</p>
   </header>
   <section class="site-section-divider" aria-labelledby="topic-list-heading">
     <h2 id="topic-list-heading" class="sr-only">Browse topics</h2>

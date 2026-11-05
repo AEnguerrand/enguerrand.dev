@@ -21,14 +21,14 @@ const { languages, pageNumber, slug, total } = Astro.props;
         data-radar-query
       />
     </label>
-    <label class="radar-filter-field">
+    <label class="radar-filter-field radar-filter-secondary">
       <span>Language</span>
       <select name="language" data-radar-language>
         <option value="">All languages</option>
         {languages.map((language) => <option value={language}>{language}</option>)}
       </select>
     </label>
-    <label class="radar-filter-field">
+    <label class="radar-filter-field radar-filter-secondary">
       <span>Status</span>
       <select name="status" data-radar-status>
         <option value="">Any status</option>
@@ -81,6 +81,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
     ) return;
 
     let repositoriesPromise;
+    let renderVersion = 0;
 
     const loadRepositories = () => {
       repositoriesPromise ??= fetch("/data/starred-groups.json", { signal: controller.signal })
@@ -111,7 +112,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
 
       if (repository.description) {
         const description = document.createElement("p");
-        description.className = "mt-2 text-sm leading-relaxed text-muted-foreground";
+        description.className = "mt-2 text-base leading-relaxed text-muted-foreground";
         description.textContent = repository.description;
         article.append(description);
       }
@@ -137,6 +138,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
     };
 
     const render = async () => {
+      const version = ++renderVersion;
       const query = normalize(queryInput.value);
       const language = languageSelect.value;
       const status = statusSelect.value;
@@ -158,7 +160,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
       summary.textContent = "Filtering repositories…";
       try {
         const repositories = await loadRepositories();
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || version !== renderVersion) return;
         const matches = repositories.filter((repository) => {
           const searchable = normalize([
             repository.full_name,
@@ -180,7 +182,9 @@ const { languages, pageNumber, slug, total } = Astro.props;
         }
         summary.textContent = `${matches.length} ${matches.length === 1 ? "repository" : "repositories"} found.`;
       } catch (error) {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || version !== renderVersion) return;
+        repositoriesPromise = undefined;
+        if (pagination instanceof HTMLElement) pagination.hidden = false;
         summary.textContent = "Repository filtering is unavailable. The current page is still available below.";
         defaultList.hidden = false;
         results.hidden = true;
@@ -211,3 +215,11 @@ const { languages, pageNumber, slug, total } = Astro.props;
     initializeRadarFilter();
   })();
 </script>
+
+<style>
+  @media(max-width:767px) {
+    .radar-filter-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+    .radar-filter-query {grid-column:1 / -1;}
+    .radar-filter-clear {width:fit-content;}
+  }
+</style>

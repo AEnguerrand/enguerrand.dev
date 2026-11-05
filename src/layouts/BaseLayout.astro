@@ -1,11 +1,10 @@
 ---
 import "../styles/global.css";
+import HarbourFooter from "@/components/HarbourFooter.astro";
 import CommandPalette from "@/components/CommandPalette.astro";
-import { getCollection, getEntry } from "astro:content";
+import { getSearchItems, searchLabels } from "@/lib/site-search";
 import { ClientRouter } from "astro:transitions";
-import { getPosts, postHref } from "@/lib/posts";
 import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib/seo";
-import { starsGroups, starsListHref, starsListName } from "@/lib/stars";
 
 interface Props {
   home?: boolean;
@@ -109,52 +108,14 @@ const jsonLd = {
   ...defaultStructuredData,
   "@graph": [...defaultStructuredData["@graph"], ...extraStructuredData],
 };
-const [talks, posts, homePage] = await Promise.all([
-  getCollection("talks"),
-  getPosts(),
-  getEntry("pages", "home"),
-]);
-const commandItems = [
-  { id: "page-home", title: "Home", href: "/", kind: "Page", keywords: "Enguerrand Allamel platform security" },
-  { id: "page-talks", title: "Talks", href: "/talks/", kind: "Page", keywords: "conference workshops videos slides" },
-  { id: "page-projects", title: "Projects", href: "/projects/", kind: "Page", keywords: "software open source" },
-  { id: "page-radar", title: "Radar", href: "/radar/", kind: "Page", keywords: "technical library github stars" },
-  { id: "page-blog", title: "Blog", href: "/blog/", kind: "Page", keywords: "articles field notes" },
-  { id: "page-about", title: "About", href: "/about/", kind: "Page", keywords: "Enguerrand Allamel biography" },
-  { id: "page-resume", title: "Resume", href: "/resume/", kind: "Page", keywords: "experience work cv" },
-  { id: "page-stars", title: "All Radar topics", href: "/github-stars/", kind: "Page", keywords: "repositories technical resources bookmarks" },
-  { id: "page-topics", title: "Topics", href: "/topics/", kind: "Page", keywords: "talk subjects tags" },
-  { id: "page-search", title: "Full search", href: "/search/", kind: "Page", keywords: "site search" },
-  { id: "page-privacy", title: "Privacy", href: "/privacy/", kind: "Page", keywords: "analytics data" },
-  ...(homePage?.data.projects ?? []).map((project, index) => ({
-    id: `project-${index}`,
-    title: project.title,
-    href: project.url,
-    kind: "Project",
-    keywords: `${project.description} ${project.status}`,
-  })),
-  ...talks.map((talk) => ({
-    id: `talk-${talk.id}`,
-    title: talk.data.displayTitle ?? talk.data.title,
-    href: `/talks/${talk.id}/`,
-    kind: "Talk",
-    keywords: [talk.data.title, talk.data.event, talk.data.summary, ...(talk.data.tags ?? [])].filter(Boolean).join(" "),
-  })),
-  ...posts.map((post) => ({
-    id: `post-${post.id}`,
-    title: post.data.title,
-    href: postHref(post.id),
-    kind: "Post",
-    keywords: `${post.data.description} ${post.data.tags.join(" ")}`,
-  })),
-  ...starsGroups.map((group) => ({
-    id: `stars-${group.slug}`,
-    title: starsListName(group.name),
-    href: starsListHref(group.slug),
-    kind: "Radar topic",
-    keywords: `${group.description ?? ""} ${group.slug.replaceAll("-", " ")}`,
-  })),
-];
+const searchItems = await getSearchItems();
+const showBlog = searchItems.some(item => item.kind === "post");
+const commandItems = searchItems.map(item => ({
+  title: item.title, href: item.href, kind: searchLabels[item.kind],
+  // Topic titles already contain their search term. Keep long descriptions in full search.
+  keywords: item.kind === "topic" ? undefined :
+    [item.summary, item.fullTitle, item.event, ...(item.tags ?? [])].filter(Boolean).join(" "),
+}));
 ---
 <!doctype html>
 <html lang="en">
@@ -201,11 +162,10 @@ const commandItems = [
     <ClientRouter fallback="swap" />
   </head>
   <body transition:animate="none" data-motion={pageMotion} class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
-    <a href="#main-content" class="skip-link">Skip to content</a>
     <div class="site-page relative isolate min-h-screen">
       <header transition:persist="site-header" class="site-header site-shell">
         <nav class="site-nav" aria-label="Main navigation" data-site-nav>
-          <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Enguerrand Allamel</a>
+          <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>{home ? "Home" : "Enguerrand Allamel"}</a>
           <button
             class="site-nav-toggle"
             type="button"
@@ -219,12 +179,11 @@ const commandItems = [
           </button>
           <div id="site-nav-links" class="site-nav-links" data-site-nav-links>
             <a href="/talks/" aria-current={Astro.url.pathname.startsWith("/talks/") ? "page" : undefined}>Talks</a>
-            {posts.length > 0 && <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>}
+            {showBlog && <a href="/blog/" aria-current={Astro.url.pathname.startsWith("/blog/") ? "page" : undefined}>Blog</a>}
             <a href="/projects/" aria-current={Astro.url.pathname.startsWith("/projects/") ? "page" : undefined}>Projects</a>
             <a href="/radar/" aria-current={Astro.url.pathname.startsWith("/radar/") || Astro.url.pathname.startsWith("/github-stars/") ? "page" : undefined}>Radar</a>
             <a href="/about/" aria-current={Astro.url.pathname.startsWith("/about/") || Astro.url.pathname.startsWith("/resume/") ? "page" : undefined}>About</a>
           </div>
-          <span class="site-nav-indicator" aria-hidden="true" data-site-nav-indicator></span>
         </nav>
       </header>
 
@@ -233,20 +192,7 @@ const commandItems = [
         <slot />
       </main>
 
-      <footer class="site-footer site-shell">
-        <div class="site-footer-message">
-          <p class="site-footer-kicker">Based in Vancouver, BC, Canada <span aria-hidden="true">🇨🇦</span></p>
-        </div>
-        <div class="site-footer-bottom">
-          <a class="site-footer-email" href="mailto:hello@enguerrand.dev">hello@enguerrand.dev</a>
-          <div class="site-footer-links">
-            <a href="/github-stars/">Radar topics</a>
-            <a href="/topics/">Topics</a>
-            <a href="/search/">Search</a>
-            <a href="/privacy/">Privacy</a>
-          </div>
-        </div>
-      </footer>
+      <HarbourFooter showBlog={showBlog} home={home} />
     </div>
     <CommandPalette items={commandItems} />
     <script is:inline>
@@ -259,6 +205,8 @@ const commandItems = [
         window.__siteRevealObserver?.disconnect();
 
         const currentPath = window.location.pathname;
+        const brand = document.querySelector(".site-brand");
+        if (brand) brand.textContent = currentPath === "/" ? "Home" : "Enguerrand Allamel";
         document.querySelectorAll(".site-nav a").forEach((link) => {
           const linkPath = new URL(link.href, window.location.origin).pathname;
           const isCurrent = linkPath === "/"
@@ -279,25 +227,7 @@ const commandItems = [
         const nav = document.querySelector("[data-site-nav]");
         const navToggle = document.querySelector("[data-site-nav-toggle]");
         const navLinks = document.querySelector("[data-site-nav-links]");
-        const navIndicator = document.querySelector("[data-site-nav-indicator]");
         const mobileNavigation = window.matchMedia("(max-width: 767px)");
-
-        const syncNavIndicator = () => {
-          if (!(nav instanceof HTMLElement) || !(navIndicator instanceof HTMLElement) || mobileNavigation.matches) {
-            navIndicator?.removeAttribute("data-ready");
-            return;
-          }
-
-          const currentLink = nav.querySelector('a[aria-current="page"]');
-          if (!(currentLink instanceof HTMLElement)) {
-            navIndicator.removeAttribute("data-ready");
-            navIndicator.style.removeProperty("--nav-indicator-x");
-            return;
-          }
-          const indicatorWidth = 24;
-          navIndicator.style.setProperty("--nav-indicator-x", `${currentLink.offsetLeft + (currentLink.offsetWidth - indicatorWidth) / 2}px`);
-          navIndicator.setAttribute("data-ready", "");
-        };
 
         const setNavigationOpen = (open) => {
           if (!(nav instanceof HTMLElement) || !(navToggle instanceof HTMLButtonElement) || !(navLinks instanceof HTMLElement)) {
@@ -309,6 +239,9 @@ const commandItems = [
           navToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
           document.body.classList.toggle("site-navigation-open", open);
           navLinks.inert = mobileNavigation.matches && !open;
+          for (const element of document.querySelectorAll("main, .site-page > footer")) {
+            element.inert = open;
+          }
         };
 
         const syncNavigationMode = () => {
@@ -322,6 +255,20 @@ const commandItems = [
         };
 
         if (navToggle instanceof HTMLButtonElement && nav instanceof HTMLElement) {
+          nav.setAttribute("data-nav-ready", "");
+          nav.addEventListener("keydown", (event) => {
+            if (event.key !== "Tab" || !nav.hasAttribute("data-open")) return;
+            const links = nav.querySelectorAll("a[href], button");
+            const first = links[0];
+            const last = links[links.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first.focus();
+            }
+          }, { signal: siteShellController.signal });
           navToggle.addEventListener("click", () => {
             setNavigationOpen(!nav.hasAttribute("data-open"));
           }, { signal: siteShellController.signal });
@@ -331,9 +278,7 @@ const commandItems = [
           if (event.target instanceof HTMLAnchorElement) setNavigationOpen(false);
         }, { signal: siteShellController.signal });
         mobileNavigation.addEventListener("change", syncNavigationMode, { signal: siteShellController.signal });
-        window.addEventListener("resize", syncNavIndicator, { signal: siteShellController.signal });
         syncNavigationMode();
-        window.requestAnimationFrame(syncNavIndicator);
 
         document.querySelectorAll("[data-reveal-group]").forEach((group) => {
           group.querySelectorAll("[data-reveal-item]").forEach((item, index) => {
@@ -375,6 +320,12 @@ const commandItems = [
           const storyObserver = new IntersectionObserver((entries) => {
             for (const entry of entries) {
               entry.target.toggleAttribute("data-motion-active", entry.isIntersecting);
+              if (entry.isIntersecting) {
+                for (const image of entry.target.querySelectorAll("image[data-motion-src]")) {
+                  image.setAttribute("href", image.getAttribute("data-motion-src"));
+                  image.removeAttribute("data-motion-src");
+                }
+              }
             }
           }, { threshold: 0.2 });
           storyItems.forEach((item) => storyObserver.observe(item));
@@ -554,6 +505,8 @@ const commandItems = [
             navToggle?.focus();
             return;
           }
+
+          if (nav?.hasAttribute("data-open")) return;
 
           if (updateSecretSequence(event)) {
             event.preventDefault();

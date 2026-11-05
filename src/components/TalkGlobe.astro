@@ -1,4 +1,5 @@
 ---
+import GeographicGlobe from "./GeographicGlobe.astro";
 import { createGlobeProjection, globeFrame, talkPlaces } from "@/lib/talk-globe";
 
 interface Props {
@@ -15,18 +16,28 @@ const online = talks.filter((talk) => talk.location === "Online");
 
 <talk-globe>
   <figure class="talk-globe" aria-label="Talk locations around the world">
+    <div class="talk-globe-stage">
+    <GeographicGlobe mode="sphere" />
     <svg class="talk-globe-visual" viewBox="0 0 360 360" role="group" aria-label="Interactive globe of talk locations" focusable="false">
       <defs>
+        <radialGradient id="talk-ocean" cx="30%" cy="25%" r="80%">
+          <stop offset="0%" stop-color="#e1e9e8" />
+          <stop offset="65%" stop-color="#93b1bd" />
+          <stop offset="100%" stop-color="#526f7c" />
+        </radialGradient>
+        <filter id="talk-land-relief" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="1" stdDeviation=".7" flood-color="#163956" flood-opacity=".35" />
+        </filter>
         <radialGradient id="globe-light" cx="32%" cy="28%" r="72%">
-          <stop offset="0%" stop-color="white" stop-opacity=".35" />
+          <stop offset="0%" stop-color="white" stop-opacity=".55" />
           <stop offset="65%" stop-color="white" stop-opacity="0" />
-          <stop offset="100%" stop-color="hsl(201 100% 14.3%)" stop-opacity=".12" />
+          <stop offset="100%" stop-color="hsl(201 100% 14.3%)" stop-opacity=".25" />
         </radialGradient>
       </defs>
       <circle class="globe-ocean" cx="180" cy="180" r="156" />
       <path class="globe-grid" data-globe-grid d={frame.grid} />
       <path class="globe-land" data-globe-land d={frame.land} />
-      <circle cx="180" cy="180" r="156" fill="url(#globe-light)" />
+      <circle class="globe-shade" cx="180" cy="180" r="156" fill="url(#globe-light)" />
       {frame.markers.filter((marker) => groups.some((group) => group.id === marker.id)).map((marker) => (
         <g class="talk-globe-marker" data-globe-marker={marker.id} transform={`translate(${marker.x} ${marker.y})`} visibility={marker.visible ? "visible" : "hidden"}>
           <circle class="globe-pin-target" r="25" />
@@ -36,6 +47,7 @@ const online = talks.filter((talk) => talk.location === "Online");
         </g>
       ))}
     </svg>
+    </div>
     <figcaption>
       <div class="globe-locations">
         {groups.map((place) => (
@@ -58,7 +70,10 @@ const online = talks.filter((talk) => talk.location === "Online");
 
 <style>
   talk-globe, .talk-globe { display: contents; }
-  .talk-globe-visual { display: block; grid-column: 2; grid-row: 1 / span 2; width: 100%; aspect-ratio: 1; height: auto; margin-inline: auto; overflow: visible; }
+  .talk-globe-stage {position:relative;grid-column:2;grid-row:1 / span 2;width:100%;aspect-ratio:1;}
+  .talk-globe-stage :global(geographic-globe) {position:absolute;}
+  .talk-globe-stage:has(:global(geographic-globe[data-ready])) :is(.globe-ocean,.globe-land,.globe-grid,.globe-shade) {opacity:0;}
+  .talk-globe-visual {position:relative; display: block; width: 100%; aspect-ratio: 1; height: auto; margin-inline: auto; overflow: visible; }
   .talk-globe-visual[data-interactive] { cursor: grab; touch-action: pan-y; user-select: none; }
   .talk-globe-visual[data-dragging] { cursor: grabbing; }
   .talk-globe-marker[role="button"] { cursor: pointer; outline: none; }
@@ -67,9 +82,9 @@ const online = talks.filter((talk) => talk.location === "Online");
   .talk-globe-marker:focus-visible .globe-pin-halo { stroke: hsl(var(--primary)); stroke-width: 2; }
   .talk-globe-visual[data-dragging] .talk-globe-marker { cursor: grabbing; }
   figcaption { grid-column: 1; grid-row: 2; align-self: start; width: min(100%, 24rem); }
-  .globe-ocean { fill: hsl(var(--secondary)); stroke: hsl(var(--border)); }
-  .globe-grid { fill: none; stroke: hsl(var(--foreground) / .1); stroke-width: .65; }
-  .globe-land { fill: hsl(var(--primary) / .3); stroke: hsl(var(--primary) / .4); stroke-width: .5; }
+  .globe-ocean { fill: url(#talk-ocean); stroke: #a8c9df; stroke-width: .7; }
+  .globe-grid { fill: none; stroke: #e0eff8; stroke-opacity: .25; stroke-width: .55; }
+  .globe-land { fill: #82978b; stroke: #d6dfd4; stroke-width: .35; filter: url(#talk-land-relief); }
   .globe-pin-halo { fill: hsl(var(--card) / .8); }
   .globe-pin { fill: hsl(var(--primary)); stroke: hsl(var(--card)); stroke-width: 1.5; }
   .globe-label { fill: hsl(var(--foreground)); font-family: var(--font-sans); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: hsl(var(--background)); stroke-width: 3px; stroke-linejoin: round; }
@@ -83,7 +98,10 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-locations a { display: inline-block; padding-block: 4px; font-size: .875rem; color: hsl(var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
   .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; }
   @media (max-width: 767px) {
-    .talk-globe-visual { grid-column: 1; grid-row: 2; width: min(100%, 20rem); }
+    .talk-globe-stage {grid-column:1;grid-row:2;width:min(100%,12rem);margin-inline:auto;}
     figcaption { grid-column: 1; grid-row: 3; width: 100%; }
+    .globe-locations {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;}
+    .globe-locations details[open] {grid-column:1 / -1;}
+    .globe-label {font-size:16px;}
   }
 </style>

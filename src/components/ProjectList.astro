@@ -1,0 +1,43 @@
+---
+import ProjectLink from "./ProjectLink.astro";
+import { Archive } from "@phosphor-icons/react";
+import type { CollectionEntry } from "astro:content";
+interface Props {
+  projects: NonNullable<CollectionEntry<"pages">["data"]["projects"]>;
+  heading?: "h2" | "h3";
+  eager?: boolean;
+}
+const { projects, heading: Heading = "h3", eager = false } = Astro.props;
+---
+<div class="project-list">
+  {projects.map((project, index) => (
+    <article class="project-row" data-reveal-item>
+      <div class="project-meta">
+        {project.image && project.imageAlt ? (
+          <img class="project-icon" src={project.image} alt={project.imageAlt} width="40" height="40" loading={eager && index === 0 ? "eager" : "lazy"} fetchpriority={eager && index === 0 ? "high" : undefined} />
+        ) : <span class="project-symbol" aria-hidden="true"><Archive size={28} weight="regular" /></span>}
+        <p class="site-eyebrow">{project.status}</p>
+      </div>
+      <Heading class="project-title"><a href={project.url}>{project.title}</a></Heading>
+      <p class="project-description">{project.description}</p>
+      <ProjectLink class="project-link" href={project.url} label={project.action} />
+    </article>
+  ))}
+</div>
+<style>
+  .project-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;margin-top:24px;}
+  .project-row {display:flex;flex-direction:column;min-width:0;padding:24px 0;border-top:1px solid hsl(var(--border));}
+  .project-meta {display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .project-icon,.project-symbol {width:40px;height:40px;flex-shrink:0;}
+  .project-icon {object-fit:contain;border-radius:8px;}
+  .project-symbol {display:flex;align-items:center;justify-content:center;color:hsl(var(--primary));}
+  .project-row .project-title {font-family:var(--font-display);font-size:1.5rem;line-height:2rem;font-weight:500;letter-spacing:-.015em;}
+  .project-title a {color:hsl(var(--primary));}
+  .project-title a:hover {text-decoration:underline;text-underline-offset:4px;}
+  .project-description {margin-top:12px;margin-bottom:16px;color:hsl(var(--muted-foreground));font-size:1rem;line-height:1.5rem;}
+  .project-row :global(.project-link) {display:inline-flex;align-self:flex-start;min-height:44px;align-items:center;gap:8px;margin-top:auto;color:hsl(var(--primary));font-size:.875rem;font-weight:500;}
+  @media(max-width:767px) {
+    .project-list {grid-template-columns:1fr;gap:0;}
+    .project-row {padding:24px 0;}
+  }
+</style>

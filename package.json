@@ -14,7 +14,7 @@
     "stars:sync": "uv run scripts/sync_starred_lists.py",
     "stars:refresh": "npm run stars:import-ui && npm run stars:sync",
     "check:site": "astro sync && tsc -p tsconfig.site.json",
-    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs",
+    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs scripts/geographic-globe.test.mjs scripts/harbour-motion.test.mjs scripts/forest-layers.test.mjs",
     "review:site": "node scripts/review-site.mjs"
   },
   "dependencies": {
@@ -37,6 +37,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.5.4",
+    "three": "^0.187.0",
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {
@@ -44,11 +45,13 @@
     "@types/d3-geo": "^3.1.1",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
+    "@types/three": "^0.187.0",
     "@types/topojson-client": "^3.1.5",
     "autoprefixer": "^10.4.20",
     "parse5": "^7.3.0",
     "playwright": "1.64.1",
     "postcss": "^8.4.47",
+    "sharp": "0.35.5",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.9.3"
   },

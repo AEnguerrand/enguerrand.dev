@@ -1,0 +1,75 @@
+---
+import atlas from './forest-trees.json';
+
+interface Props { landscape: string }
+const { landscape } = Astro.props;
+const paintedForest = landscape === '/images/scenic/forest.webp';
+const percent = (value: number, full: number) => `${100 * value / full}%`;
+---
+<div class="forest" aria-hidden="true" data-motion-story>
+  <forest-layers class="painting" data-pines={paintedForest || undefined}>
+    <img class="original" src={landscape} alt="" width="1600" height="700" fetchpriority="high" />
+    {paintedForest && <div class="layers" data-plate="/images/scenic/forest-plate.webp" data-trees="/images/scenic/forest-trees.webp">
+      {atlas.trees.map(tree => <span class="pine" style={{
+        left: percent(tree.left, 1600), top: percent(tree.top, 700),
+        width: percent(tree.width, 1600), height: percent(tree.height, 700),
+        backgroundSize: `${percent(atlas.atlasWidth, tree.width)} ${percent(atlas.atlasHeight, tree.height)}`,
+        backgroundPosition: `${percent(tree.ax, atlas.atlasWidth - tree.width)} ${percent(tree.ay, atlas.atlasHeight - tree.height)}`,
+        transformOrigin: `${percent(tree.x - tree.left, tree.width)} ${percent(tree.root - tree.top, tree.height)}`,
+        '--period': `${(9 + Math.sin(tree.x / 144) * .75).toFixed(2)}s`,
+        '--lag': `${(.1 + tree.x / 1250 + .12 * (1 + Math.sin(tree.x / 115))).toFixed(2)}s`,
+      }} />)}
+    </div>}
+  </forest-layers>
+</div>
+<script>
+  class ForestLayers extends HTMLElement {
+    connectedCallback() {
+      const layers = this.querySelector<HTMLElement>('.layers');
+      if (!layers || document.body.dataset.motion === 'static') return;
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      const load = async () => {
+        if (reduced.matches) return;
+        reduced.removeEventListener('change', load);
+        try {
+          const urls = [layers.dataset.plate!, layers.dataset.trees!];
+          await Promise.all(urls.map(url => {
+            const image = new Image();
+            image.src = url;
+            return image.decode();
+          }));
+          layers.style.backgroundImage = `url("${urls[0]}")`;
+          layers.style.setProperty('--trees', `url("${urls[1]}")`);
+          layers.setAttribute('data-ready', '');
+        } catch { /* Keep the original painting if a layer cannot load. */ }
+      };
+      if (reduced.matches) reduced.addEventListener('change', load, {signal: this.events.signal});
+      else void load();
+    }
+    private events = new AbortController();
+    disconnectedCallback() { this.events.abort(); this.events = new AbortController(); }
+  }
+  if (!customElements.get('forest-layers')) customElements.define('forest-layers', ForestLayers);
+</script>
+<style>
+  .forest {position:absolute;z-index:-1;bottom:0;left:50%;transform:translateX(-50%);width:100vw;height:80%;overflow:hidden;container-type:size;pointer-events:none;mask-image:linear-gradient(to bottom,transparent,black 18%,black 72%,transparent);}
+  .painting {position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:max(100%,228.57143cqh);aspect-ratio:16/7;}
+  /* Reserve real paint outside the viewport for the edge trees to sway into. */
+  .painting[data-pines] {width:max(101.6%,228.57143cqh);}
+  .original {display:block;width:100%;height:100%;}
+  .layers {display:none;position:absolute;inset:0;overflow:hidden;background-size:100% 100%;background-repeat:no-repeat;}
+  .pine {position:absolute;background-image:var(--trees);background-repeat:no-repeat;
+    animation:pine-start 2s ease-in-out var(--lag) 1,
+      pine-sway var(--period) cubic-bezier(.445,.05,.55,.95) calc(var(--lag) + 2s) infinite;
+    animation-play-state:paused;}
+  [data-motion-active] .pine {animation-play-state:running;}
+  @keyframes pine-start {from {transform:rotate(0);} to {transform:rotate(-1.65deg);}}
+  @keyframes pine-sway {
+    0%,100% {transform:rotate(-1.65deg);}
+    50% {transform:rotate(1.85deg);}
+  }
+  @media screen and (prefers-reduced-motion:no-preference) {
+    .layers[data-ready] {display:block;}
+  }
+  @media(max-width:600px) {.forest {height:56%;} .painting {left:38%;transform:translateX(-38%);}}
+</style>

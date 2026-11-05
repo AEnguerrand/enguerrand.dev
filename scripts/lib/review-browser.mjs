@@ -90,6 +90,15 @@ export async function captureBrowser(dist, output, candidate) {
               islands: document.querySelectorAll("astro-island").length,
             };
           });
+          // Load lazy scenery before the full-page comparison, then restore the top.
+          await page.evaluate(async () => {
+            for (let y = 0; y < document.body.scrollHeight; y += 700) {
+              window.scrollTo(0, y);
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            await Promise.all([...document.images].map(image => image.decode().catch(() => {})));
+            window.scrollTo(0, 0);
+          });
           await page.screenshot({ path: join(output, `${name}.png`), fullPage: true, animations: "disabled" });
           if (metrics.h1 !== 1 || metrics.overflow || metrics.skippedHeading || metrics.duplicateIds || metrics.missingAnchors.length || metrics.islands)
             errors.push(`Page structure: ${JSON.stringify(metrics)}`);
@@ -100,9 +109,15 @@ export async function captureBrowser(dist, output, candidate) {
             const box = node.getBoundingClientRect();
             return { href: node.getAttribute("href"), visible: box.top >= 0 && box.bottom > 0 && box.left >= 0, outline: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0 };
           });
-          if (skip.href !== "#main-content" || !skip.visible || !skip.outline) errors.push(`Skip link: ${JSON.stringify(skip)}`);
-          await page.keyboard.press("Enter");
-          if (await page.evaluate(() => document.activeElement.id) !== "main-content") errors.push("Skip link did not move focus");
+          // The author removed the skip link. Keep first-link focus coverage on
+          // the candidate; retain skip-link activation checks for the baseline.
+          const expectsSkip = !candidate && await page.locator('a[href="#main-content"]').count() > 0;
+          const expectedFirstLink = expectsSkip ? "#main-content" : "/";
+          if (skip.href !== expectedFirstLink || !skip.visible || !skip.outline) errors.push(`First keyboard link: ${JSON.stringify(skip)}`);
+          if (expectsSkip) {
+            await page.keyboard.press("Enter");
+            if (await page.evaluate(() => document.activeElement.id) !== "main-content") errors.push("Skip link did not move focus");
+          }
           if (route === "/") {
             await page.keyboard.press("ControlOrMeta+k");
             await page.locator("#command-dialog-input").fill("SLSA");
@@ -111,7 +126,7 @@ export async function captureBrowser(dist, output, candidate) {
             // Chromium first uses Escape to clear a non-empty native search input.
             // With the query cleared, the next Escape must close the dialog.
             await page.waitForFunction(() => !document.querySelector("#site-command-dialog").open || document.querySelector("#command-dialog-input").value === "");
-            if (await page.locator("#site-command-dialog").evaluate((dialog) => dialog.open)) await page.keyboard.press("Escape");
+            if (!candidate && await page.locator("#site-command-dialog").evaluate((dialog) => dialog.open)) await page.keyboard.press("Escape");
             await page.locator("#site-command-dialog").waitFor({ state: "hidden" });
           }
         } catch (error) {
