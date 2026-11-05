@@ -1,29 +1,20 @@
 ---
-import { CaretDown } from "@phosphor-icons/react";
 interface Props { items: { title: string; description: string }[] }
 const { items } = Astro.props;
 ---
-<exploration-list class="home-exploring-grid">
-  {items.map(item => <details class="home-exploring-card" open>
-    <summary><h3>{item.title}</h3><CaretDown size={16} aria-hidden="true" /></summary>
+<exploration-list class="exploration-list">
+  {items.map(item => <article class="exploration-item">
+    <h3>{item.title}</h3>
     <p>{item.description}</p>
-  </details>)}
+  </article>)}
 </exploration-list>
-
-<script>
-  class ExplorationList extends HTMLElement {
-    private cleanup?: () => void;
-    connectedCallback() {
-      this.cleanup?.();
-      const phone = matchMedia("(max-width: 767px)");
-      const arrange = () => this.querySelectorAll("details").forEach((item, index) => {
-        item.open = !phone.matches || index === 0;
-      });
-      arrange();
-      phone.addEventListener("change", arrange);
-      this.cleanup = () => phone.removeEventListener("change", arrange);
-    }
-    disconnectedCallback() { this.cleanup?.(); }
+<style>
+  .exploration-list {display:block;}
+  .exploration-item {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);align-items:baseline;gap:48px;padding:24px 0;}
+  .exploration-item + .exploration-item {border-top:1px solid hsl(var(--border));}
+  .exploration-item h3 {margin:0;font-family:var(--font-display);font-size:1.25rem;line-height:1.75rem;font-weight:500;}
+  .exploration-item p {margin:0;max-width:65ch;color:hsl(var(--muted-foreground));font-size:1rem;line-height:1.5rem;}
+  @media(max-width:767px) {
+    .exploration-item {grid-template-columns:1fr;gap:8px;padding:20px 0;}
   }
-  if (!customElements.get("exploration-list")) customElements.define("exploration-list", ExplorationList);
-</script>
+</style>

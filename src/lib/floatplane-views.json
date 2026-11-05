@@ -1,0 +1,4 @@
+{
+  "width": 96, "height": 60, "pivotX": 48, "pivotY": 40, "columns": 10,
+  "harbour": { "elevation": 16, "airElevation": 4, "heightAtEntry": 85, "yawStep": 3, "density": 1 }
+}

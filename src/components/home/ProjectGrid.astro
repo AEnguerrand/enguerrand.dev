@@ -1,0 +1,12 @@
+---
+import SectionHeading from "@/components/SectionHeading.astro";
+import ProjectList from "@/components/ProjectList.astro";
+import type { CollectionEntry } from "astro:content";
+interface Props { projects: NonNullable<CollectionEntry<"pages">["data"]["projects"]> }
+const { projects } = Astro.props;
+---
+<section id="projects" class="home-projects" aria-labelledby="projects-title">
+  <SectionHeading actionVariant="primary" id="projects-title" title="Projects" href="/projects/" action="All projects" />
+  {projects.length ? <ProjectList projects={projects} /> :
+    <p class="home-empty">Project write-ups are on the way. In the meantime, you can explore my public work on GitHub.</p>}
+</section>

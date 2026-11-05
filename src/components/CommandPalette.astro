@@ -2,7 +2,6 @@
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 
 type CommandItem = {
-  id: string;
   title: string;
   href: string;
   kind: string;
@@ -186,6 +185,13 @@ const initialItems = items.slice(0, 8);
       } else if (event.key === "Enter" && visibleItems.length > 0) {
         event.preventDefault();
         results.querySelectorAll("a")[activeIndex]?.click();
+      }
+    }, { signal: controller.signal });
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        dialog.close();
       }
     }, { signal: controller.signal });
     dialog.addEventListener("click", (event) => {

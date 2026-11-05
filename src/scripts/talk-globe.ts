@@ -25,6 +25,7 @@ class TalkGlobe extends HTMLElement {
 
     const render = () => {
       const frame = globeFrame(projection);
+      this.querySelector('geographic-globe')?.dispatchEvent(new CustomEvent('globe-orientation',{detail:projection.rotate()}));
       land.setAttribute("d", frame.land);
       grid.setAttribute("d", frame.grid);
       for (const marker of frame.markers) {

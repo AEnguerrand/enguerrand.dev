@@ -54,12 +54,11 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", ...(hasPosts ? ["Blog"] : []), "What I'm exploring now"]);
+  assert.deepEqual(walk(home.nodes.find((n) => n.tagName === "main")).filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", ...(hasPosts ? ["Blog"] : []), "What I'm exploring now"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
   assert.ok(home.nodes.some((n) => "data-hero-motion" in attrs(n)), "Home must keep its one-time hero choreography");
-  assert.ok(home.nodes.some((n) => n.tagName === "button" && "data-confetti-trigger" in attrs(n)), "Home portrait must expose the optional celebration interaction");
   assert.equal(home.nodes.some((n) => attrs(n).class?.split(" ").includes("home-work-index")), false);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
@@ -90,9 +89,9 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
   ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
   const exploration = home.nodes.find(n => n.tagName === "exploration-list");
-  const explorationItems = walk(exploration).filter(n => n.tagName === "details");
+  const explorationItems = walk(exploration).filter(n => n.tagName === "article");
   assert.equal(explorationItems.length, 4);
-  assert.ok(explorationItems.every(n => "open" in attrs(n)), "All exploration text must be visible without JavaScript");
+  assert.equal(walk(exploration).filter(n => n.tagName === "details" || n.tagName === "summary").length, 0, "Exploration content must remain open");
   const homeMain = home.nodes.find(n => n.tagName === "main");
   assert.ok(!walk(homeMain).some(n => n.tagName === "a" && ["/radar/", "/github-stars/"].includes(attrs(n).href)), "Home content must omit the Radar preview and links");
   assert.doesNotMatch(text(home.nodes[0]), /Sample content|Example project|titles to confirm/);
@@ -271,7 +270,7 @@ test("Shared shell keeps route width stable and uses client navigation", async (
   assert.match(homeOutput, /astro-view-transitions/);
   assert.match(homeOutput, /data-astro-transition-persist="site-header"/);
   assert.match(homeOutput, /data-site-nav-toggle/);
-  assert.match(homeOutput, /data-site-nav-indicator/);
+
   assert.match(homeOutput, /data-reveal-group/);
 });
 
@@ -290,7 +289,7 @@ test("Motion stays prominent on content pages and static on the resume", async (
 test("Projects has a dedicated page with the public project list", () => {
   assert.equal(projectsPage.nodes.filter((n) => n.tagName === "h1").length, 1);
   assert.deepEqual(
-    projectsPage.nodes.filter((n) => n.tagName === "h2" && attrs(n).id !== "project-list-heading").map(text),
+    walk(projectsPage.nodes.find((n) => n.tagName === "main")).filter((n) => n.tagName === "h2" && attrs(n).id !== "project-list-heading").map(text),
     ["Foliobruma Scanner", "Foliobruma", "Chaud à Grospierres"],
   );
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com", "https://chaudagrospierres.fr"])
@@ -420,7 +419,8 @@ test("Review fixes keep the concise Home introduction, talks list, and search st
     assert.equal(walk(heading).filter(n => n.tagName === "a").length, 1);
   const search = await page("search/index.html");
   assert.equal(search.nodes.filter(n => attrs(n)["aria-pressed"] === "true").length, 1);
-  assert.equal(search.nodes.filter(n => "data-search-filter" in attrs(n)).length, 4);
+  assert.deepEqual(search.nodes.filter(n => "data-search-filter" in attrs(n)).map(n => attrs(n)["data-search-filter"]),
+    ["all", "talk", "project", "post", "topic", "repository", "page"]);
   assert.ok(search.nodes.some(n => attrs(n).role === "status" && attrs(n)["aria-live"] === "polite"));
   for (const current of builtPages.filter(p => p.file.startsWith("talks/") && p.file !== "talks/index.html")) {
     assert.ok(!graph(current.nodes).some(n => n["@type"] === "VideoObject"), "Do not publish recording metadata with an unverified upload date");

@@ -41,7 +41,7 @@ export function RepoCard({ repo }: { repo: StarredRepository }) {
             <ArrowUpRight aria-hidden="true" className="h-4 w-4 shrink-0" />
           </a>
         </h3>
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <p className="text-base leading-relaxed text-muted-foreground">
           {repo.description ?? "No description provided."}
         </p>
       </header>

@@ -49,7 +49,7 @@ python3 -m http.server 4321 --directory PACKAGE/preview
 npx playwright show-trace PACKAGE/candidate/home-390.zip
 ```
 
-The browser checks one H1, heading order, IDs, local anchors, horizontal overflow, console errors, local HTTP failures, the skip link and its focus outline, search open/query/close behavior (Escape can first clear the native search field), and static talk links without JavaScript. They reject unexpected Astro islands on the tested routes. A feature that needs hydration must make that exception explicit in review.
+The browser checks one H1, heading order, IDs, local anchors, horizontal overflow, console errors, local HTTP failures, the first navigation link and its focus outline (plus skip-link activation on the earlier baseline), search open/query/close behavior (the candidate closes on the first Escape), and static talk links without JavaScript. They reject unexpected Astro islands on the tested routes. A feature that needs hydration must make that exception explicit in review.
 
 Review all visible differences. There is no automatic visual-baseline acceptance. The JavaScript inventory records asset bytes on disk; it does not measure network transfer or inline script bytes. The text diff covers generated public pages, so unpublished prose stays out of it. It preserves code-block indentation, tabs, blank lines, and trailing spaces in a separate `codeBlocks` field. Prose whitespace is normalized. Changed-file lists use NUL delimiters so filenames with accents, spaces, tabs, or newlines reach the human-review classification intact.
 

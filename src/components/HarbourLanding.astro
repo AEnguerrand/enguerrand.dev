@@ -1,0 +1,45 @@
+---
+import { harbourMotion } from '../lib/harbour-motion';
+import Floatplane from './Floatplane.astro';
+import { flightViews, groundProjection } from '../lib/floatplane-view';
+const projection = groundProjection('harbour');
+const planes = [0,1].map(id => harbourMotion(id, projection));
+---
+<div class="harbour-landing" data-motion-story aria-hidden="true" style={`--projection:${projection}`}>
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+    {planes.map((plane, i) => <g class="flight" style={`--flight-duration:${plane.duration}s;--flight-delay:${plane.delay}s;animation-name:${plane.name}-move`}>
+      <g class="projection">
+        <g class="heading" style={`animation-name:${plane.name}-heading`}>
+          <ellipse class="shadow" style={`animation-name:${plane.name}-shadow`} cx="0" cy="4" rx="22" ry="9" fill="#21485c" />
+          <g class="wake" style={`animation-name:${plane.name}-wake`} fill="none" stroke="#e2eff1" stroke-linecap="round">
+            <path d="M-18 -8 Q-50 -12 -95 -24 M-18 8 Q-50 12 -95 24" stroke-width="1.7" />
+            <path d="M-20 -5 L-60 -8 M-20 5 L-60 8" stroke-width="2" opacity=".5" />
+          </g>
+        </g>
+      </g>
+      <g class="airframe" style={`animation-name:${plane.name}-altitude`}>
+        <Floatplane scene="harbour" animation={plane.name} poses={flightViews('harbour',plane.headings).poses} color={i===0?'blue':'red'} />
+      </g>
+    </g>)}
+  </svg>
+</div>
+<link rel="stylesheet" href="/styles/harbour-motion.css" />
+<style>
+.harbour-landing {position:absolute;inset:0;pointer-events:none;}
+svg {display:block;width:100%;height:100%;overflow:hidden;}
+.projection {transform:scaleY(var(--projection));}
+/* Keep the wake attached to the floats as its length changes. */
+.wake {transform-box:view-box;transform-origin:-18px 0;}
+.flight,.heading,.airframe,.wake,.shadow {
+  animation-duration:var(--flight-duration);animation-delay:var(--flight-delay);
+  animation-timing-function:linear;animation-iteration-count:infinite;
+  animation-play-state:paused;
+}
+[data-motion-active] :is(.flight,.heading,.airframe,.wake,.shadow) {animation-play-state:running;}
+:global(body[data-motion="static"]) .harbour-landing {display:none;}
+@media(prefers-reduced-motion:reduce) {
+  .harbour-landing {display:none;}
+  .flight,.heading,.airframe,.wake,.shadow {animation:none;}
+}
+@media print {.harbour-landing {display:none;}}
+</style>

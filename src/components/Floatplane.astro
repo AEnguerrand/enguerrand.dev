@@ -1,0 +1,20 @@
+---
+import views from '../lib/floatplane-views.json';
+import type { Pose, Scene } from '../lib/floatplane-view';
+interface Props { scene: Scene; animation: string; poses: Pose[]; color?: 'blue' | 'red' }
+const { scene, animation, poses, color = 'blue' } = Astro.props;
+const rows = Math.ceil(poses.length / views.columns);
+---
+<svg x={-views.pivotX} y={-views.pivotY} width={views.width} height={views.height}
+  viewBox={`0 0 ${views.width} ${views.height}`} overflow="hidden" focusable="false">
+  <image data-motion-src={`/images/scenic/floatplane-${scene}-${color}.webp`} class="views"
+    width={views.columns*views.width} height={rows*views.height} style={`animation-name:${animation}-view`} />
+</svg>
+<style>
+  .views {
+    animation-duration:var(--flight-duration);animation-delay:var(--flight-delay);
+    animation-timing-function:steps(1,end);animation-iteration-count:infinite;
+    animation-fill-mode:both;animation-play-state:paused;
+  }
+  :global([data-motion-active]) .views {animation-play-state:running;}
+</style>

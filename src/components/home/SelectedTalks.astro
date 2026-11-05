@@ -1,0 +1,42 @@
+---
+import SectionHeading from '@/components/SectionHeading.astro';
+import { ArrowRight } from '@phosphor-icons/react';
+import type { CollectionEntry } from 'astro:content';
+interface Props { talks: CollectionEntry<'talks'>[] }
+const { talks } = Astro.props;
+const eventLabels: Record<string, string> = {
+  "meetup-owasp-france-chapter-10-2025": "OWASP France",
+  "kubecon-na-2024": "KubeCon North America",
+};
+const monthYear = (date: string) => new Intl.DateTimeFormat("en-CA", {
+  month: "long", year: "numeric", timeZone: "UTC",
+}).format(new Date(`${date}T00:00:00Z`));
+const talkFormats = (talk: typeof talks[number]) => {
+  const labels = (talk.data.resources ?? []).map((resource) => resource.label.toLowerCase());
+  const formats = ["Notes"];
+  if (labels.some((label) => label.includes("video") || label.includes("recording"))) formats.push("Video");
+  if (labels.some((label) => label.includes("slides") || label.includes("presentation"))) formats.push("Slides");
+  if (labels.some((label) => label.includes("lab"))) formats.push("Lab");
+  return formats;
+};
+---
+  <section id="selected-talks" class="home-talks" aria-labelledby="talks-title" data-reveal data-reveal-group>
+    <SectionHeading actionVariant="primary" id="talks-title" title="Talks" href="/talks/" action="All talks" />
+    <ul class="home-list home-talk-list">
+      {talks.map((talk) => (
+        <li data-reveal-item>
+          <a class="home-talk-link" href={`/talks/${talk.id}/`}>
+            <div>
+              <h3>{talk.data.displayTitle ?? talk.data.title}</h3>
+              <p>{eventLabels[talk.id] ?? talk.data.event} <span aria-hidden="true">·</span> <time datetime={talk.data.date}>{monthYear(talk.data.date)}</time></p>
+              <ul class="home-talk-meta">
+                {talkFormats(talk).map((format) => <li>{format}</li>)}
+                {(talk.data.language ?? []).map((language) => <li>{language}</li>)}
+              </ul>
+            </div>
+            <ArrowRight size={22} className="motion-arrow" aria-hidden="true" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
