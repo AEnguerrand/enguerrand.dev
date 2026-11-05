@@ -18,6 +18,9 @@ const page = async (path) => {
 const home = await page("index.html");
 const talk = await page("talks/kubecon-na-2024/index.html");
 const projectsPage = await page("projects/index.html");
+const postRoutes = (await readdir(output, { recursive: true }))
+  .filter((file) => /^blog\/[^/]+\/index\.html$/.test(file));
+const hasPosts = postRoutes.length > 0;
 
 for (const [name, { html, nodes }] of [
   ["Home", home],
@@ -51,7 +54,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   const links = walk(selected).filter((n) => n.tagName === "a").map((n) => attrs(n).href);
   assert.ok(links.includes("/talks/meetup-owasp-france-chapter-10-2025/"));
   assert.ok(links.includes("/talks/kubecon-na-2024/"));
-  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", "What I'm exploring now"]);
+  assert.deepEqual(home.nodes.filter((n) => n.tagName === "h2").map(text), ["Talks", "Projects", ...(hasPosts ? ["Blog"] : []), "What I'm exploring now"]);
   assert.equal(text(home.nodes.find((n) => n.tagName === "h1")), "Hi, I'm Enguerrand.");
   const contact = home.nodes.find((n) => attrs(n).id === "contact");
   assert.equal(walk(contact).filter((n) => n.tagName === "a").length, 3);
@@ -60,7 +63,7 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.equal(home.nodes.some((n) => attrs(n).class?.split(" ").includes("home-work-index")), false);
   assert.match(text(selected), /November 2024/);
   const blog = home.nodes.find((n) => attrs(n).id === "blog");
-  assert.equal(blog, undefined, "Home must hide Blog until a post is published");
+  assert.equal(Boolean(blog), hasPosts, "Home shows Blog only when a post is published");
   const projects = home.nodes.find((n) => attrs(n).id === "projects");
   assert.deepEqual(walk(projects).filter((n) => n.tagName === "h3").map(text), ["Foliobruma Scanner", "Foliobruma", "Chaud à Grospierres"]);
   for (const url of ["https://github.com/AEnguerrand/foliobruma-scanner", "https://foliobruma.com", "https://chaudagrospierres.fr"])
@@ -208,21 +211,22 @@ test("Generated pages have no Once UI assets or markup", async () => {
   assert.doesNotMatch(lock, /@once-ui-system/);
 });
 
-test("Blog is honest, empty, and hidden from primary navigation until content exists", async () => {
+test("Blog output and navigation follow the published routes", async () => {
   const blog = await page("blog/index.html");
-  assert.match(text(blog.nodes[0]), /No posts yet/);
   assert.equal(blog.nodes.filter((n) => n.tagName === "h1").length, 1);
+  assert.equal(text(blog.nodes[0]).includes("No posts yet"), !hasPosts);
   const homeNav = home.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
-  assert.ok(!walk(homeNav).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"));
-  const files = await readdir(output, { recursive: true });
-  const postFiles = await readdir(new URL("../src/content/posts/", import.meta.url));
-  assert.equal(postFiles.filter((f) => f.endsWith(".md")).length, 0);
-  assert.ok(!files.some((f) => /^blog\/(ai-development|moving-to-canada|security-guardrails)\//.test(f)));
+  assert.equal(walk(homeNav).some((n) => n.tagName === "a" && attrs(n).href === "/blog/"), hasPosts);
+  for (const route of postRoutes) {
+    const href = `/${route.replace(/index\.html$/, "")}`;
+    assert.ok(blog.nodes.some((n) => n.tagName === "a" && attrs(n).href === href), `Missing published link ${href}`);
+    assert.doesNotMatch(text((await page(route)).nodes[0]), /Local preview · (Draft|Scheduled)/);
+  }
 });
 
 test("Primary navigation is consistent across Home, Blog, and talks", async () => {
   const blog = await page("blog/index.html");
-  const expected = ["Talks", "Projects", "Radar", "About"];
+  const expected = ["Talks", ...(hasPosts ? ["Blog"] : []), "Projects", "Radar", "About"];
   for (const current of [home, blog, talk]) {
     const nav = current.nodes.find((n) => n.tagName === "nav" && attrs(n)["aria-label"] === "Main navigation");
     assert.deepEqual(walk(nav).filter((n) => n.tagName === "a").slice(1).map(text), expected);

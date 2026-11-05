@@ -28,6 +28,16 @@ Use ASD-STE100 Simplified Technical English (STE) by default.
 - Keep personal facts and opinions with the author. Do not write invented experiences or publish outlines. Use a real `publishDate` in `YYYY-MM-DD` format, interpreted as UTC.
 - This is a static site. A future publication date needs a new build on or after that date.
 
+## Autonomous work and human review
+
+- Keep blog writing author-led. The author supplies the first draft. Return editorial suggestions separately unless the author asks you to apply them. Do not create placeholder posts or invent personal facts, opinions, or experience.
+- For each task, state the expected result, allowed changes, protected content, required evidence, and stopping condition. Continue routine implementation and fixes within that scope.
+- Use `npm run review:site -- --base origin/main` to produce the combined checks and review package. The base must be the intended target revision. Follow `docs/ai-workflow.md` for setup and evidence limits.
+- Include the report path, exact base and candidate revisions, source hash, working-tree state, changed author-content paths, check results, and open decisions in the PR. A passing check is not author approval.
+- Keep changes to checks, publication rules, workflow permissions, and visual expectations visible for human review. Do not weaken a check to make a change pass.
+- Any source edit after validation makes the report stale. Generate new evidence after relevant changes. Do not describe a report from a dirty working tree as proof for its HEAD commit alone.
+- Stop before merge, deployment, or publication unless the user has requested that action.
+
 ## Validation
 
 - Run `npm run check:site`, `npm run build`, and `npm run test:site` on the final source. Run `git diff --check`.
