@@ -1,6 +1,6 @@
 import { getCollection, getEntry } from "astro:content";
 import { getPosts, postHref } from "./posts";
-import { starsGroups, starsListHref, starsListName } from "./stars";
+import { starsGroups, starsListHref, starsListName, starsListDescription } from "./stars";
 import { canonicalTopics, topicDescription, topicHref, topicTitle } from "./topics";
 import { resumeSearchText } from "@/data/resume";
 
@@ -26,11 +26,11 @@ const pages = [
   ["home", "Home", "/", "Enguerrand Allamel, platform security, selected talks and current exploration topics."],
   ["talks", "Talks", "/talks/", "Conference talks, workshops, videos, slides and labs."],
   ["projects", "Projects", "/projects/", "Independent software, open source projects and tools for paper records."],
-  ["radar", "Radar", "/radar/", "Technical library of selected GitHub repositories."],
+  ["radar", "Radar", "/radar/", "Selected technical signals and a library of GitHub bookmarks."],
   ["blog", "Blog", "/blog/", "Articles and field notes on life in Canada, security, and AI."],
   ["about", "About", "/about/", "About Enguerrand Allamel, his work, biography and public resume."],
   ["resume", "Resume", "/resume/", "Work experience, skills and CV."],
-  ["stars", "Repository topics", "/github-stars/", "Technical resources and bookmarks organized by topic."],
+  ["stars", "Repository topics", "/github-stars/", "GitHub bookmarks organized by topic."],
   ["topics", "Talk topics", "/topics/", "Browse talks by subject and tag."],
   ["search", "Search", "/search/", "Full site search."],
   ["privacy", "Privacy", "/privacy/", "Website analytics and data handling information."],
@@ -62,7 +62,7 @@ export async function getSearchItems(): Promise<SearchItem[]> {
     })),
     ...starsGroups.map((group): SearchItem => ({
       id: `stars-${group.slug}`, kind: "repository", title: starsListName(group.name), href: starsListHref(group.slug),
-      summary: group.description, tags: [group.slug.replaceAll("-", " ")],
+      summary: starsListDescription(group), tags: [group.slug.replaceAll("-", " ")],
     })),
     ...Array.from(topics, (topic): SearchItem => ({
       id: `topic-${topic}`, kind: "topic", title: topicTitle(topic), href: topicHref(topic), summary: topicDescription(topic),

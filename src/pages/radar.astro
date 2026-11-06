@@ -22,6 +22,7 @@ import {
   starsDate,
   starsListHref,
   starsListName,
+  starsListDescription,
 } from "@/lib/stars";
 
 const featuredSlugs = [
@@ -77,8 +78,8 @@ const topicIcons = {
 };
 ---
 
-<BaseLayout title="Technical Radar" description="A curated technical library of useful repositories across security, Kubernetes, software delivery, AI, and developer tooling.">
-  <PageIntro title="Radar" eyebrow="Selected technical resources" art="/images/illustrations/field-guide.webp" class="radar-header">
+<BaseLayout title="Technical Radar" description="Three selected technical signals and a library of GitHub bookmarks organized by topic.">
+  <PageIntro title="Radar" eyebrow="Selected signals and bookmarks" description={`${signals.length} selected signals, plus a broader library of GitHub bookmarks.`} art="/images/illustrations/field-guide.webp" class="radar-header">
     <p class="site-page-meta">
       <span>{starsGroups.length} topics</span>
       <span aria-hidden="true">·</span>
@@ -107,7 +108,8 @@ const topicIcons = {
   )}
 
   <section class="radar-section" aria-labelledby="radar-topics-title" data-reveal>
-    <SectionHeading id="radar-topics-title" title="Explore by topic" href="/github-stars/" action="All repository topics" />
+    <SectionHeading id="radar-topics-title" title="Bookmark library" href="/github-stars/" action="All repository topics" />
+    <p class="mt-2 text-sm leading-relaxed text-muted-foreground">Bookmarks for reference and further reading.</p>
 
     <ul class="radar-topic-list mt-5 grid sm:grid-cols-2 sm:gap-x-8">
       {featuredGroups.map((group) => {
@@ -115,9 +117,12 @@ const topicIcons = {
         return (
           <li class="border-b border-border">
             <a class="group flex min-h-16 items-center justify-between gap-5 py-4" href={starsListHref(group.slug)}>
-              <span class="radar-topic-title flex min-w-0 items-center gap-2">
-                <TopicIcon size={18} aria-hidden="true" />
-                <span>{starsListName(group.name)}</span>
+              <span class="flex min-w-0 items-start gap-2">
+                <TopicIcon size={18} className="mt-1 shrink-0 text-primary" aria-hidden="true" />
+                <span class="min-w-0">
+                  <span class="radar-topic-title block">{starsListName(group.name)}</span>
+                  <span class="mt-1 block text-sm leading-relaxed text-muted-foreground">{starsListDescription(group)}</span>
+                </span>
               </span>
               <span class="flex shrink-0 items-center gap-2 text-sm tabular-nums text-muted-foreground">
                 {group.repos.length}

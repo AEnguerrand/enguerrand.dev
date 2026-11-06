@@ -1,6 +1,42 @@
 # Website audit fixes
 
-This closes the implementation work from the 6 November 2026 design and technical audits. It keeps the accepted homepage, shared navbar, name visibility rule, and existing harbour scene. The result is a local proposal for author review. Merge and deployment are separate decisions.
+This records the implementation work from the 6 November 2026 design and technical audits. It keeps the accepted homepage, shared navbar, name visibility rule, and existing harbour scene. The result is a local proposal for author review. Merge and deployment are separate decisions.
+
+## Current status
+
+All 19 items have implementation changes. Thirteen have passed local checks; six still need a specific author, device, screen-reader or live check. These counts do not mean that all items are closed.
+
+| Item | Implementation and local evidence | Status and remaining work |
+| --- | --- | --- |
+| A01: Menu focus | Visible controls form the focus loop. Home and inner-page checks cover forward/reverse wrap and Escape. The extra inner-page checks passed after Astro navigation at 390 and 767 pixels. | Local checks passed. |
+| A02: Globe gestures | Touch input waits for horizontal intent. Vertical gesture and city-anchor checks passed in Chromium emulation. | Open: confirm scrolling, rotation and city taps on a physical phone. |
+| A03: Resume search | Search uses the structured resume data. Terraform, Equativ and Procurify queries, existing results, filters and history were checked. | Local checks passed. |
+| A04: Talks load | Smaller maps reduce local resource bytes. Rendered checks preserve the three cities, initial view, fallback and anchors. | Open: check responsiveness on a physical phone. Local byte sizes are not field performance. |
+| A05: Language markup | French text has language markup. Session, notes and slides use separate fields with the author-confirmed languages. | Open: verify French pronunciation with a screen reader. |
+| A06: Search fallback | Controls stay disabled until search starts. Native browse links remain available. Disabled JavaScript and forced initialization failure checks passed. | Local checks passed. |
+| A07: Talk subjects | Supply-chain subjects share a collection. Subjects, tools and events have separate groups. Existing topic routes and search were checked. | Local checks passed; labels remain part of the overall author review. |
+| A08: Talk copy | The edit proposal reduces repetition, uses distinct takeaways and labels the AWS abstract accurately. Existing titles and resources remain. | Open: the author must accept the edited copy. |
+| A09: Project detail | Each project has useful detail from linked public project documentation. Actions and destinations were checked. | Local checks passed; content remains part of the overall author review. |
+| A10: Phone talk layout | The phone globe frame and gaps use less height. Narrow layouts, labels and talk rows were inspected. | Local checks passed; the size remains a design choice for author review. |
+| A11: Topic hierarchy | Topic pages use a short Talks section label and compact talk titles. Headings and narrow layouts were checked. | Local checks passed. |
+| A12: Skip link | The shared link appears on first focus and moves focus to main content. Extra phone checks passed after Astro navigation. | Local checks passed. |
+| A13: Artwork delivery | Smaller copies of the same artwork serve phone widths. Wide views and normal/reduced-motion resource behavior were checked. | Local checks passed. |
+| A14: Asset caching | Local Wrangler checks confirm immutable caching for fingerprinted assets and revalidation for HTML and mutable images. | Open: verify live headers and navigation after a separately authorized release. |
+| A15: Video activation | The player loads on request. Pointer, keyboard, focus and native fallback checks passed. One live YouTube recording played. | Local activation checks passed. The playback check does not prove every provider or recording. |
+| A16: Repository labels | All 22 categories have clear labels and short descriptions, shared by the topic directory, category pages, Radar and search. Safe wallet services and unsorted bookmarks have explicit names. Slugs, counts and saved repository records stay unchanged. | Local checks passed: all 22 descriptions, category links and counts, phone/tablet/desktop layouts, and native links without JavaScript. |
+| A17: Empty Blog search | Search no longer promises articles when the Blog has no published posts. Draft and future-post filters remain. | Local checks passed. |
+| A18: About links | Descriptions now match Projects and Talks. Existing sections and destinations remain. | Local checks passed; copy remains part of the overall author review. |
+| A19: Resume copy | Completed-role verbs use past tense. Speaking and project entries link to existing evidence. | Open: the author must accept the copy. |
+
+**New follow-up G01:** The user reported uneven white backgrounds around the globe city labels. The label backgrounds now use measured text and flag bounds with even padding. Chromium, WebKit and Firefox checks cover font loading, resize, drag and anchors. A separate flag span preserves the emoji when the city text uses a halo. Geometry and focused visual checks passed; this remains local browser evidence. Track it separately from A16 and the original audit items.
+
+## Evidence and final validation
+
+The previous complete review covers base `a722020063ca7eb135f496b4aff8dfc5715f135d` and candidate `4bc1e1677273c1e66ed3337859e27e744eb80f8a`. Report: `artifacts/site-review/2026-11-06T22-13-25.733Z-6dbc1714`. Source SHA-256: `08d8fbc434fbdf00e9e59b363cd2a8256d8e039cd2b8d41fe37c4ef94f7c72f5`. The report ran from a dirty working tree; `commit-binding.json` binds the same source hash to that clean candidate. It records passing type, build, whitespace and test checks: 86 tests and 38 Chromium checks. A separate route crawl passed for 70 routes and 140 views. Extra A01, A06 and A12 checks are in `output/audit-completion/exact-audit-followup.json`.
+
+The previous report proves that candidate only. A16 checks are in `output/a16-category/checks.json` (22 categories and 12 page views); G01 measurements, images and limits are in `output/a16-globe/`. The required combined review runs again on the final source before commit. Its exact report, source hash and commit binding are attached to PR 38 and the current-status section of the original audit. Do not use the previous report as proof for later source.
+
+GitHub Actions stays disabled at the author's request. No merge, deployment or publication is authorized. Author review of the copy and design remains open. Browser emulation does not prove physical-phone behavior, screen-reader output, native zoom or installed Safari behavior.
 
 ## Fixes
 

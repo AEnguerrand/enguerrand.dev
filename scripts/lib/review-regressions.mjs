@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { checkTextScaling } from "./review-text-scaling.mjs";
 import { checkVideoActivation } from "./review-video.mjs";
+import { checkGlobeLabelBounds } from "./review-globe-labels.mjs";
 
 // Use native links between valid routes to cover history without a directory detour.
 export async function checkRadarHistory(page, origin, navigate) {
@@ -237,7 +238,7 @@ export async function captureRegressions(browser, origin, output, candidate) {
         const orientation = JSON.parse(await globe.locator("geographic-globe").getAttribute("data-orientation"));
         assert.equal(orientation[1], -90, "The initial view looks down from the North Pole");
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-        metrics = { initialCities: 3, orientation };
+        metrics = { initialCities: 3, orientation, labels: await checkGlobeLabelBounds(page) };
         await page.evaluate(async () => {
           await document.fonts.ready;
           await Promise.all([...document.images].map(image => { image.loading = "eager"; return image.decode(); }));

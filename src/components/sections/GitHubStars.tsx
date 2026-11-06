@@ -1,6 +1,6 @@
 import { ArrowUpRight, Clock, GitFork, Star } from "@phosphor-icons/react";
 import { TopicIcon } from "@/components/TopicIcon";
-import { type StarredRepository, type StarredDataset, starsListHref, starsListName } from "@/lib/stars";
+import { type StarredRepository, type StarredDataset, starsListHref, starsListName, starsListDescription } from "@/lib/stars";
 
 const formatNumber = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const formatDate = (value: string) => new Date(value).toLocaleDateString("en-US", {year:"numeric",month:"short",day:"numeric",timeZone:"UTC"});
@@ -79,7 +79,14 @@ export function GitHubStars({dataset}: {dataset: StarredDataset | null}) {
       {groups.length ? <ul className="grid gap-x-10 sm:grid-cols-2">{groups.map(group =>
         <li key={group.slug} id={`list-${group.slug}`} className="site-list-row scroll-mt-40">
           <a href={starsListHref(group.slug)} className="site-link min-h-16 w-full justify-between py-5">
-            <span className="flex min-w-0 items-center gap-3"><TopicIcon slug={group.slug} className="h-5 w-5 shrink-0" /><span className="font-[family-name:var(--font-display)] text-xl font-medium leading-snug">{starsListName(group.name)}</span></span><span className="shrink-0 text-xs tabular-nums text-muted-foreground"><span className="sr-only">Repositories: </span>{group.repos.length} <span aria-hidden="true">→</span></span>
+            <span className="flex min-w-0 items-start gap-3">
+              <TopicIcon slug={group.slug} className="mt-1 h-5 w-5 shrink-0" />
+              <span className="min-w-0">
+                <span className="block font-[family-name:var(--font-display)] text-xl font-medium leading-snug">{starsListName(group.name)}</span>
+                <span className="mt-1 block text-sm font-normal leading-relaxed text-muted-foreground">{starsListDescription(group)}</span>
+              </span>
+            </span>
+            <span className="shrink-0 text-xs tabular-nums text-muted-foreground"><span className="sr-only">Repositories: </span>{group.repos.length} <span aria-hidden="true">→</span></span>
           </a>
         </li>
       )}</ul> : <p>No starred repositories yet.</p>}

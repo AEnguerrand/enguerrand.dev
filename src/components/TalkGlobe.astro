@@ -44,8 +44,8 @@ const online = talks.filter((talk) => talk.location === "Online");
           <circle class="globe-pin-target" r="29" />
           <circle class="globe-pin-halo" r="9" />
           <circle class="globe-pin" r="4" />
-          {journey && <rect class="globe-label-backplate" x={marker.x > 235 ? -(marker.label.length * 5.6 + 34) : 10} y="-10" width={marker.label.length * 5.6 + 24} height="20" rx="2" />}
-          <text class="globe-label" x={marker.x > 235 ? -13 : 13} text-anchor={marker.x > 235 ? "end" : "start"} y="4" aria-hidden="true">{marker.label} {marker.flag}</text>
+          {journey && <rect class="globe-label-backplate" rx="3" />}
+          <text class="globe-label" x={marker.x > 235 ? -13 : 13} text-anchor={marker.x > 235 ? "end" : "start"} y="4" aria-hidden="true">{marker.label}{" "}<tspan class="globe-label-flag">{marker.flag}</tspan></text>
         </a>
       ))}
     </svg>
@@ -90,6 +90,7 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-pin-halo { fill: hsl(var(--card) / .8); }
   .globe-pin { fill: hsl(var(--primary)); stroke: hsl(var(--card)); stroke-width: 1.5; }
   .globe-label { fill: hsl(var(--foreground)); font-family: var(--font-sans); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: hsl(var(--background)); stroke-width: 3px; stroke-linejoin: round; }
+  .globe-label-flag {stroke:none;paint-order:normal;}
   .globe-locations { border-top: 1px solid hsl(var(--border)); }
   .globe-locations details { border-bottom: 1px solid hsl(var(--border)); }
   .globe-locations summary { min-height: 44px; padding: 12px 4px; cursor: pointer; color: hsl(var(--primary)); font-size: .875rem; }
@@ -100,8 +101,10 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-locations a { display: inline-block; padding-block: 4px; font-size: .875rem; color: hsl(var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
   .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1.5; }
   [data-journey] .talk-globe-stage {width:100%;margin:0;}
-  [data-journey] .globe-label {font-size:11px;stroke:none;}
-  .globe-label-backplate {fill:hsl(var(--background) / .94);pointer-events:none;}
+  [data-journey] .globe-label {font-size:11px;}
+  [data-journey] [data-label-ready] .globe-label {stroke:none;}
+  .globe-label-backplate {fill:hsl(var(--background) / .94);visibility:hidden;pointer-events:none;}
+  [data-label-ready] .globe-label-backplate {visibility:inherit;}
   [data-journey] .globe-pin-halo {r:5.5px;}
   [data-journey] .globe-pin {r:3px;stroke-width:1.3px;}
   [data-journey] .talk-globe-marker {cursor:pointer;outline:none;}
@@ -111,7 +114,7 @@ const online = talks.filter((talk) => talk.location === "Online");
     .globe-locations {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;}
     .globe-locations details[open] {grid-column:1 / -1;}
     .globe-label {font-size:16px;}
-    [data-journey] .globe-label {font-size:13px;stroke:hsl(var(--background));stroke-width:4px;}
+    [data-journey] .globe-label, [data-journey] [data-label-ready] .globe-label {font-size:13px;stroke:hsl(var(--background));stroke-width:4px;}
     .globe-label-backplate {display:none;}
   }
 </style>
