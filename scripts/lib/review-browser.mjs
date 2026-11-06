@@ -3,6 +3,7 @@ import { readFile, mkdir, readdir, writeFile } from "node:fs/promises";
 import { resolve, extname, join, sep } from "node:path";
 import { chromium } from "playwright";
 import { parse } from "parse5";
+import { captureRegressions } from "./review-regressions.mjs";
 
 const routes = ["/", "/talks/kubecon-na-2024/", "/blog/", "/talks/aws-summit-paris-2025/", "/github-stars/"];
 const widths = [390, 768, 1440];
@@ -139,6 +140,7 @@ export async function captureBrowser(dist, output, candidate) {
         results.push({ route, width, screenshot: `${name}.png`, trace: candidate ? `${name}.zip` : undefined, metrics, errors: [...errors, ...localFailures], status: errors.length || localFailures.length ? "failed" : "passed" });
       }
     }
+    results.push(...await captureRegressions(browser, origin, output, candidate));
     // The public links must also work without browser JavaScript.
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();

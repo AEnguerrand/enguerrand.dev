@@ -52,7 +52,7 @@ const percent = (value: number, full: number) => `${100 * value / full}%`;
   if (!customElements.get('forest-layers')) customElements.define('forest-layers', ForestLayers);
 </script>
 <style>
-  .forest {position:absolute;z-index:-1;bottom:0;left:50%;transform:translateX(-50%);width:100vw;height:80%;overflow:hidden;container-type:size;pointer-events:none;mask-image:linear-gradient(to bottom,transparent,black 18%,black 72%,transparent);}
+  .forest {position:absolute;z-index:-1;bottom:0;left:50%;transform:translateX(-50%);width:min(100vw,var(--scenery-max-width));height:80%;overflow:hidden;container-type:size;pointer-events:none;mask-image:linear-gradient(to bottom,transparent,black 18%,black 72%,transparent);}
   .painting {position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:max(100%,228.57143cqh);aspect-ratio:16/7;}
   /* Reserve real paint outside the viewport for the edge trees to sway into. */
   .painting[data-pines] {width:max(101.6%,228.57143cqh);}
@@ -71,5 +71,7 @@ const percent = (value: number, full: number) => `${100 * value / full}%`;
   @media screen and (prefers-reduced-motion:no-preference) {
     .layers[data-ready] {display:block;}
   }
+  /* Fade the bounded painting into the page on wide displays. */
+  @media(min-width:1440px) {.painting {mask-image:linear-gradient(to right,transparent,black 8%,black 92%,transparent);}}
   @media(max-width:600px) {.forest {height:56%;} .painting {left:38%;transform:translateX(-38%);}}
 </style>

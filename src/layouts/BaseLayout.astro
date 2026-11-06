@@ -158,7 +158,8 @@ const commandItems = searchItems.map(item => ({
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <script is:inline>document.documentElement.classList.add("js");</script>
+    <!-- Reapply enhancement styles after ClientRouter replaces the html attributes. -->
+    <script is:inline data-astro-rerun>document.documentElement.classList.add("js");</script>
     <ClientRouter fallback="swap" />
   </head>
   <body transition:animate="none" data-motion={pageMotion} class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
