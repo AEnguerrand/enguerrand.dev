@@ -1,7 +1,7 @@
 import { getCollection, getEntry } from "astro:content";
 import { getPosts, postHref } from "./posts";
 import { starsGroups, starsListHref, starsListName } from "./stars";
-import { topicDescription, topicHref, topicTitle } from "./topics";
+import { canonicalTopics, topicDescription, topicHref, topicTitle } from "./topics";
 import { resumeSearchText } from "@/data/resume";
 
 export const searchLabels = {
@@ -40,7 +40,7 @@ export async function getSearchItems(): Promise<SearchItem[]> {
   const [home, talks, posts] = await Promise.all([
     getEntry("pages", "home"), getCollection("talks"), getPosts(),
   ]);
-  const topics = new Set(talks.flatMap(talk => talk.data.tags ?? []));
+  const topics = canonicalTopics(talks.flatMap(talk => talk.data.tags ?? []));
   return [
     ...pages.filter(([id]) => id !== "blog" || posts.length > 0).map(([id, title, href, summary]): SearchItem => ({
       id: `page-${id}`, kind: "page", title, href, summary,

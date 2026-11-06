@@ -1,5 +1,6 @@
 ---
 import HarbourLanding from "./HarbourLanding.astro";
+import responsiveAssets from "@/data/responsive-assets.json";
 import { EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
 interface Props { showBlog?: boolean }
 const { showBlog = false } = Astro.props;
@@ -17,7 +18,7 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
   </div>
   <div class="harbour-art" aria-hidden="true">
     <div class="harbour-scene">
-      <img src="/images/scenic/vancouver-harbour-map-aligned.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" />
+      <img src="/images/scenic/vancouver-harbour-map-aligned.webp" srcset={`${responsiveAssets.harbour.map(image => `${image.src} ${image.width}w`).join(", ")}, /images/scenic/vancouver-harbour-map-aligned.webp 1672w`} sizes="100vw" alt="" width="1672" height="941" loading="lazy" decoding="async" />
       <HarbourLanding />
     </div>
   </div>

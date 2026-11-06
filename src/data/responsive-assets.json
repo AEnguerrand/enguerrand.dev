@@ -1,0 +1,106 @@
+{
+  "sources": {
+    "/images/earth/natural-earth.webp": "27dafdcfdacc22768cb66174e4c8cc17c688f8738e00be42c23883fc7dd79263",
+    "/images/earth/earth-normal.webp": "830638ffc24a6e37d90986ef6123109802440a2caba05df95b1dd873207d24b6",
+    "/images/earth/earth-elevation.webp": "f4dc4c9c05796f7639a4ebcf601f2941b9c45f5a45f38fc35422c6b60e4adf23",
+    "/images/earth/earth-clouds.webp": "7589991d37037fab75553cd23e46b44efbb2a9c98433961e5b9294694beb52fc",
+    "/images/scenic/vancouver-harbour-map-aligned.webp": "0c8d4ec33846f86ecff2821e7c5eb60c8890e691e18a40a396f033ca0222d702",
+    "/projects/foliobruma-scanner-icon.png": "666c71d5619ba9b086479b1f7d8fe7985f17a840db7f3a1dba620675c1e450fc"
+  },
+  "globe": {
+    "phone": {
+      "colour": {
+        "src": "/images/optimized/natural-earth-1024.35b99a7db981.webp",
+        "width": 1024,
+        "height": 512,
+        "bytes": 36936
+      },
+      "normal": {
+        "src": "/images/optimized/earth-normal-512.1f3b0c07ea76.webp",
+        "width": 512,
+        "height": 256,
+        "bytes": 13876
+      },
+      "elevation": {
+        "src": "/images/optimized/earth-elevation-512.fb9568e97cae.webp",
+        "width": 512,
+        "height": 256,
+        "bytes": 6312
+      },
+      "clouds": {
+        "src": "/images/optimized/earth-clouds-512.3a97961abeb0.webp",
+        "width": 512,
+        "height": 256,
+        "bytes": 68046
+      }
+    },
+    "desktop": {
+      "colour": {
+        "src": "/images/optimized/natural-earth-2048.757d86dfeaeb.webp",
+        "width": 2048,
+        "height": 1024,
+        "bytes": 160302
+      },
+      "normal": {
+        "src": "/images/optimized/earth-normal-1024.377ad46c1b2e.webp",
+        "width": 1024,
+        "height": 512,
+        "bytes": 55594
+      },
+      "elevation": {
+        "src": "/images/optimized/earth-elevation-1024.ee3307c19921.webp",
+        "width": 1024,
+        "height": 512,
+        "bytes": 18030
+      },
+      "clouds": {
+        "src": "/images/optimized/earth-clouds-1024.797becc7ee31.webp",
+        "width": 1024,
+        "height": 512,
+        "bytes": 195918
+      }
+    }
+  },
+  "harbour": [
+    {
+      "src": "/images/optimized/vancouver-harbour-map-aligned-640.3a5a38f8d52a.webp",
+      "width": 640,
+      "height": 360,
+      "bytes": 68070
+    },
+    {
+      "src": "/images/optimized/vancouver-harbour-map-aligned-960.c2976b2d2c01.webp",
+      "width": 960,
+      "height": 540,
+      "bytes": 139268
+    },
+    {
+      "src": "/images/optimized/vancouver-harbour-map-aligned-1280.d73f2d02442e.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 216534
+    }
+  ],
+  "icons": {
+    "/projects/foliobruma-scanner-icon.png": [
+      {
+        "src": "/images/optimized/foliobruma-scanner-icon-40.c5b31a65f90d.webp",
+        "width": 40,
+        "height": 40,
+        "bytes": 964
+      },
+      {
+        "src": "/images/optimized/foliobruma-scanner-icon-80.2d4246110270.webp",
+        "width": 80,
+        "height": 80,
+        "bytes": 2044
+      },
+      {
+        "src": "/images/optimized/foliobruma-scanner-icon-120.8125eb2d7d4a.webp",
+        "width": 120,
+        "height": 120,
+        "bytes": 3230
+      }
+    ]
+  }
+}

@@ -1,35 +1,30 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
-import { topicDescription, topicHref, topicSlug, topicTitle } from "@/lib/topics";
+import { canonicalTopic, canonicalTopics, countTopics, topicDescription, topicHref, topicKind, topicRoutes, topicSlug, topicTitle } from "@/lib/topics";
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
-  const topicNames = Array.from(new Set(talks.flatMap((talk) => talk.data.tags ?? [])));
-
-  return topicNames.map((topic) => ({ params: { slug: topicSlug(topic) }, props: { topic } }));
+  return topicRoutes(talks.flatMap((talk) => talk.data.tags ?? []))
+    .map(({ slug, topic }) => ({ params: { slug }, props: { topic } }));
 }
 
 const { topic } = Astro.props as { topic: string };
+const canonical = canonicalTopic(topic);
+const isAlias = canonical !== topic;
 const allTalks = await getCollection("talks");
 const talks = allTalks
-  .filter((talk) => (talk.data.tags ?? []).includes(topic))
+  .filter((talk) => canonicalTopics(talk.data.tags ?? []).includes(canonical))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-const relatedTopicCounts = new Map<string, number>();
-for (const talk of talks) {
-  for (const tag of talk.data.tags ?? []) {
-    if (tag !== topic) relatedTopicCounts.set(tag, (relatedTopicCounts.get(tag) ?? 0) + 1);
-  }
-}
-const relatedTopics = Array.from(relatedTopicCounts, ([name, count]) => ({ name, count }))
-  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+const relatedTopics = countTopics(talks)
+  .filter((related) => related.name !== canonical && topicKind(related.name) === "subject")
   .slice(0, 4);
 
 const name = topicTitle(topic);
 const description = topicDescription(topic);
-const topicUrl = new URL(topicHref(topic), Astro.site).toString();
+const topicUrl = new URL(`/topics/${topicSlug(topic)}/`, Astro.site).toString();
 const structuredData = [
   {
     "@type": "CollectionPage",
@@ -73,6 +68,7 @@ const structuredData = [
   </nav>
 
   <PageIntro title={name} description={description} />
+  {isAlias && <p class="topic-alias">This subject is also listed under <a href={topicHref(canonical)} class="site-text-link">{topicTitle(canonical)}</a>. Both pages include the same talks.</p>}
 
   <section aria-labelledby="talks-heading">
     <h2 id="talks-heading" class="site-section-title">Talks</h2>
@@ -90,7 +86,7 @@ const structuredData = [
             {talk.data.summary && <p class="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">{talk.data.summary}</p>}
           </div>
           <div class="topic-talk-tags">
-            {(talk.data.tags ?? []).filter((tag) => tag !== topic).slice(0, 5).map((tag) => (
+            {canonicalTopics(talk.data.tags ?? []).filter((tag) => tag !== canonical && topicKind(tag) === "subject").slice(0, 5).map((tag) => (
               <a href={topicHref(tag)}>
                 {topicTitle(tag)}
               </a>
@@ -103,7 +99,7 @@ const structuredData = [
 
   {relatedTopics.length > 0 && (
     <section aria-labelledby="related-heading" class="mt-10">
-      <h2 id="related-heading" class="site-section-title">Related topics</h2>
+      <h2 id="related-heading" class="site-section-title">Related subjects</h2>
       <ul class="related-topics">
         {relatedTopics.map((related) => (
           <li class="site-list-row">
@@ -119,6 +115,7 @@ const structuredData = [
 </BaseLayout>
 
 <style>
+  .topic-alias {margin-bottom:28px;color:hsl(var(--muted-foreground));font-size:14px;line-height:1.6;}
   .topic-talks {margin-top:8px;}
   .topic-talk {padding:24px 0;}
   .topic-talk-title {margin-top:8px;color:hsl(var(--primary));font-size:20px;font-weight:500;line-height:1.4;}

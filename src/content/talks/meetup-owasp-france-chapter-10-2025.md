@@ -7,6 +7,8 @@ date: "2025-10-13"
 event: "OWASP France Chapter Meetup (October 2025)"
 location: "Paris, France"
 language: ["French"]
+sessionLanguages: ["French"]
+notesLanguages: ["English"]
 sessionType: "Meetup talk"
 summary: "The September 2025 npm attacks, how they spread, and controls for safer JavaScript pipelines."
 tags:

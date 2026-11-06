@@ -1,5 +1,7 @@
 ---
 import ProjectLink from "./ProjectLink.astro";
+import { projectDetails } from "@/data/project-details";
+import responsiveAssets from "@/data/responsive-assets.json";
 import { Archive } from "@phosphor-icons/react";
 import type { CollectionEntry } from "astro:content";
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
   illustrated?: boolean;
 }
 const { projects, heading: Heading = "h3", eager = false, illustrated = false } = Astro.props;
+const projectIconVariants: Record<string, { src: string; width: number }[]> = responsiveAssets.icons;
 const illustrations: Record<string, string> = {
   "Foliobruma Scanner": "/images/illustrations/document-to-pdf.webp",
   "Foliobruma": "/images/illustrations/archive-box.webp",
@@ -21,13 +24,13 @@ const illustrations: Record<string, string> = {
       {illustrated && illustrations[project.title] && <div class="project-illustration" aria-hidden="true"><img src={illustrations[project.title]} alt="" width="512" height="384" loading={eager ? "eager" : "lazy"} decoding="async" /></div>}
       <div class="project-meta">
         {project.image && project.imageAlt ? (
-          <img class="project-icon" src={project.image} alt={project.imageAlt} width="40" height="40" loading={eager && index === 0 ? "eager" : "lazy"} fetchpriority={eager && index === 0 ? "high" : undefined} />
+          <img class="project-icon" src={project.image} srcset={projectIconVariants[project.image]?.map((variant) => `${variant.src} ${variant.width}w`).join(", ")} sizes={projectIconVariants[project.image] ? illustrated ? "(max-width: 767px) 28px, 40px" : "40px" : undefined} alt={project.imageAlt} width="40" height="40" loading={eager && index === 0 ? "eager" : "lazy"} fetchpriority={eager && index === 0 ? "high" : undefined} />
         ) : <span class="project-symbol" aria-hidden="true"><Archive size={28} weight={illustrated ? "duotone" : "regular"} /></span>}
         <p class="site-eyebrow">{project.status}</p>
       </div>
       <Heading class="project-title"><a href={project.url}>{project.title}</a></Heading>
       <p class="project-description">{project.description}</p>
-      {illustrated && project.title === "Foliobruma Scanner" && <p class="project-detail">Capture with a document camera and review each page before export. No account needed.</p>}
+      {illustrated && projectDetails[project.title] && <p class="project-detail">{projectDetails[project.title]}</p>}
       <ProjectLink class="project-link" href={project.url} label={project.action} />
     </article>
   ))}

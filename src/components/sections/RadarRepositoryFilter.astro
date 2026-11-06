@@ -42,7 +42,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
     </button>
   </form>
   <p class="radar-filter-summary" role="status" aria-live="polite" data-radar-filter-summary>
-    {`Page ${pageNumber}. ${total} repositories in this topic.`}
+    {`Page ${pageNumber}. ${total} ${total === 1 ? "repository" : "repositories"} in this topic.`}
   </p>
 </div>
 
@@ -57,6 +57,8 @@ const { languages, pageNumber, slug, total } = Astro.props;
 
     const root = document.querySelector("[data-radar-filter]");
     if (!(root instanceof HTMLElement)) return;
+    const pathname = window.location.pathname;
+    const isCurrentRoute = () => !controller.signal.aborted && root.isConnected && window.location.pathname === pathname;
     const slug = root.dataset.radarFilter ?? "";
     const total = Number(root.dataset.radarTotal ?? 0);
     const pageNumber = Number(root.dataset.radarPage ?? 1);
@@ -160,13 +162,14 @@ const { languages, pageNumber, slug, total } = Astro.props;
       history.replaceState(history.state, "", url);
     };
 
-    const render = async () => {
+    const render = async (updateHistory = false) => {
+      if (!isCurrentRoute()) return;
       const version = ++renderVersion;
       const query = normalize(queryInput.value);
       const language = languageSelect.value;
       const status = statusSelect.value;
       const isFiltering = Boolean(query || language || status);
-      updateUrl(queryInput.value.trim(), language, status);
+      if (updateHistory) updateUrl(queryInput.value.trim(), language, status);
 
       defaultList.hidden = isFiltering;
       if (pagination instanceof HTMLElement) pagination.hidden = isFiltering;
@@ -174,14 +177,14 @@ const { languages, pageNumber, slug, total } = Astro.props;
 
       if (!isFiltering) {
         results.replaceChildren();
-        summary.textContent = `Page ${pageNumber}. ${total} repositories in this topic.`;
+        summary.textContent = `Page ${pageNumber}. ${total} ${total === 1 ? "repository" : "repositories"} in this topic.`;
         return;
       }
 
       summary.textContent = "Filtering repositories…";
       try {
         const repositories = await loadRepositories();
-        if (controller.signal.aborted || version !== renderVersion) return;
+        if (!isCurrentRoute() || version !== renderVersion) return;
         const matches = repositories.filter((repository) => {
           const searchable = normalize([
             repository.full_name,
@@ -203,7 +206,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
         }
         summary.textContent = `${matches.length} ${matches.length === 1 ? "repository" : "repositories"} found.`;
       } catch (error) {
-        if (controller.signal.aborted || version !== renderVersion) return;
+        if (!isCurrentRoute() || version !== renderVersion) return;
         repositoriesPromise = undefined;
         if (pagination instanceof HTMLElement) pagination.hidden = false;
         summary.textContent = "Repository filtering is unavailable. The current page is still available below.";
@@ -219,14 +222,20 @@ const { languages, pageNumber, slug, total } = Astro.props;
       statusSelect.value = parameters.get("status") ?? "";
     };
     readUrl();
-    window.addEventListener("popstate", () => { readUrl(); render(); }, { signal: controller.signal });
+    // History updates the URL before Astro replaces the old page. Only read this
+    // document's route, and never write filter values while restoring history.
+    window.addEventListener("popstate", () => {
+      if (!isCurrentRoute()) return;
+      readUrl();
+      render();
+    }, { signal: controller.signal });
 
-    form.addEventListener("input", render, { signal: controller.signal });
-    form.addEventListener("change", render, { signal: controller.signal });
+    form.addEventListener("input", () => render(true), { signal: controller.signal });
+    form.addEventListener("change", () => render(true), { signal: controller.signal });
     form.addEventListener("submit", (event) => event.preventDefault(), { signal: controller.signal });
     clearButton.addEventListener("click", () => {
       form.reset();
-      render();
+      render(true);
       queryInput.focus();
     }, { signal: controller.signal });
 

@@ -7,6 +7,8 @@ date: "2025-02-20"
 event: "Wiz Customer Story Session"
 location: "Online"
 language: ["English"]
+sessionLanguages: ["English"]
+notesLanguages: ["English"]
 sessionType: "Customer story"
 summary: "How Ledger used Wiz for cloud visibility, risk prioritization, and security checks in development workflows."
 tags:

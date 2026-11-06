@@ -1,6 +1,6 @@
 # Redesign visual QA
 
-final result: passed
+final result: passed for the local design review; the final combined report records the source validation result
 
 ## Scope and visual references
 
@@ -26,7 +26,7 @@ The first screenshot pass missed lazy footer images. The affected captures were 
 
 - Resolved P2: article headings retained the default heavy, near-black prose style. The shared interior prose rules now use the site ink and heading weight 500. `blog-typography-comparison.png` contains the first and corrected 390-pixel captures. Revised blog and two talk templates were checked at all three widths with no overflow or page errors.
 - Resolved P2: repository links inherited a body size despite their heading wrapper. The default list now uses 20-pixel Fraunces at weight 500, matching filtered results. See `output/redesign/library/review.json` and its final captures.
-- No remaining actionable P0, P1, or P2 visual findings in the inspected states.
+- The first design pass found no further visual defects in its inspected states. A later audit found history and large-text issues; the follow-up fixes and checks are listed in `docs/audit-completion.md`.
 - Final static checks also found duplicate Overview IDs and an HTML-size regression. Article headings now use Talk overview; the palette script is bundled once, with compact keyword data. The size limit and structural checks were kept. Final verification is recorded in the combined review package.
 
 ## Required design surfaces
@@ -45,7 +45,7 @@ Project illustration focus motion moves 4 pixels and rotates 1 degree with norma
 
 ## Limits and open decisions
 
-This passes local design QA, not author approval. Physical devices, Safari/Firefox, a screen reader, live video playback and external destinations were not established by these captures. The blog article is a synthetic layout fixture because the site has no published posts. Remote résumé certification logos are outside the deterministic capture boundary. The author still needs to review the proposed illustrations and copy before merge. No merge or deployment is authorized.
+This passes local design QA, not author approval. Follow-up checks cover headless WebKit and Firefox, plus one successful YouTube playback. Physical devices, installed Safari, a screen reader and native text zoom remain outside the evidence. External destinations are not covered in full. The blog article is a synthetic layout fixture because the site has no published posts. Remote résumé certification logos are outside the deterministic capture boundary. The author still needs to review the proposed illustrations and copy before merge. No merge or deployment is authorized.
 
 ## Implementation checklist
 
@@ -54,4 +54,10 @@ This passes local design QA, not author approval. Physical devices, Safari/Firef
 - [x] Verify phone, tablet and desktop templates and useful motion states.
 - [x] Preserve the homepage, shared navbar design and existing harbour footer.
 - [x] Keep synthetic posts outside source and production output.
-- [ ] Attach the final combined review package and exact revisions to the draft PR.
+- [x] Attach the design review package and exact revisions to the draft PR; refresh the evidence binding after each validated implementation change.
+
+## Audit follow-up
+
+Before/after Home and Talks comparisons are in `output/audit-completion/`. The accepted full-width scenes, type, spacing and shared navigation remain. Smaller copies use the original globe, harbour and Scanner assets. Language labels now distinguish notes from speech. The video placeholder grows with enlarged text, and long headings and the site name wrap at narrow widths. The final browser suite checks these cases at 320 pixels. Initial cross-browser failures remain in the evidence directory; corrected results are kept separately.
+
+See `docs/audit-completion.md` for the item-by-item result and evidence limits. GitHub Actions remains disabled as requested. The draft PR contains the final combined report path, base, candidate, source hash, author-content paths and open review decisions.

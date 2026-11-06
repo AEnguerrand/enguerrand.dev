@@ -16,14 +16,15 @@ export function getStaticPaths() {
 }
 const {group,pageNumber,pageCount} = Astro.props as {group:StarredGroup;pageNumber:number;pageCount:number};
 const name = starsListName(group.name);
+const repositoryCount = `${group.repos.length} ${group.repos.length === 1 ? "repository" : "repositories"}`;
 const repos = group.repos.slice((pageNumber-1)*starsPageSize,pageNumber*starsPageSize);
 const suffix = pageNumber > 1 ? ` — Page ${pageNumber}` : "";
 const languages = [...new Set(group.repos.map((repo) => repo.language).filter((language): language is string => Boolean(language)))].sort((a, b) => a.localeCompare(b));
 ---
-<BaseLayout title={`${name} Radar${suffix}`} description={`Browse ${name} resources in my technical radar. Page ${pageNumber} of ${pageCount}; ${group.repos.length} repositories in this topic.`}>
+<BaseLayout title={`${name} Radar${suffix}`} description={`Browse ${name} resources in my technical radar. Page ${pageNumber} of ${pageCount}; ${repositoryCount} in this topic.`}>
   <nav class="repository-back" aria-label="Breadcrumb"><a href="/radar/" class="site-back-link">← Radar</a><a href="/github-stars/" class="site-back-link">All repository topics</a></nav>
   <PageIntro title={name} description={group.description}>
-    <p class="site-page-meta">{group.repos.length} repositories · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
+    <p class="site-page-meta">{repositoryCount} · Page {pageNumber} of {pageCount} · Updated {starsDate(starsDataset.generated_at)}</p>
   </PageIntro>
   <section aria-labelledby="repos-heading">
     <h2 id="repos-heading" class="sr-only">Repositories</h2>

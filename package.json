@@ -14,8 +14,9 @@
     "stars:sync": "uv run scripts/sync_starred_lists.py",
     "stars:refresh": "npm run stars:import-ui && npm run stars:sync",
     "check:site": "astro sync && tsc -p tsconfig.site.json",
-    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs scripts/geographic-globe.test.mjs scripts/harbour-motion.test.mjs scripts/forest-layers.test.mjs",
-    "review:site": "node scripts/review-site.mjs"
+    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs scripts/geographic-globe.test.mjs scripts/harbour-motion.test.mjs scripts/forest-layers.test.mjs scripts/topics.test.mjs scripts/review-workflow.test.mjs scripts/asset-delivery.test.mjs",
+    "review:site": "node scripts/review-site.mjs",
+    "assets:prepare": "node scripts/prepare-responsive-assets.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.1",

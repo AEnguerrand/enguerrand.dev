@@ -1,10 +1,101 @@
 import assert from "node:assert/strict";
 import { join } from "node:path";
+import { checkTextScaling } from "./review-text-scaling.mjs";
+import { checkVideoActivation } from "./review-video.mjs";
+
+// Use native links between valid routes to cover history without a directory detour.
+export async function checkRadarHistory(page, origin, navigate) {
+  const states = [];
+  const visit = async path => {
+    await page.evaluate(href => {
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = "History test destination";
+      link.dataset.reviewHistoryLink = "";
+      document.querySelector("main").prepend(link);
+    }, path);
+    await navigate(() => page.locator("[data-review-history-link]").click(), `${origin}${path}`);
+  };
+  const expectState = async path => {
+    const expected = new URL(path, origin);
+    const query = expected.searchParams.get("q") ?? "";
+    const language = expected.searchParams.get("language") ?? "";
+    const status = expected.searchParams.get("status") ?? "";
+    const filtering = Boolean(query || language || status);
+    await page.waitForFunction(active => {
+      const summary = document.querySelector("[data-radar-filter-summary]")?.textContent.trim();
+      return active ? /^\d+ repositor(?:y|ies) found\.$/.test(summary ?? "") : summary?.startsWith("Page ");
+    }, filtering);
+    assert.equal(page.url(), expected.href, "History preserves the destination filter URL");
+    assert.equal(await page.locator("[data-radar-query]").inputValue(), query);
+    assert.equal(await page.locator("[data-radar-language]").inputValue(), language);
+    assert.equal(await page.locator("[data-radar-status]").inputValue(), status);
+    const state = await page.locator("[data-radar-filter]").evaluate(root => ({
+      topic: root.dataset.radarFilter, page: Number(root.dataset.radarPage), total: Number(root.dataset.radarTotal),
+      summary: root.querySelector("[data-radar-filter-summary]").textContent.trim(),
+    }));
+    const parts = expected.pathname.split("/").filter(Boolean);
+    assert.equal(state.topic, parts[1]);
+    assert.equal(state.page, Number(parts[2] ?? 1));
+    assert.equal(await page.locator("[data-radar-default]").isVisible(), !filtering);
+    assert.equal(await page.locator("[data-radar-filter-results]").isVisible(), filtering);
+    if (filtering) {
+      const count = await page.locator("[data-radar-filter-results] h3").count();
+      assert.ok(count > 0, "The known filter has repository matches");
+      assert.equal(state.summary, `${count} ${count === 1 ? "repository" : "repositories"} found.`);
+      if (language) for (const label of await page.locator(".radar-result-labels").allTextContents())
+        assert.equal(label.split(" · ")[0], language);
+    } else {
+      const count = `${state.total} ${state.total === 1 ? "repository" : "repositories"}`;
+      assert.equal(state.summary, `Page ${state.page}. ${count} in this topic.`);
+      assert.ok((await page.locator(".site-page-meta").textContent()).includes(count));
+      assert.ok((await page.locator('meta[name="description"]').getAttribute("content")).includes(count));
+    }
+    states.push({ path, ...state });
+  };
+  const rust = "/github-stars/rust/?language=Rust";
+  const data = "/github-stars/data/?language=Python";
+  await page.goto(`${origin}${rust}`, { waitUntil: "networkidle" });
+  await expectState(rust);
+  await visit("/github-stars/data/");
+  await expectState("/github-stars/data/");
+  await page.locator("[data-radar-language]").selectOption("Python");
+  await expectState(data);
+  await navigate(() => page.goBack(), `${origin}${rust}`);
+  await expectState(rust);
+  await navigate(() => page.goForward(), `${origin}${data}`);
+  await expectState(data);
+
+  const first = "/github-stars/kubernetes/?q=kube&language=Go&status=active";
+  const second = "/github-stars/kubernetes/2/";
+  await visit(first);
+  await expectState(first);
+  await visit(second);
+  await expectState(second);
+  await navigate(() => page.goBack(), `${origin}${first}`);
+  await expectState(first);
+  await navigate(() => page.goForward(), `${origin}${second}`);
+  await expectState(second);
+  await page.locator("[data-radar-language]").selectOption("Go");
+  await expectState(`${second}?language=Go`);
+  await visit(`${second}?language=Python`);
+  await expectState(`${second}?language=Python`);
+  await navigate(() => page.goBack(), `${origin}${second}?language=Go`);
+  await expectState(`${second}?language=Go`);
+  await navigate(() => page.goForward(), `${origin}${second}?language=Python`);
+  await expectState(`${second}?language=Python`);
+  await page.locator("[data-radar-clear]").click();
+  await expectState(second);
+  return { crossTopicHistory: true, paginatedHistory: true, queryHistory: true, clear: true, states };
+}
 
 // Follow real links: a direct page load cannot detect stale transition state.
 export async function captureRegressions(browser, origin, output, candidate) {
   const results = [];
   const cases = [
+    { name: "text-scaling-320", width: 320, kind: "text" },
+    { name: "video-activation-390", width: 390, kind: "video" },
+    ...[390, 1440].map(width => ({ name: `radar-history-${width}`, width, kind: "radar" })),
     ...[320, 390, 767].map(width => ({ name: `navigation-${width}`, width, kind: "navigation" })),
     { name: "navigation-motion-390", width: 390, kind: "navigation", motion: "no-preference" },
     ...[390, 1440].map(width => ({ name: `search-return-${width}`, width, kind: "search" })),
@@ -46,7 +137,13 @@ export async function captureRegressions(browser, origin, output, candidate) {
     });
     let metrics;
     try {
-      if (test.kind === "navigation") {
+      if (test.kind === "text") {
+        metrics = await checkTextScaling(page, origin);
+      } else if (test.kind === "video") {
+        metrics = await checkVideoActivation(page, origin, navigate);
+      } else if (test.kind === "radar") {
+        metrics = await checkRadarHistory(page, origin, navigate);
+      } else if (test.kind === "navigation") {
         await page.goto(origin, { waitUntil: "networkidle" });
         const toggle = page.locator("[data-site-nav-toggle]");
         const assertClosed = async () => {
@@ -60,6 +157,7 @@ export async function captureRegressions(browser, origin, output, candidate) {
         };
         await toggle.click();
         const lastNavLink = page.locator("[data-site-nav-links] a").last();
+        await lastNavLink.waitFor({ state: "visible" });
         await lastNavLink.focus();
         await page.keyboard.press("Tab");
         assert.equal(await toggle.evaluate(node => node === document.activeElement), true, "Home menu wraps past its hidden brand");
@@ -178,7 +276,13 @@ export async function captureRegressions(browser, origin, output, candidate) {
       } else {
         await page.goto(`${origin}${test.page === "home" ? "/" : "/projects/"}`, { waitUntil: "networkidle" });
         await page.locator(".harbour-art").scrollIntoViewIfNeeded();
-        await page.locator(".harbour-art img").evaluate(image => image.decode());
+        // A responsive source can change while decode() is pending. Check the selected image.
+        await page.waitForFunction(() => {
+          const image = document.querySelector(".harbour-art img");
+          return image?.complete && image.naturalWidth > 0;
+        });
+        if (candidate && test.motion === "no-preference")
+          await page.locator(".harbour-landing[data-motion-ready]").waitFor({ state: "visible" });
         await page.evaluate(async () => {
           await document.fonts.ready;
           window.scrollTo({ top: 0, behavior: "instant" });

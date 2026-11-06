@@ -66,7 +66,14 @@ import { certifications, community, education, experience, resumeProfile, resume
       <article>
         <h2 class="resume-section-title">{resumeSections.community}</h2>
         <div class="resume-community">
-          {community.map((paragraph) => <p>{paragraph}</p>)}
+          {community.map((item) => (
+            <div class="resume-community-item">
+              <p>{item.text}</p>
+              <ul class="resume-evidence-links">
+                {item.links.map((link) => <li><a href={link.href} class="site-text-link">{link.label}{link.href.startsWith("https://") ? " ↗" : " →"}</a></li>)}
+              </ul>
+            </div>
+          ))}
         </div>
       </article>
     </section>
@@ -113,7 +120,9 @@ import { certifications, community, education, experience, resumeProfile, resume
   .resume-bullets li::marker {color:hsl(var(--primary) / .55);}
   .resume-details {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;margin:8px 0 32px;padding-top:28px;border-top:1px solid hsl(var(--border));}
   .resume-education,.resume-community {margin-top:20px;color:hsl(var(--muted-foreground));font-size:.9375rem;line-height:1.7;}
-  .resume-school + .resume-school,.resume-community p + p {margin-top:16px;}
+  .resume-school + .resume-school,.resume-community-item + .resume-community-item {margin-top:16px;}
+  .resume-evidence-links {display:flex;flex-wrap:wrap;gap:0 16px;margin-top:6px;font-size:.8125rem;}
+  .resume-evidence-links a {display:inline-flex;align-items:center;min-height:44px;}
   .resume-school h3 {color:hsl(var(--foreground));font-family:var(--font-sans);font-size:.9375rem;font-weight:500;line-height:1.6;}
   .resume-school > p:last-child {margin-top:5px;}
   .resume-certifications {margin-top:24px;}

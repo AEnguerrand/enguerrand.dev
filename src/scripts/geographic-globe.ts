@@ -1,3 +1,4 @@
+import responsiveAssets from '../data/responsive-assets.json';
 import type { WebGLRenderer, Scene, OrthographicCamera, Group, Mesh, SphereGeometry, MeshPhongMaterial, ShaderMaterial, Texture } from 'three';
 
 class GeographicGlobe extends HTMLElement {
@@ -52,7 +53,9 @@ class GeographicGlobe extends HTMLElement {
       const canvas=this.querySelector('canvas')!;
       renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
       renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-      const texture=await new T.TextureLoader().loadAsync(this.dataset.mode==='sphere'?this.dataset.texture!:'/images/earth/vancouver-colour.webp');
+      const maps=this.dataset.mode==='sphere' ? (canvas.getBoundingClientRect().width <= 360 ? responsiveAssets.globe.phone : responsiveAssets.globe.desktop) : undefined;
+      if(maps) this.dataset.textureProfile=maps===responsiveAssets.globe.phone ? 'phone' : 'desktop';
+      const texture=await new T.TextureLoader().loadAsync(maps?.colour.src ?? '/images/earth/vancouver-colour.webp');
       if(signal.aborted){texture.dispose();renderer.dispose();return;}
       texture.colorSpace=T.SRGBColorSpace;
       if(this.dataset.mode!=='sphere'){
@@ -61,9 +64,9 @@ class GeographicGlobe extends HTMLElement {
         texture.offset?.set(-49.5/15.75,-135/9);
       }
       this.texture=texture;
-      this.normal=await new T.TextureLoader().loadAsync('/images/earth/earth-normal.webp');
-      this.elevation=await new T.TextureLoader().loadAsync('/images/earth/earth-elevation.webp');
-      this.cloudTexture=await new T.TextureLoader().loadAsync('/images/earth/earth-clouds.webp');
+      this.normal=await new T.TextureLoader().loadAsync(maps?.normal.src ?? '/images/earth/earth-normal.webp');
+      this.elevation=await new T.TextureLoader().loadAsync(maps?.elevation.src ?? '/images/earth/earth-elevation.webp');
+      this.cloudTexture=await new T.TextureLoader().loadAsync(maps?.clouds.src ?? '/images/earth/earth-clouds.webp');
       this.cloudTexture.colorSpace=T.SRGBColorSpace;
       // Preserve texture detail at the shallow viewing angle of the horizon.
       const anisotropy=Math.min(renderer.capabilities?.getMaxAnisotropy() ?? 1,8);

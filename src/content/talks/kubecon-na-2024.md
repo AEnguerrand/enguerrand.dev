@@ -7,6 +7,8 @@ date: "2024-11-15"
 event: "KubeCon + CloudNativeCon North America 2024"
 location: "Salt Lake City, Utah"
 language: ["English"]
+sessionLanguages: ["English"]
+notesLanguages: ["English"]
 sessionType: "Conference talk"
 summary: "Practical SLSA supply chain security, from GitHub Actions builds to Kubernetes policy enforcement."
 tags:
@@ -15,6 +17,7 @@ resources:
   - label: "Talk Video (YouTube)"
     url: "https://www.youtube.com/watch?v=0w_dBmvu5l8"
   - label: "Presentation Slides"
+    language: "English"
     url: "https://static.sched.com/hosted_files/kccncna2024/0b/Practical%20Supply%20Chain%20Security_%20Implementing%20SLSA%20Compliance%20from%20Build%20to%20Runtime.pdf.pdf"
   - label: "Lab Repository"
     url: "https://github.com/AEnguerrand/kubecon-cloudnativecon-na-2024-supply-chain-security-lab"

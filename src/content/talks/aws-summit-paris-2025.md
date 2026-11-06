@@ -7,6 +7,8 @@ date: "2025-04-09"
 event: "AWS Summit Paris 2025"
 location: "Paris, France"
 language: ["French", "English"]
+sessionLanguages: ["French"]
+notesLanguages: ["English", "French"]
 sessionType: "Conference talk"
 summary: "How Ledger used Wiz to connect code scanning, cloud risk management, and runtime protection."
 tags: ["aws", "aws-summit", "security", "cloud security", "wiz"]

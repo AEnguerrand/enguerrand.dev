@@ -1,20 +1,15 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
-import { topicDescription, topicHref, topicTitle } from "@/lib/topics";
+import { countTopics, topicDescription, topicGroups, topicHref, topicKind, topicTitle } from "@/lib/topics";
 import { getCollection } from "astro:content";
 
 const talks = await getCollection("talks");
-const topicCounts = new Map<string, number>();
-
-for (const talk of talks) {
-  for (const topic of talk.data.tags ?? []) {
-    topicCounts.set(topic, (topicCounts.get(topic) ?? 0) + 1);
-  }
-}
-
-const topics = Array.from(topicCounts, ([name, count]) => ({ name, count }))
-  .sort((a, b) => b.count - a.count || topicTitle(a.name).localeCompare(topicTitle(b.name), "en"));
+const topics = countTopics(talks);
+const groups = topicGroups.map((group) => ({
+  ...group,
+  topics: topics.filter((topic) => topicKind(topic.name) === group.kind),
+})).filter((group) => group.topics.length > 0);
 
 const structuredData = {
   "@type": "CollectionPage",
@@ -42,11 +37,12 @@ const structuredData = {
   description="Browse conference talks and practical resources by cloud security, software supply chain security, Kubernetes, AWS, npm, SLSA, and related topics."
   structuredData={structuredData}
 >
-  <PageIntro title="Talk topics" description={`Browse ${topics.length} topics from conference talks and workshops.`} />
-  <section aria-labelledby="topic-list-heading">
-    <h2 id="topic-list-heading" class="sr-only">Browse topics</h2>
+  <PageIntro title="Talk topics" description="Browse talks by subject, tool, or event." />
+  {groups.map((group) => (
+    <section aria-labelledby={`${group.id}-heading`} class="topic-group">
+    <h2 id={`${group.id}-heading`} class="site-section-title">{group.title}</h2>
     <div class="topic-list">
-      {topics.map((topic) => (
+      {group.topics.map((topic) => (
         <article class="site-list-row topic-row">
           <div class="topic-heading">
             <h3><a href={topicHref(topic.name)}>{topicTitle(topic.name)}</a></h3>
@@ -56,11 +52,13 @@ const structuredData = {
         </article>
       ))}
     </div>
-  </section>
+    </section>
+  ))}
 </BaseLayout>
 
 <style>
-  .topic-list {display:grid;column-gap:40px;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .topic-group + .topic-group {margin-top:40px;}
+  .topic-list {margin-top:8px;display:grid;column-gap:40px;grid-template-columns:repeat(2,minmax(0,1fr));}
   .topic-row {min-width:0;padding:24px 0;}
   .topic-heading {display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;}
   .topic-heading h3 {color:hsl(var(--primary));font-size:20px;font-weight:500;line-height:1.4;}

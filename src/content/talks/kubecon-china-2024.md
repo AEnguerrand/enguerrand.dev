@@ -7,6 +7,8 @@ date: "2024-08-21"
 event: "KubeCon + CloudNativeCon + Open Source Summit China 2024"
 location: "Hong Kong"
 language: ["English", "Chinese"]
+sessionLanguages: ["English"]
+notesLanguages: ["English"]
 sessionType: "Conference talk"
 summary: "An introduction to SLSA supply chain security, from build pipelines to Kubernetes policy enforcement."
 tags:
@@ -15,8 +17,11 @@ resources:
   - label: "Talk Video (YouTube)"
     url: "https://www.youtube.com/watch?v=733HXxEnm0I"
   - label: "English Slides"
+    language: "English"
     url: "https://static.sched.com/hosted_files/kccncossaidevchn2024/91/English%20-%20Securing%20the%20Supply%20Chain%20A%20Practical%20Guide%20to%20SLSA%20Compliance%20from%20Build%20to%20Runtime.pdf"
   - label: "Chinese Slides"
+    language: "Chinese"
+    translation: "automatic"
     url: "https://static.sched.com/hosted_files/kccncossaidevchn2024/3d/Chinese%20%28Automatic%20Translation%29%20-%20Securing%20the%20Supply%20Chain%20A%20Practical%20Guide%20to%20SLSA%20Compliance%20from%20Build%20to%20Runtime.pdf"
 ---
 

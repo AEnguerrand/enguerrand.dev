@@ -144,8 +144,22 @@ export const skills = [
 ] as const;
 
 export const community = [
-  "Speaker at KubeCon + CloudNativeCon (North America, China), AWS Summit, and CNCF / OWASP meetups.",
-  "Contributor to open-source and security projects.",
+  {
+    text: "Speaker at KubeCon + CloudNativeCon (North America, China), AWS Summit, and CNCF / OWASP meetups.",
+    links: [
+      { label: "KubeCon North America", href: "/talks/kubecon-na-2024/" },
+      { label: "KubeCon China", href: "/talks/kubecon-china-2024/" },
+      { label: "AWS Summit", href: "/talks/aws-summit-paris-2025/" },
+      { label: "OWASP France", href: "/talks/meetup-owasp-france-chapter-10-2025/" },
+    ],
+  },
+  {
+    text: "Contributor to open-source and security projects.",
+    links: [
+      { label: "Foliobruma Scanner", href: "https://github.com/AEnguerrand/foliobruma-scanner" },
+      { label: "Supply chain security lab", href: "https://github.com/AEnguerrand/kubecon-cloudnativecon-na-2024-supply-chain-security-lab" },
+    ],
+  },
 ] as const;
 
 export const certifications = [
@@ -177,7 +191,7 @@ export const resumeSearchText = [
   resumeSections.education,
   ...education.flatMap((item) => [item.school, item.period, item.degree]),
   resumeSections.community,
-  ...community,
+  ...community.flatMap((item) => [item.text, ...item.links.map((link) => link.label)]),
   resumeSections.skills,
   resumeSections.certifications,
   ...certifications.map((item) => item.name),

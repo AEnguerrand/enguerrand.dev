@@ -65,7 +65,7 @@ External requests, including video embeds, are replaced with empty responses. Li
 
 ## CI and approval
 
-The `Site review` workflow checks the exact PR head against its event's base commit. It uses Node.js 22, read-only repository permissions, and no saved checkout credentials. It uploads evidence for 14 days even after failure. It does not publish a preview, post comments, merge, or deploy. Existing Cloudflare deployment behavior is unchanged.
+The `Site review` workflow covers PRs targeting any branch, including stacked PRs. It checks the exact PR head against its event's base commit. A manual run requires an explicit base branch, tag ref or full commit SHA; it rejects a self-comparison and records both resolved revisions before running project code. It uses Node.js 22, read-only repository permissions, and no saved checkout credentials. It uploads evidence for 14 days even after failure. It does not publish a preview, post comments, merge, or deploy. Existing Cloudflare deployment behavior is unchanged.
 
 After the workflow has run, the repository owner can make `Site checks and review evidence` a required branch check and set a human merge rule that fits the account setup. Adding this workflow does not configure GitHub branch protection. Rerun against the new target revision if the base changes. CI results and checks are review evidence; author approval remains separate.
 

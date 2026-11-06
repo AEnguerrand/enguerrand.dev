@@ -70,8 +70,8 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://github.com/AEnguerrand/foliobruma-scanner" && text(n) === "View source"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://foliobruma.com" && text(n) === "Website"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
-  assert.match(text(selected), /Notes.*French/s);
-  assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
+  assert.match(text(selected), /Notes in English.*Talk in French/s);
+  assert.match(text(selected), /Video.*Slides.*Lab.*Talk in English/s);
   const homeText = text(home.nodes[0]);
   for (const filler of [
     "Selected talks, notes, recordings, and practical examples.",
@@ -165,9 +165,12 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
       assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
     }
   }
-  const video = attrs(talk.nodes.find((n) => n.tagName === "iframe"));
-  assert.equal(video.loading, "lazy");
-  assert.equal(video.src, "https://www.youtube.com/embed/0w_dBmvu5l8");
+  assert.equal(talk.nodes.filter((n) => n.tagName === "iframe").length, 0, "The player must not load before activation");
+  const video = talk.nodes.find((n) => n.tagName === "talk-video");
+  assert.equal(attrs(video)["data-embed-url"], "https://www.youtube.com/embed/0w_dBmvu5l8");
+  const button = walk(video).find((n) => "data-video-load" in attrs(n));
+  assert.ok("hidden" in attrs(button), "Without JavaScript use the native video link");
+  assert.ok(walk(video).some((n) => n.tagName === "a" && attrs(n).href === "https://www.youtube.com/watch?v=0w_dBmvu5l8"));
 });
 
 test("Stars and Radar use the checked-in dataset in production output", async () => {
@@ -257,9 +260,11 @@ test("Command-K opens a site-wide modal instead of leaving the page", async () =
     assert.equal(attrs(input)["aria-controls"], "command-dialog-results");
     assert.ok(walk(dialog).some((node) => node.tagName === "ul" && attrs(node).role === "listbox"));
   }
-  const homeHtml = await load("index.html");
-  assert.match(homeHtml, /site-command:open/);
-  assert.doesNotMatch(homeHtml, /searchParams\.set\("focus", "1"\)/);
+  const shell = home.nodes.find((node) => node.tagName === "script" && "data-site-shell" in attrs(node));
+  assert.match(attrs(shell).src, /^\/_astro\/site-shell\.[\w-]+\.js$/);
+  const shellScript = await load(attrs(shell).src.slice(1));
+  assert.match(shellScript, /site-command:open/);
+  assert.doesNotMatch(shellScript, /searchParams\.set\("focus", "1"\)/);
 });
 
 test("Shared shell keeps route width stable and uses client navigation", async () => {

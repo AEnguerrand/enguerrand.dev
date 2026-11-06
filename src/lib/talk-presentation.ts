@@ -12,7 +12,17 @@ export function getTalkPresentation(
     timeZone: "UTC",
   });
 
-  const resources = talk.data.resources ?? [];
+  const resources = (talk.data.resources ?? []).map((resource) => ({
+    ...resource,
+    displayLabel: resource.translation === "automatic"
+      ? `${resource.label} (automatic translation)`
+      : resource.label,
+  }));
+  const slidesLanguages = Array.from(new Set(resources
+    .filter((resource) => /slides|presentation/i.test(resource.label) && resource.language)
+    .map((resource) => resource.translation === "automatic"
+      ? `${resource.language} (automatic translation)`
+      : resource.language))).join(", ");
 
   const videoResource = resources.find((resource) => {
     const label = resource.label.toLowerCase();
@@ -79,7 +89,9 @@ export function getTalkPresentation(
   const talkMetadata = [
     { label: "Event", value: talk.data.event },
     { label: "Location", value: talk.data.location },
-    { label: "Language", value: talk.data.language?.join(", ") },
+    { label: "Session language", value: talk.data.sessionLanguages?.join(", ") },
+    { label: "Notes language", value: talk.data.notesLanguages?.join(", ") },
+    { label: "Slides language", value: slidesLanguages },
     { label: "Format", value: talk.data.sessionType },
   ].filter((item) => Boolean(item.value));
 

@@ -8,7 +8,7 @@ The homepage is the visual reference for every page on enguerrand.dev. Keep the 
 - Keep one navbar layout, type scale, spacing, and mobile behavior. Hide the name on the homepage because the introduction already identifies the author. On every other page, show “Enguerrand Allamel” as the link to the homepage. Do not use “Home” as the navbar brand.
 - This brand visibility rule and the active-page indicator are the only route-specific navbar differences. Keep the navigation controls in the same position. The hidden homepage brand must not receive keyboard focus or appear in the accessibility tree.
 - Keep the existing homepage harbour footer, its links, artwork, crop rules, and motion behavior across the site.
-- Use `public/images/scenic/vancouver-harbour-map-aligned.webp` for the footer. Do not generate or introduce a new footer image.
+- Use `public/images/scenic/vancouver-harbour-map-aligned.webp` as the footer source. Do not generate or introduce new footer artwork. The author authorized smaller responsive copies of this same source in the audit completion task; preserve the composition, crop and shared layout.
 - Do not add per-page footer scenes, compact variants, other branding variants, or separate navbar designs.
 - Keep page-specific art below the navbar and separate from the shared footer. A page redesign does not authorize a shared-shell redesign.
 

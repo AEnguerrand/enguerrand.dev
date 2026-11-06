@@ -1,6 +1,6 @@
 # Website redesign proposal
 
-Status: implemented as a local proposal; visual QA passed. This branch is a proposal; it does not authorize merge or deployment.
+Status: implemented as a local proposal; design QA and the audit fixes are documented separately. This branch is a proposal; it does not authorize merge or deployment.
 
 ## Scope
 
@@ -49,3 +49,7 @@ The palette interaction script is bundled once instead of repeated inline on eve
 The browser review now selects the navigation toggle by its stable data attribute while still asserting its accessible label and expanded state. It uses the clearer Search this site field label. These changes prevent stale selectors from hiding the real navigation and search assertions.
 
 The SLSA search assertion now expects five matches on the candidate and checks the added Resume link. The original four matches remain. This records the intended improvement from complete résumé indexing.
+
+## Audit completion
+
+The follow-up fixes are listed in `docs/audit-completion.md`. They cover Radar history, responsive assets, session/notes/slide languages, topic aliases, project context, resume links, click-to-load video, large text, asset caching and the review workflow. The shared shell script is now a fingerprinted module so the existing HTML budget remains in force. GitHub Actions stays disabled at the author's explicit request. Local checks do not authorize merge or deployment.

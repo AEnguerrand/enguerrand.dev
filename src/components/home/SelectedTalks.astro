@@ -13,7 +13,7 @@ const monthYear = (date: string) => new Intl.DateTimeFormat("en-CA", {
 }).format(new Date(`${date}T00:00:00Z`));
 const talkFormats = (talk: typeof talks[number]) => {
   const labels = (talk.data.resources ?? []).map((resource) => resource.label.toLowerCase());
-  const formats = ["Notes"];
+  const formats = [`Notes in ${(talk.data.notesLanguages ?? ["English"]).join(" / ")}`];
   if (labels.some((label) => label.includes("video") || label.includes("recording"))) formats.push("Video");
   if (labels.some((label) => label.includes("slides") || label.includes("presentation"))) formats.push("Slides");
   if (labels.some((label) => label.includes("lab"))) formats.push("Lab");
@@ -31,7 +31,7 @@ const talkFormats = (talk: typeof talks[number]) => {
               <p>{eventLabels[talk.id] ?? talk.data.event} <span aria-hidden="true">·</span> <time datetime={talk.data.date}>{monthYear(talk.data.date)}</time></p>
               <ul class="home-talk-meta">
                 {talkFormats(talk).map((format) => <li>{format}</li>)}
-                {(talk.data.language ?? []).map((language) => <li>{language}</li>)}
+                {(talk.data.sessionLanguages ?? []).length > 0 && <li>Talk in {talk.data.sessionLanguages.join(" / ")}</li>}
               </ul>
             </div>
             <ArrowRight size={22} className="motion-arrow" aria-hidden="true" />
