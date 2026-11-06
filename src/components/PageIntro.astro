@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+  eyebrow?: string;
+  description?: string;
+  art?: string;
+  class?: string;
+}
+const { title, eyebrow, description, art, class: className } = Astro.props;
+---
+<header class:list={["site-page-header page-intro", { "page-intro--illustrated": art }, className]} data-reveal>
+  <div class="page-intro-copy">
+    {eyebrow && <p class="site-eyebrow">{eyebrow}</p>}
+    <h1 class="site-page-title">{title}</h1>
+    {description && <p class="site-lead">{description}</p>}
+    <slot />
+  </div>
+  {art && <img class="page-intro-art" src={art} alt="" width="320" height="240" decoding="async" />}
+</header>
+<style>
+  .page-intro {position:relative;}
+  .page-intro-copy {min-width:0;}
+  .page-intro--illustrated {display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:center;gap:32px;}
+  .page-intro-art {width:180px;height:140px;object-fit:contain;transform:rotate(-2deg);transition:transform 240ms ease;}
+  .page-intro--illustrated:hover .page-intro-art {transform:rotate(0);}
+  @media(max-width:600px){
+    .page-intro--illustrated {grid-template-columns:minmax(0,1fr) 72px;gap:16px;align-items:start;}
+    .page-intro-art {width:72px;height:72px;margin-top:4px;}
+  }
+  @media(prefers-reduced-motion:reduce){.page-intro-art {transform:none;transition:none;}.page-intro--illustrated:hover .page-intro-art {transform:none;}}
+</style>

@@ -6,20 +6,28 @@ interface Props {
   projects: NonNullable<CollectionEntry<"pages">["data"]["projects"]>;
   heading?: "h2" | "h3";
   eager?: boolean;
+  illustrated?: boolean;
 }
-const { projects, heading: Heading = "h3", eager = false } = Astro.props;
+const { projects, heading: Heading = "h3", eager = false, illustrated = false } = Astro.props;
+const illustrations: Record<string, string> = {
+  "Foliobruma Scanner": "/images/illustrations/document-to-pdf.webp",
+  "Foliobruma": "/images/illustrations/archive-box.webp",
+  "Chaud à Grospierres": "/images/illustrations/weather-map.webp",
+};
 ---
-<div class="project-list">
+<div class:list={["project-list", { "project-list--illustrated": illustrated }]}>
   {projects.map((project, index) => (
-    <article class="project-row" data-reveal-item>
+    <article class:list={["project-row", { "project-row--illustrated": illustrated }]} data-reveal-item>
+      {illustrated && illustrations[project.title] && <div class="project-illustration" aria-hidden="true"><img src={illustrations[project.title]} alt="" width="512" height="384" loading={eager ? "eager" : "lazy"} decoding="async" /></div>}
       <div class="project-meta">
         {project.image && project.imageAlt ? (
           <img class="project-icon" src={project.image} alt={project.imageAlt} width="40" height="40" loading={eager && index === 0 ? "eager" : "lazy"} fetchpriority={eager && index === 0 ? "high" : undefined} />
-        ) : <span class="project-symbol" aria-hidden="true"><Archive size={28} weight="regular" /></span>}
+        ) : <span class="project-symbol" aria-hidden="true"><Archive size={28} weight={illustrated ? "duotone" : "regular"} /></span>}
         <p class="site-eyebrow">{project.status}</p>
       </div>
       <Heading class="project-title"><a href={project.url}>{project.title}</a></Heading>
       <p class="project-description">{project.description}</p>
+      {illustrated && project.title === "Foliobruma Scanner" && <p class="project-detail">Capture with a document camera and review each page before export. No account needed.</p>}
       <ProjectLink class="project-link" href={project.url} label={project.action} />
     </article>
   ))}
@@ -36,8 +44,23 @@ const { projects, heading: Heading = "h3", eager = false } = Astro.props;
   .project-title a:hover {text-decoration:underline;text-underline-offset:4px;}
   .project-description {margin-top:12px;margin-bottom:16px;color:hsl(var(--muted-foreground));font-size:1rem;line-height:1.5rem;}
   .project-row :global(.project-link) {display:inline-flex;align-self:flex-start;min-height:44px;align-items:center;gap:8px;margin-top:auto;color:hsl(var(--primary));font-size:.875rem;font-weight:500;}
+  .project-row--illustrated {padding-top:8px;}
+  .project-illustration {display:flex;align-items:center;justify-content:center;height:188px;margin-bottom:16px;}
+  .project-illustration img {width:232px;height:188px;object-fit:contain;transition:transform 240ms var(--motion-curve);}
+  .project-row--illustrated:is(:hover,:focus-within) .project-illustration img {transform:translateY(-4px) rotate(-1deg);}
+  .project-detail {font-size:.875rem;line-height:1.6;color:hsl(var(--muted-foreground));margin:0 0 24px;}
+  @media(prefers-reduced-motion:reduce){.project-illustration img {transition:none;}.project-row--illustrated:is(:hover,:focus-within) .project-illustration img {transform:none;}}
   @media(max-width:767px) {
     .project-list {grid-template-columns:1fr;gap:0;}
     .project-row {padding:24px 0;}
+    .project-row--illustrated {display:grid;grid-template-columns:88px minmax(0,1fr);gap:0 20px;align-items:start;}
+    .project-row--illustrated .project-illustration {grid-column:1;grid-row:1 / span 2;width:88px;height:116px;margin:0;}
+    .project-illustration img {width:112px;max-width:none;height:112px;}
+    .project-row--illustrated .project-meta {grid-column:2;grid-row:1;margin:0 0 8px;min-height:32px;}
+    .project-row--illustrated .project-icon,.project-row--illustrated .project-symbol {width:28px;height:28px;}
+    .project-row--illustrated .project-title {grid-column:2;grid-row:2;font-size:1.25rem;line-height:1.4;align-self:start;}
+    .project-row--illustrated .project-description,.project-row--illustrated .project-detail,.project-row--illustrated :global(.project-link) {grid-column:1 / -1;}
+    .project-row--illustrated .project-description {margin-top:16px;}
+    .project-row--illustrated .project-detail {margin-bottom:16px;}
   }
 </style>

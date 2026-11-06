@@ -10,7 +10,8 @@ const { languages, pageNumber, slug, total } = Astro.props;
 ---
 
 <div class="radar-filter" data-radar-filter={slug} data-radar-total={total} data-radar-page={pageNumber}>
-  <form class="radar-filter-grid" data-radar-filter-form>
+  <p class="radar-filter-fallback" data-radar-filter-fallback>Filters need JavaScript. You can browse the repositories and pages below.</p>
+  <form class="radar-filter-grid" data-radar-filter-form hidden>
     <label class="radar-filter-field radar-filter-query">
       <span>Filter repositories</span>
       <input
@@ -41,7 +42,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
     </button>
   </form>
   <p class="radar-filter-summary" role="status" aria-live="polite" data-radar-filter-summary>
-    {pageNumber === 1 ? `Showing the first page of ${total} repositories.` : `Showing page ${pageNumber} of ${total} repositories.`}
+    {`Page ${pageNumber}. ${total} repositories in this topic.`}
   </p>
 </div>
 
@@ -60,6 +61,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
     const total = Number(root.dataset.radarTotal ?? 0);
     const pageNumber = Number(root.dataset.radarPage ?? 1);
     const form = root?.querySelector("[data-radar-filter-form]");
+    const fallback = root?.querySelector("[data-radar-filter-fallback]");
     const queryInput = root?.querySelector("[data-radar-query]");
     const languageSelect = root?.querySelector("[data-radar-language]");
     const statusSelect = root?.querySelector("[data-radar-status]");
@@ -80,6 +82,8 @@ const { languages, pageNumber, slug, total } = Astro.props;
       !(defaultList instanceof HTMLElement)
     ) return;
 
+    document.addEventListener("astro:before-swap", () => controller.abort(), { once: true, signal: controller.signal });
+
     let repositoriesPromise;
     let renderVersion = 0;
 
@@ -89,7 +93,11 @@ const { languages, pageNumber, slug, total } = Astro.props;
           if (!response.ok) throw new Error("Repository data is unavailable.");
           return response.json();
         })
-        .then((dataset) => dataset.groups.find((group) => group.slug === slug)?.repos ?? []);
+        .then((dataset) => {
+          const group = dataset.groups?.find((group) => group.slug === slug);
+          if (!group || !Array.isArray(group.repos)) throw new Error("Repository topic data is unavailable.");
+          return group.repos;
+        });
       return repositoriesPromise;
     };
 
@@ -99,30 +107,45 @@ const { languages, pageNumber, slug, total } = Astro.props;
       const article = document.createElement("article");
       article.className = "radar-result-row";
 
+      const labels = document.createElement("p");
+      labels.className = "radar-result-labels";
+      labels.textContent = [repository.language, repository.archived ? "Archived" : "", repository.fork ? "Fork" : ""].filter(Boolean).join(" · ");
+      article.append(labels);
+
       const heading = document.createElement("h3");
-      heading.className = "text-lg font-semibold";
+      heading.className = "radar-result-title";
       const link = document.createElement("a");
-      link.className = "site-link items-start text-foreground";
+      link.className = "site-link items-start";
       link.href = repository.html_url;
       link.target = "_blank";
       link.rel = "noreferrer";
       link.textContent = repository.full_name;
+      const arrow = document.createElement("span");
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.className = "motion-arrow motion-arrow-external";
+      arrow.textContent = "↗";
+      link.append(arrow);
       heading.append(link);
       article.append(heading);
 
-      if (repository.description) {
         const description = document.createElement("p");
-        description.className = "mt-2 text-base leading-relaxed text-muted-foreground";
-        description.textContent = repository.description;
+        description.className = "radar-result-description";
+        description.textContent = repository.description ?? "No description provided.";
         article.append(description);
-      }
 
       const meta = document.createElement("p");
-      meta.className = "mt-3 text-xs text-muted-foreground";
-      meta.textContent = [repository.language, repository.archived ? "Archived" : "Active"]
-        .filter(Boolean)
-        .join(" · ");
+      meta.className = "radar-result-meta";
+      const number = new Intl.NumberFormat("en-US");
+      const updated = new Date(repository.updated_at).toLocaleDateString("en-US", {year:"numeric", month:"short", day:"numeric", timeZone:"UTC"});
+      meta.textContent = `${number.format(repository.stargazers_count)} stars · ${number.format(repository.forks_count)} forks · Updated ${updated}`;
       article.append(meta);
+
+      if (repository.topics?.length) {
+        const topics = document.createElement("p");
+        topics.className = "radar-result-topics";
+        topics.textContent = repository.topics.slice(0, 2).join(" · ");
+        article.append(topics);
+      }
 
       return article;
     };
@@ -151,9 +174,7 @@ const { languages, pageNumber, slug, total } = Astro.props;
 
       if (!isFiltering) {
         results.replaceChildren();
-        summary.textContent = pageNumber === 1
-          ? `Showing the first page of ${total} repositories.`
-          : `Showing page ${pageNumber} of ${total} repositories.`;
+        summary.textContent = `Page ${pageNumber}. ${total} repositories in this topic.`;
         return;
       }
 
@@ -191,10 +212,14 @@ const { languages, pageNumber, slug, total } = Astro.props;
       }
     };
 
-    const parameters = new URLSearchParams(window.location.search);
-    queryInput.value = parameters.get("q") ?? "";
-    languageSelect.value = parameters.get("language") ?? "";
-    statusSelect.value = parameters.get("status") ?? "";
+    const readUrl = () => {
+      const parameters = new URLSearchParams(window.location.search);
+      queryInput.value = parameters.get("q") ?? "";
+      languageSelect.value = parameters.get("language") ?? "";
+      statusSelect.value = parameters.get("status") ?? "";
+    };
+    readUrl();
+    window.addEventListener("popstate", () => { readUrl(); render(); }, { signal: controller.signal });
 
     form.addEventListener("input", render, { signal: controller.signal });
     form.addEventListener("change", render, { signal: controller.signal });
@@ -205,6 +230,8 @@ const { languages, pageNumber, slug, total } = Astro.props;
       queryInput.focus();
     }, { signal: controller.signal });
 
+    form.hidden = false;
+    if (fallback instanceof HTMLElement) fallback.hidden = true;
     render();
     };
 
@@ -217,7 +244,23 @@ const { languages, pageNumber, slug, total } = Astro.props;
 </script>
 
 <style>
+  .radar-filter {padding:0 0 20px;border-bottom:0;}
+  .radar-filter-grid {gap:12px;}
+  .radar-filter-grid[hidden] {display:none;}
+  .radar-filter-field {gap:8px;font-weight:400;}
+  .radar-filter-field input,.radar-filter-field select {min-height:44px;border-radius:var(--radius-md);background:hsl(var(--background));font-weight:400;}
+  .radar-filter-clear {min-height:44px;}
+  .radar-filter-fallback {max-width:65ch;color:hsl(var(--muted-foreground));font-size:14px;line-height:1.6;}
+  .radar-filter-results {grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;margin-top:8px;border-top:0;}
+  .radar-filter-results :global(.radar-result-row),.radar-filter-results :global(.radar-result-row:nth-child(even)) {display:flex;min-width:0;flex-direction:column;padding:24px 0;border-left:0;}
+  .radar-filter-results :global(.radar-result-title) {margin-top:8px;font-size:20px;font-weight:500;line-height:1.4;}
+  .radar-filter-results :global(.radar-result-title a) {font-family:var(--font-display);font-size:inherit;font-weight:inherit;overflow-wrap:anywhere;}
+  .radar-filter-results :global(.radar-result-description) {margin-top:8px;color:hsl(var(--muted-foreground));font-size:16px;line-height:1.6;}
+  .radar-filter-results :global(.radar-result-labels),.radar-filter-results :global(.radar-result-meta),.radar-filter-results :global(.radar-result-topics) {color:hsl(var(--muted-foreground));font-size:12px;line-height:1.6;overflow-wrap:anywhere;}
+  .radar-filter-results :global(.radar-result-meta) {margin-top:auto;padding-top:16px;font-variant-numeric:tabular-nums;}
+  .radar-filter-results :global(.radar-result-topics) {margin-top:8px;}
   @media(max-width:767px) {
+    .radar-filter-results {grid-template-columns:1fr;}
     .radar-filter-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
     .radar-filter-query {grid-column:1 / -1;}
     .radar-filter-clear {width:fit-content;}

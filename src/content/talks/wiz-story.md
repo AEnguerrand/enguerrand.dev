@@ -8,7 +8,7 @@ event: "Wiz Customer Story Session"
 location: "Online"
 language: ["English"]
 sessionType: "Customer story"
-summary: "How Ledger scaled multi-cloud security operations with Wiz to improve visibility, prioritization, compliance, and developer workflows."
+summary: "How Ledger used Wiz for cloud visibility, risk prioritization, and security checks in development workflows."
 tags:
   [
     "wiz",
@@ -25,55 +25,19 @@ resources:
     url: "https://www.wiz.io/customers/ledger"
 ---
 
-## Description
+## Talk overview
 
-As Staff Cloud Security Engineer at Ledger, I share how we protect the infrastructure behind one of the world's leading cryptocurrency security companies. This case study explores our journey from fragmented security visibility to comprehensive cloud protection across our multi-cloud environment.
+As Staff Cloud Security Engineer at Ledger, I share how we brought security visibility across AWS, GCP, and Azure into one platform. The session covers the use of Wiz to protect cloud infrastructure and sensitive data while supporting 200+ developers.
 
-In this talk, I discuss how Ledger leverages Wiz's Cloud Native Application Protection Platform (CNAPP) to secure both our internal infrastructure and protect our customers' sensitive data. We'll cover practical implementations including:
+## Topics covered
 
-- **Multi-cloud visibility**: How we gained complete oversight across our entire cloud footprint
-- **Risk prioritization**: Moving from hundreds of unactionable alerts to contextualized, prioritized threats
-- **Shift-left security**: Integrating Wiz Code with GitHub to catch misconfigurations before deployment
-- **Data protection**: Using Wiz DSPM to ensure compliance with financial services regulations
-- **Runtime security**: Deploying Wiz Sensor across virtual machines for real-time threat detection
+- **Cloud visibility**: A shared view of risks across the cloud environment
+- **Risk prioritization**: Context for alerts so teams can focus on the most critical issues
+- **Development workflows**: Wiz Code and GitHub checks to find misconfigurations before deployment
+- **Data protection**: Wiz DSPM for sensitive data visibility and financial services compliance
+- **Runtime detection**: Wiz Sensor on virtual machines
+- **Kubernetes policy checks**: Security policies in admission control
 
-Key outcomes include supporting 200+ developers in a centralized security solution, automated compliance through Kubernetes admission control, and demonstrating security excellence that builds customer trust in our cryptocurrency security products.
-
----
-
-## Key Highlights
+## Customer trust
 
 > "We sell security products, so to build our customers' trust in our solutions, we have to be transparent about how we're keeping them safe." - _Enguerrand Allamel, Staff Cloud Security Engineer at Ledger_
-
-### Challenge
-
-- **Multi-cloud complexity**: Growing multi-cloud environment requiring centralized security management
-- **High-stakes industry**: Cryptocurrency sector faces frequent targeting and needs rapid threat identification
-- **Regulatory compliance**: Strict financial services regulations requiring proactive compliance monitoring
-- **Developer productivity**: Need to shift security left without blocking development workflows
-
-### Solution
-
-- **Complete visibility**: Comprehensive oversight across entire cloud footprint to uncover vulnerabilities
-- **Risk prioritization**: Contextualized threat assessment helping teams focus on critical issues first
-- **Automated compliance**: Security policies built directly into Kubernetes admission processes
-- **Developer integration**: 200+ developers using unified security solution throughout development lifecycle
-
-### Technologies & Integrations
-
-- **Wiz CNAPP**: Comprehensive cloud security platform
-- **Wiz Code**: GitHub integration for secure development
-- **Wiz DSPM**: Data Security Posture Management for sensitive data protection
-- **Wiz Sensor**: Runtime threat detection across virtual machines
-- **Kubernetes**: Admission control security policies
-- **Multi-cloud**: AWS, GCP, Azure environments
-
----
-
-## Impact & Results
-
-✅ **Centralized Security**: Single platform supporting 200+ developers across multiple teams  
-✅ **Proactive Protection**: Real-time threat detection with contextualized risk prioritization  
-✅ **Compliance Automation**: Built-in security policies ensuring regulatory adherence  
-✅ **Developer Empowerment**: Security integrated into GitHub workflows without blocking deployment  
-✅ **Customer Trust**: Transparent security practices strengthening brand credibility

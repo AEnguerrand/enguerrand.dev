@@ -48,15 +48,24 @@ export async function captureRegressions(browser, origin, output, candidate) {
     try {
       if (test.kind === "navigation") {
         await page.goto(origin, { waitUntil: "networkidle" });
-        const toggle = page.getByRole("button", { name: "Open navigation", exact: true });
+        const toggle = page.locator("[data-site-nav-toggle]");
         const assertClosed = async () => {
           await toggle.waitFor({ state: "visible" });
           assert.equal(await toggle.getAttribute("aria-expanded"), "false");
+          assert.equal(await toggle.getAttribute("aria-label"), "Open navigation");
           assert.equal(await page.locator("main").evaluate(node => node.inert), false);
           assert.equal((await page.locator(".site-brand").textContent()).trim(), "Enguerrand Allamel");
           assert.equal(await page.locator(".site-brand").isVisible(), new URL(page.url()).pathname !== "/",
             "The name is hidden only on Home");
         };
+        await toggle.click();
+        const lastNavLink = page.locator("[data-site-nav-links] a").last();
+        await lastNavLink.focus();
+        await page.keyboard.press("Tab");
+        assert.equal(await toggle.evaluate(node => node === document.activeElement), true, "Home menu wraps past its hidden brand");
+        await page.keyboard.press("Shift+Tab");
+        assert.equal(await lastNavLink.evaluate(node => node === document.activeElement), true, "Home menu wraps in reverse");
+        await page.keyboard.press("Escape");
         for (const label of ["Talks", "Projects"]) {
           await assertClosed();
           await toggle.click();
@@ -84,7 +93,8 @@ export async function captureRegressions(browser, origin, output, candidate) {
         metrics = { internalLinks: 2, backForward: true, escapeFocus: true, resize: true, homeBrandVisibility: true };
       } else if (test.kind === "search") {
         await page.goto(`${origin}/search/?q=slsa&filter=talk`, { waitUntil: "networkidle" });
-        const input = page.getByLabel("Query", { exact: true });
+        const input = page.getByRole("searchbox", { name: candidate ? "Search this site" : "Query", exact: true });
+        const allResultCount = candidate ? 5 : 4;
         const expectCount = count => page.waitForFunction(expected =>
           document.querySelector("[data-search-count]")?.textContent === `${expected} results`, count);
         await expectCount(2);
@@ -92,7 +102,8 @@ export async function captureRegressions(browser, origin, output, candidate) {
         await navigate(() => footer.getByRole("link", { name: "Talks", exact: true }).click(), `${origin}/talks/`);
         await navigate(() => footer.getByRole("link", { name: "Search", exact: true }).click(), `${origin}/search/`);
         await input.fill("slsa");
-        await expectCount(4);
+        await expectCount(allResultCount);
+        if (candidate) assert.equal(await page.locator('[data-search-results] a[href="/resume/"]').count(), 1, "Complete résumé text adds the SLSA result");
         const filter = async value => {
           if (test.width < 768) await page.getByLabel("Content type").selectOption(value);
           else await page.locator(`[data-search-filter="${value}"]`).click();
@@ -101,20 +112,20 @@ export async function captureRegressions(browser, origin, output, candidate) {
         await expectCount(0);
         assert.equal(new URL(page.url()).searchParams.get("filter"), "project");
         await filter("all");
-        await expectCount(4);
+        await expectCount(allResultCount);
         await navigate(() => page.locator('[data-search-results] a[href="/talks/kubecon-na-2024/"]').click(),
           `${origin}/talks/kubecon-na-2024/`);
         await navigate(() => page.goBack(), `${origin}/search/?q=slsa`);
-        await expectCount(4);
+        await expectCount(allResultCount);
         assert.equal(await input.inputValue(), "slsa");
         await navigate(() => page.goForward(), `${origin}/talks/kubecon-na-2024/`);
         await navigate(() => page.goBack(), `${origin}/search/?q=slsa`);
-        await expectCount(4);
+        await expectCount(allResultCount);
         await input.fill("zznoresultzz");
         await expectCount(0);
         await page.locator("[data-search-empty]").waitFor({ state: "visible" });
         await input.fill("slsa");
-        await expectCount(4);
+        await expectCount(allResultCount);
         metrics = { initialQuery: true, returnVisit: true, filters: true, backForward: true, emptyState: true };
       } else if (test.kind === "globe") {
         await page.goto(`${origin}/talks/`, { waitUntil: "networkidle" });

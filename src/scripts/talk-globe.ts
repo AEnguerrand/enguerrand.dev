@@ -36,7 +36,7 @@ class TalkGlobe extends HTMLElement {
         node.setAttribute("tabindex", marker.visible ? "0" : "-1");
         node.setAttribute("aria-hidden", String(!marker.visible));
         node.setAttribute("transform", `translate(${marker.x} ${marker.y})`);
-        node.querySelector("rect")?.setAttribute("x", marker.x > 235 ? String(-(marker.label.length * 4.7 + 29)) : "10");
+        node.querySelector("rect")?.setAttribute("x", marker.x > 235 ? String(-(marker.label.length * 5.6 + 34)) : "10");
         const label = node.querySelector("text");
         label?.setAttribute("x", marker.x > 235 ? "-13" : "13");
         label?.setAttribute("text-anchor", marker.x > 235 ? "end" : "start");

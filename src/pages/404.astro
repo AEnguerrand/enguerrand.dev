@@ -1,17 +1,27 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
+import { Signpost } from "@phosphor-icons/react";
 ---
 
 <BaseLayout title="Page not found" description="The page you are looking for does not exist." noindex={true}>
-  <section class="site-page-header" data-reveal>
-    <p class="site-eyebrow">Error 404</p>
-    <h1 class="site-page-title">Page not found</h1>
-    <p class="site-lead">
-      The link may be outdated or the page may have moved.
-    </p>
-    <div class="mt-7 flex flex-wrap gap-3">
-      <a class="site-action site-action-primary" href="/">Go back home</a>
-      <a class="site-action site-action-secondary" href="/talks/">Browse talks</a>
-    </div>
-  </section>
+  <div class="not-found">
+    <PageIntro title="Page not found" eyebrow="Error 404" description="The link may be outdated or the page may have moved.">
+      <div class="site-action-row">
+        <a class="site-action site-action-primary" href="/">Go back home</a>
+        <a class="site-action site-action-secondary" href="/talks/">Browse talks</a>
+      </div>
+    </PageIntro>
+    <div class="not-found-mark" aria-hidden="true"><Signpost size={88} weight="duotone" /></div>
+  </div>
 </BaseLayout>
+
+<style>
+  .not-found {display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:32px;max-width:48rem;}
+  .not-found-mark {padding-top:calc(var(--page-start) + 12px);color:hsl(var(--primary) / .75);}
+  .not-found-mark :global(svg) {width:88px;height:88px;}
+  @media(max-width:600px) {
+    .not-found {grid-template-columns:minmax(0,1fr) 52px;gap:12px;}
+    .not-found-mark :global(svg) {width:52px;height:52px;}
+  }
+</style>

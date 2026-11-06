@@ -94,3 +94,31 @@ for (const reason of ["pointercancel", "lostpointercapture", "blur", "hidden", "
     assert.equal("dragging" in sphere.dataset, false);
   });
 }
+
+
+test("vertical touch scrolling does not capture or rotate the globe", t => {
+  const { sphere, document, events, captures } = setup(t);
+  pointer(sphere, "pointerdown", { pointerType: "touch" });
+  pointer(sphere, "pointermove", { pointerType: "touch", clientX: 4, clientY: 18 });
+  pointer(sphere, "pointermove", { pointerType: "touch", clientX: 40, clientY: 22 });
+  pointer(document, "pointercancel", { pointerType: "touch" });
+  assert.deepEqual(events, ["down"]);
+  assert.equal(captures.size, 0);
+  assert.equal("dragging" in sphere.dataset, false);
+});
+
+test("touch direction must be horizontal before rotation begins", t => {
+  const { sphere, document, events, captures } = setup(t);
+  pointer(sphere, "pointerdown", { pointerType: "touch" });
+  pointer(sphere, "pointermove", { pointerType: "touch", clientX: 9, clientY: 9 });
+  assert.deepEqual(events, ["down"]);
+  assert.equal(captures.size, 0);
+  pointer(sphere, "pointermove", { pointerType: "touch", clientX: 24, clientY: 10 });
+  assert.deepEqual(events, ["down", "start", [24, 10]]);
+  assert.equal(captures.has(1), true);
+  pointer(document, "pointercancel", { pointerType: "touch" });
+  assert.equal(captures.size, 0);
+  assert.equal("dragging" in sphere.dataset, false);
+  pointer(sphere, "pointermove", { pointerType: "touch", clientX: 40, clientY: 10 });
+  assert.equal(events.length, 3);
+});

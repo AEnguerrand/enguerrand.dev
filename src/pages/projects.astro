@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ProjectList from "@/components/ProjectList.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { getEntry } from "astro:content";
 
 const homePage = await getEntry("pages", "home");
@@ -31,12 +32,10 @@ const structuredData = {
   description="Independent projects by Enguerrand Allamel for paper archives and weather observations."
   structuredData={structuredData}
 >
-  <header class="site-page-header" data-reveal>
-    <h1 class="site-page-title">Projects</h1>
-  </header>
+  <PageIntro title="Projects" description="Software for paper archives and weather observations." />
 
   <section class="project-index" aria-labelledby="project-list-heading" data-reveal data-reveal-group>
     <h2 id="project-list-heading" class="sr-only">Project list</h2>
-    <ProjectList projects={projects} heading="h2" eager />
+    <ProjectList projects={projects} heading="h2" eager illustrated />
   </section>
 </BaseLayout>

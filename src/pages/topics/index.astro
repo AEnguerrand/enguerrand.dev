@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { topicDescription, topicHref, topicTitle } from "@/lib/topics";
 import { getCollection } from "astro:content";
 
@@ -41,29 +42,30 @@ const structuredData = {
   description="Browse conference talks and practical resources by cloud security, software supply chain security, Kubernetes, AWS, npm, SLSA, and related topics."
   structuredData={structuredData}
 >
-  <header class="site-page-header">
-    <h1 class="site-page-title">Talk topics</h1>
-    <p class="site-lead">Browse {topics.length} topics from conference talks and workshops.</p>
-  </header>
-  <section class="site-section-divider" aria-labelledby="topic-list-heading">
+  <PageIntro title="Talk topics" description={`Browse ${topics.length} topics from conference talks and workshops.`} />
+  <section aria-labelledby="topic-list-heading">
     <h2 id="topic-list-heading" class="sr-only">Browse topics</h2>
-    <div class="site-list mt-0">
+    <div class="topic-list">
       {topics.map((topic) => (
-        <article class="site-list-row grid gap-4 py-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10">
-          <div>
-            <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-              <h3 class="text-2xl font-semibold tracking-tight"><a class="hover:text-primary" href={topicHref(topic.name)}>{topicTitle(topic.name)}</a></h3>
-              <span class="whitespace-nowrap text-xs font-semibold tabular-nums text-muted-foreground">{topic.count} {topic.count === 1 ? "talk" : "talks"}</span>
-            </div>
-            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{topicDescription(topic.name)}</p>
+        <article class="site-list-row topic-row">
+          <div class="topic-heading">
+            <h3><a href={topicHref(topic.name)}>{topicTitle(topic.name)}</a></h3>
+            <span class="topic-count">{topic.count} {topic.count === 1 ? "talk" : "talks"}</span>
           </div>
-          <div>
-            <a class="site-text-link text-sm font-semibold" href={topicHref(topic.name)}>
-              Explore {topicTitle(topic.name)} →
-            </a>
-          </div>
+          <p>{topicDescription(topic.name)}</p>
         </article>
       ))}
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .topic-list {display:grid;column-gap:40px;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .topic-row {min-width:0;padding:24px 0;}
+  .topic-heading {display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;}
+  .topic-heading h3 {color:hsl(var(--primary));font-size:20px;font-weight:500;line-height:1.4;}
+  .topic-heading a:hover {text-decoration:underline;text-underline-offset:4px;}
+  .topic-count {color:hsl(var(--muted-foreground));font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .topic-row p {max-width:65ch;margin-top:10px;color:hsl(var(--muted-foreground));font-size:16px;line-height:1.6;}
+  @media(max-width:767px){.topic-list {grid-template-columns:1fr;}.topic-row {padding:20px 0;}}
+</style>

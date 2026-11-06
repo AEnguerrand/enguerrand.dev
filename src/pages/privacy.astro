@@ -1,17 +1,16 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 
 const lastUpdated = "February 7, 2026";
 ---
 
 <BaseLayout title="Privacy" description="Privacy notice for enguerrand.dev, including how contact requests, hosting logs, cookies, analytics, and visitor rights are handled.">
-  <header class="site-page-header">
-    <h1 class="site-page-title">Privacy Notice</h1>
-    <p class="site-lead">This page explains what data is processed when you browse this website.</p>
+  <PageIntro title="Privacy Notice" description="This page explains what data is processed when you browse this website." class="privacy-intro">
     <p class="site-page-meta">Last updated: {lastUpdated}</p>
-  </header>
+  </PageIntro>
 
-  <div>
+  <div class="privacy-reading">
     <section class="site-section-divider pb-8">
       <h2 class="site-section-title">Controller</h2>
       <div class="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
@@ -104,3 +103,16 @@ const lastUpdated = "February 7, 2026";
     </section>
   </div>
 </BaseLayout>
+
+<style>
+  .privacy-reading {max-width:68ch;}
+  .privacy-reading section {padding-top:28px;padding-bottom:28px;}
+  .privacy-reading h2 {font-size:1.25rem;line-height:1.4;}
+  .privacy-reading p,.privacy-reading li {font-size:1rem;line-height:1.75;}
+  .privacy-reading a {overflow-wrap:anywhere;}
+  .privacy-reading ul {padding-left:20px;}
+  .privacy-reading li::marker {color:hsl(var(--primary) / .55);}
+  @media(max-width:600px) {
+    .privacy-reading section {padding-top:24px;padding-bottom:24px;}
+  }
+</style>

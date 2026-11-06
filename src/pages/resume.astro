@@ -1,122 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { LinkedinLogo } from "@phosphor-icons/react";
-
-const experience = [
-  {
-    company: "Procurify",
-    period: "Apr 2026 - Present",
-    roles: [
-      {
-        title: "Senior Platform Security Engineer",
-        bullets: [
-          "Lead platform security initiatives across cloud and developer infrastructure with a focus on practical, secure-by-default controls.",
-          "Design guardrails for AI-first development workflows, including agentic tooling, LLM-assisted engineering, and internal developer platforms.",
-          "Automate security checks across CI/CD pipelines, AWS environments, and Kubernetes platforms to improve coverage without adding friction.",
-          "Strengthen detection and response through SIEM improvements, incident review, and cloud-native monitoring patterns.",
-          "Drive architecture reviews, threat modeling, and security enablement so engineering teams can ship faster with clearer risk boundaries.",
-        ],
-      },
-    ],
-  },
-  {
-    company: "Ledger",
-    period: "Apr 2022 - Apr 2026",
-    roles: [
-      {
-        title: "Staff Cloud Security Engineer",
-        period: "Sep 2024 - Apr 2026",
-        bullets: [
-          "Act as security owner and technical advisor for infrastructure and engineering teams across cloud, products, and Kubernetes platforms.",
-          "Design and lead cloud security initiatives on AWS, from posture hardening to detection and response.",
-          "Build and roll out software supply chain security practices using SLSA, Sigstore (keyless signing), GitHub Actions, Socket.dev, and JFrog while building custom APIs in Go.",
-          "Deploy and operate Wiz across cloud and on-prem environments, improving visibility and threat detection at scale.",
-          "Define and build secure architecture patterns adopted by multiple engineering teams from Data to Firmware.",
-        ],
-      },
-      {
-        title: "Senior Cloud Security Engineer",
-        period: "Apr 2024 - Sep 2024",
-        bullets: [
-          "Introduced keyless artifact signing using GitHub OIDC and Sigstore.",
-          "Laid the foundation of an organization-wide software supply chain security program (SLSA).",
-          "Contributed to security tooling rollout, including Wiz and JFrog Artifactory.",
-        ],
-      },
-      {
-        title: "Senior Site Reliability Engineer",
-        period: "Jul 2023 - Apr 2024",
-        bullets: [
-          "Technical lead for the infrastructure redesign of Ledger Recover with strict stability and security constraints.",
-          "Built and operated GitOps deployment platforms using ArgoCD, Linkerd, and Helm libraries.",
-          "Improved reliability, observability, and incident response using Datadog and Kubernetes-native tooling.",
-          "Mentored engineers and promoted SRE and DevOps best practices.",
-        ],
-      },
-      {
-        title: "Site Reliability Engineer",
-        period: "Apr 2022 - Jul 2023",
-        bullets: [
-          "Optimized private cloud and Kubernetes platforms supporting core and firmware services.",
-          "Built and maintained observability stacks using Prometheus, Grafana, Loki, and OpsGenie.",
-          "Improved CI/CD availability to 99.99% using GitHub Actions and custom Golang tooling.",
-          "Delivered self-service deployment platforms, reducing rollout time from days to minutes.",
-        ],
-      },
-    ],
-  },
-  {
-    company: "Ubisoft",
-    period: "Jun 2021 - Apr 2022",
-    roles: [
-      {
-        title: "Cloud Engineer Kubernetes",
-        bullets: [
-          "Contributed to the design and operation of a global Kubernetes platform (OpenStack, Rancher, Prometheus).",
-          "Participated in on-call rotations for production-grade Kubernetes services supporting worldwide apps.",
-        ],
-      },
-    ],
-  },
-  {
-    company: "Equativ",
-    period: "Mar 2020 - Jun 2021",
-    roles: [
-      {
-        title: "Site Reliability Engineer",
-        bullets: [
-          "Supported a global ad-tech platform across 6 datacenters and 900+ servers, handling 30B+ daily auctions.",
-          "Designed and deployed a Kubernetes production platform on a hybrid stack (Rancher, Alibaba Cloud).",
-          "Built CI/CD pipelines and GitOps workflows using GitLab CI, Terraform, and Ansible.",
-          "Led GCP operations and drove GitLab adoption across 100+ applications.",
-          "Improved observability and incident response using Prometheus, Grafana, Datadog, and Stackdriver.",
-        ],
-      },
-    ],
-  },
-] as const;
-
-const education = [
-  {
-    school: "EPITECH - European Institute of Technology",
-    period: "2015 - 2020",
-    degree: "Expert in Information Technologies (Master's equivalent)",
-  },
-  {
-    school: "Tsinghua University",
-    period: "2018 - 2019",
-    degree: "Master's in Advanced Computing",
-  },
-] as const;
-
-const skills = [
-  ["Cloud & Platform", "Kubernetes, AWS, EKS, GitOps, Helm"],
-  ["Infrastructure as Code", "Terraform, Ansible"],
-  ["Security", "Platform security architecture, threat modeling, IAM, Wiz, software supply chain security (SLSA, Sigstore, OIDC), AI development guardrails"],
-  ["Observability", "Grafana, Prometheus, Datadog"],
-  ["CI/CD", "GitHub Actions, ArgoCD, Atlantis, security automation"],
-  ["Programming", "Go, Python, Bash"],
-] as const;
+import { certifications, community, education, experience, resumeProfile, resumeSections, skills } from "@/data/resume";
 ---
 
 <BaseLayout
@@ -125,173 +11,136 @@ const skills = [
   pageType="ProfilePage"
   description="Resume of Enguerrand Allamel, a Senior Platform Security Engineer specializing in AI development guardrails, AWS, Kubernetes, SLSA, SRE, and secure CI/CD."
 >
-  <header class="site-page-header resume-header">
-    <p class="site-eyebrow">Resume</p>
-    <h1 class="site-page-title">Enguerrand Allamel</h1>
-    <p class="resume-title">Platform Security Engineer</p>
-    <p class="site-lead resume-intro">
-      Senior Platform Security Engineer with a strong SRE background and hands-on work
-      across AI-first development, cloud security, Kubernetes, AWS, and CI/CD in
-      production.
-    </p>
-    <div class="mt-5">
-      <a
-        class="site-action site-action-primary resume-link"
-        href="https://www.linkedin.com/in/enguerrandallamel/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <LinkedinLogo aria-hidden="true" className="h-4 w-4 shrink-0" />
-        <span>View LinkedIn Profile</span>
-      </a>
-    </div>
-  </header>
+  <div class="resume-page">
+    <PageIntro title={resumeProfile.name} eyebrow={resumeProfile.eyebrow} class="resume-header">
+      <p class="resume-title">{resumeProfile.title}</p>
+      <p class="resume-intro">{resumeProfile.intro}</p>
+      <div class="site-action-row">
+        <a class="site-action site-action-primary resume-link" href={resumeProfile.linkHref} target="_blank" rel="noreferrer">
+          <LinkedinLogo aria-hidden="true" className="h-4 w-4 shrink-0" />
+          <span>{resumeProfile.linkLabel}</span>
+        </a>
+      </div>
+    </PageIntro>
 
-  <section class="site-section-divider resume-experience" aria-labelledby="experience-heading">
-    <h2 id="experience-heading" class="resume-section-title">Work Experience</h2>
-    <div class="resume-companies">
-      {experience.map((company) => (
-        <article class="resume-company">
-          <div class="resume-company-heading">
-            <h3>{company.company}</h3>
-            {company.roles.length > 1 && <p class="resume-period">{company.period}</p>}
-          </div>
-          <div class="resume-roles">
-            {company.roles.map((role) => (
-              <div class="resume-role">
-                <p class="resume-period resume-role-period">{role.period ?? company.period}</p>
-                <div class="resume-role-content">
-                <div class="resume-role-heading">
-                  <h4>{role.title}</h4>
+    <section class="site-section-divider resume-experience" aria-labelledby="experience-heading">
+      <h2 id="experience-heading" class="resume-section-title">{resumeSections.experience}</h2>
+      <div class="resume-companies">
+        {experience.map((company) => (
+          <article class="resume-company">
+            <div class="resume-company-heading">
+              <h3>{company.company}</h3>
+              {company.roles.length > 1 && <p class="resume-period">{company.period}</p>}
+            </div>
+            <div class="resume-roles">
+              {company.roles.map((role) => (
+                <div class="resume-role">
+                  <div class="resume-role-heading">
+                    <h4>{role.title}</h4>
+                    <p class="resume-period">{role.period ?? company.period}</p>
+                  </div>
+                  <ul class="resume-bullets">
+                    {role.bullets.map((bullet) => <li>{bullet}</li>)}
+                  </ul>
                 </div>
-                <ul class="resume-bullets">
-                  {role.bullets.map((bullet) => (
-                    <li>{bullet}</li>
-                  ))}
-                </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="resume-details">
-    <article>
-      <h2 class="resume-section-title">Education</h2>
-      <div class="site-list">
-        {education.map((item) => (
-          <div class="site-list-row space-y-1 py-4">
-            <p class="text-base font-semibold">{item.school}</p>
-            <p class="text-sm text-muted-foreground">{item.period}</p>
-            <p class="text-sm text-muted-foreground">{item.degree}</p>
-          </div>
+              ))}
+            </div>
+          </article>
         ))}
       </div>
-    </article>
+    </section>
 
-    <article>
-      <h2 class="resume-section-title">Community & Speaking</h2>
-      <div class="site-list space-y-3 py-4 text-sm leading-relaxed text-muted-foreground">
-        <p>Speaker at KubeCon + CloudNativeCon (North America, China), AWS Summit, and CNCF / OWASP meetups.</p>
-        <p>Contributor to open-source and security projects.</p>
-      </div>
-    </article>
-  </section>
-
-  <section class="site-section-divider resume-skills" aria-labelledby="skills-heading">
-    <h2 id="skills-heading" class="resume-section-title">Technical Skills</h2>
-    <div class="mt-6">
-      <p class="site-eyebrow">Certifications</p>
-      <div class="site-list grid gap-x-6 sm:grid-cols-2">
-        <article class="site-list-row flex items-center gap-3 py-4">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg"
-            alt="Kubernetes official logo"
-            class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
-            loading="lazy"
-            decoding="async"
-          />
-          <p class="text-sm font-semibold leading-snug text-foreground">
-            CKA: Certified Kubernetes Administrator
-          </p>
-        </article>
-        <article class="site-list-row flex items-center gap-3 py-4">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg"
-            alt="AWS official logo"
-            class="h-12 w-12 shrink-0 rounded-lg bg-white/95 p-1 object-contain"
-            loading="lazy"
-            decoding="async"
-          />
-          <p class="text-sm font-semibold leading-snug text-foreground">
-            AWS Certified Security – Specialty
-          </p>
-        </article>
-      </div>
-    </div>
-    <div class="site-list">
-      {skills.map(([label, value]) => (
-        <div class="site-list-row grid gap-1 py-3 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:gap-6">
-          <p class="text-sm font-semibold">{label}</p>
-          <p class="text-sm text-muted-foreground">{value}</p>
+    <section class="resume-details">
+      <article>
+        <h2 class="resume-section-title">{resumeSections.education}</h2>
+        <div class="resume-education">
+          {education.map((item) => (
+            <div class="resume-school">
+              <h3>{item.school}</h3>
+              <p class="resume-period">{item.period}</p>
+              <p>{item.degree}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </section>
+      </article>
+      <article>
+        <h2 class="resume-section-title">{resumeSections.community}</h2>
+        <div class="resume-community">
+          {community.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </article>
+    </section>
+
+    <section class="site-section-divider resume-skills" aria-labelledby="skills-heading">
+      <h2 id="skills-heading" class="resume-section-title">{resumeSections.skills}</h2>
+      <div class="resume-certifications">
+        <h3 class="site-eyebrow">{resumeSections.certifications}</h3>
+        <div class="resume-certification-list">
+          {certifications.map((item) => (
+            <div class="resume-certification">
+              <img src={item.logo} alt={item.alt} width="40" height="40" loading="lazy" decoding="async" />
+              <p>{item.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <dl class="resume-skills-list">
+        {skills.map(([label, value]) => (
+          <div><dt>{label}</dt><dd>{value}</dd></div>
+        ))}
+      </dl>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .resume-header {max-width:760px;padding-bottom:32px;}
-  .resume-header h1 {font-size:clamp(2.25rem,4vw,3.5rem);line-height:1.12;letter-spacing:-.035em;}
-  .resume-title {margin-top:10px;font-size:1.25rem;font-weight:500;color:hsl(var(--primary));}
-  .resume-intro {max-width:68ch;margin-top:20px;font-size:1rem;line-height:1.75;}
-  .resume-link {display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:.875rem;}
-  .resume-section-title {margin:0;font-size:1.5rem;line-height:1.3;}
-  .resume-experience {padding-top:28px;}
-  .resume-companies {margin-top:8px;}
-  .resume-company {display:grid;grid-template-columns:12rem minmax(0,1fr);gap:48px;padding:32px 0;}
+  .resume-page {max-width:58rem;}
+  .resume-page :global(.resume-header) {max-width:46rem;}
+  .resume-title {margin-top:12px;color:hsl(var(--primary));font-size:1.125rem;font-weight:500;}
+  .resume-intro {max-width:65ch;margin-top:16px;color:hsl(var(--muted-foreground));font-size:1rem;line-height:1.75;}
+  .resume-link {min-height:44px;font-size:.875rem;}
+  .resume-section-title {font-size:1.5rem;line-height:1.3;}
+  .resume-companies {margin-top:24px;}
+  .resume-company {display:grid;grid-template-columns:10rem minmax(0,1fr);gap:32px;padding:28px 0;}
+  .resume-company:first-child {padding-top:0;}
   .resume-company + .resume-company {border-top:1px solid hsl(var(--border));}
-  .resume-company-heading h3 {font-size:1.5rem;line-height:1.3;}
-  .resume-period {margin-top:7px;font-size:.875rem;line-height:1.6;color:hsl(var(--muted-foreground));}
-  .resume-roles {display:contents;}
-  .resume-role {display:grid;grid-template-columns:subgrid;grid-column:1 / -1;gap:0 48px;}
-  .resume-role-content {grid-column:2;}
-  .resume-company-heading {grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;}
-  .resume-role-period {grid-column:1;margin-top:0;}
-  .resume-role + .resume-role {margin-top:32px;}
-  .resume-company {row-gap:16px;}
-  .resume-role h4 {font-family:var(--font-sans);font-size:1.125rem;font-weight:600;line-height:1.5;}
-  .resume-bullets {margin-top:12px;padding-left:18px;max-width:65ch;list-style:disc;font-size:1rem;line-height:1.6;color:hsl(var(--muted-foreground));}
+  .resume-company-heading h3 {font-size:1.25rem;line-height:1.4;}
+  .resume-period {margin-top:5px;color:hsl(var(--muted-foreground));font-size:.8125rem;line-height:1.6;font-variant-numeric:tabular-nums;}
+  .resume-role + .resume-role {margin-top:28px;padding-top:24px;border-top:1px solid hsl(var(--border) / .6);}
+  .resume-role h4 {font-family:var(--font-sans);font-size:1rem;font-weight:600;line-height:1.5;}
+  .resume-bullets {max-width:65ch;margin-top:12px;padding-left:18px;list-style:disc;color:hsl(var(--muted-foreground));font-size:.9375rem;line-height:1.7;}
   .resume-bullets li + li {margin-top:7px;}
-  .resume-bullets li::marker {color:hsl(var(--primary) / .6);}
-  .resume-details {display:grid;grid-template-columns:1fr 1fr;gap:48px;margin:12px 0 36px;padding-top:28px;border-top:1px solid hsl(var(--border));}
-  .resume-details .site-list {margin-top:14px;}
-  .resume-details .site-list-row {border:0;}
-  .resume-details .site-list {border:0;}
-  .resume-skills .site-list-row {border:0;}
-  .resume-skills .site-list {border:0;}
-  .resume-skills {padding-top:28px;}
-  @media (max-width:700px) {
-    .resume-company {grid-template-columns:1fr;gap:18px;padding:26px 0;}
-    .resume-role {display:block;}
-    .resume-role-period {margin-bottom:8px;}
+  .resume-bullets li::marker {color:hsl(var(--primary) / .55);}
+  .resume-details {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;margin:8px 0 32px;padding-top:28px;border-top:1px solid hsl(var(--border));}
+  .resume-education,.resume-community {margin-top:20px;color:hsl(var(--muted-foreground));font-size:.9375rem;line-height:1.7;}
+  .resume-school + .resume-school,.resume-community p + p {margin-top:16px;}
+  .resume-school h3 {color:hsl(var(--foreground));font-family:var(--font-sans);font-size:.9375rem;font-weight:500;line-height:1.6;}
+  .resume-school > p:last-child {margin-top:5px;}
+  .resume-certifications {margin-top:24px;}
+  .resume-certifications h3 {font-family:var(--font-sans);}
+  .resume-certification-list {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 24px;margin-top:14px;}
+  .resume-certification {display:flex;align-items:center;gap:12px;font-size:.875rem;line-height:1.5;}
+  .resume-certification img {width:40px;height:40px;flex-shrink:0;object-fit:contain;}
+  .resume-skills-list {margin-top:24px;border-top:1px solid hsl(var(--border));}
+  .resume-skills-list > div {display:grid;grid-template-columns:10rem minmax(0,1fr);gap:32px;padding:14px 0;border-bottom:1px solid hsl(var(--border) / .65);font-size:.875rem;line-height:1.7;}
+  .resume-skills-list dt {font-weight:500;}
+  .resume-skills-list dd {color:hsl(var(--muted-foreground));}
+  @media(max-width:700px) {
+    .resume-company {grid-template-columns:1fr;gap:16px;padding:24px 0;}
     .resume-company-heading {display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;}
-    .resume-period {margin-top:4px;}
+    .resume-company-heading .resume-period {margin-top:0;}
     .resume-details {grid-template-columns:1fr;gap:28px;}
-    .resume-header {padding-bottom:24px;}
+    .resume-certification-list {grid-template-columns:1fr;}
+    .resume-skills-list > div {grid-template-columns:1fr;gap:3px;}
   }
   @media print {
-    .resume-header {padding-bottom:16px;}
-    .resume-header h1 {font-size:26pt;}
+    .resume-page :global(.resume-header) {padding-bottom:16px;}
     .resume-title {font-size:13pt;}
     .resume-link {display:none;}
-    .resume-company {grid-template-columns:140px minmax(0,1fr);gap:24px;padding:18px 0;}
+    .resume-company {grid-template-columns:100px minmax(0,1fr);gap:24px;padding:18px 0;}
     .resume-role-heading,.resume-company-heading {break-after:avoid;}
     .resume-bullets li {break-inside:avoid;}
-    .resume-role + .resume-role {margin-top:18px;}
+    .resume-role + .resume-role {margin-top:18px;padding-top:16px;}
     .resume-bullets,.resume-intro {font-size:10pt;line-height:1.5;}
   }
 </style>

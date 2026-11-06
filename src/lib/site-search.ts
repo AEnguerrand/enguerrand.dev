@@ -2,6 +2,7 @@ import { getCollection, getEntry } from "astro:content";
 import { getPosts, postHref } from "./posts";
 import { starsGroups, starsListHref, starsListName } from "./stars";
 import { topicDescription, topicHref, topicTitle } from "./topics";
+import { resumeSearchText } from "@/data/resume";
 
 export const searchLabels = {
   page: "Page", talk: "Talk", project: "Project", post: "Post",
@@ -41,8 +42,9 @@ export async function getSearchItems(): Promise<SearchItem[]> {
   ]);
   const topics = new Set(talks.flatMap(talk => talk.data.tags ?? []));
   return [
-    ...pages.map(([id, title, href, summary]): SearchItem => ({
+    ...pages.filter(([id]) => id !== "blog" || posts.length > 0).map(([id, title, href, summary]): SearchItem => ({
       id: `page-${id}`, kind: "page", title, href, summary,
+      content: id === "resume" ? resumeSearchText : undefined,
     })),
     ...(home?.data.projects ?? []).map((project, i): SearchItem => ({
       id: `project-${i}`, kind: "project", title: project.title, href: project.url,

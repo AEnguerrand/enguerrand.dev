@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import "../styles/interiors.css";
 import HarbourFooter from "@/components/HarbourFooter.astro";
 import CommandPalette from "@/components/CommandPalette.astro";
 import { getSearchItems, searchLabels } from "@/lib/site-search";
@@ -114,7 +115,8 @@ const commandItems = searchItems.map(item => ({
   title: item.title, href: item.href, kind: searchLabels[item.kind],
   // Topic titles already contain their search term. Keep long descriptions in full search.
   keywords: item.kind === "topic" ? undefined :
-    [item.summary, item.fullTitle, item.event, ...(item.tags ?? [])].filter(Boolean).join(" "),
+    [item.summary, item.fullTitle, item.event, ...(item.tags ?? []),
+      item.id === "page-resume" ? [...new Set((item.content ?? "").toLowerCase().match(/[a-z0-9+#-]{3,}/g) ?? [])].join(" ") : undefined].filter(Boolean).join(" "),
 }));
 ---
 <!doctype html>
@@ -164,6 +166,7 @@ const commandItems = searchItems.map(item => ({
   </head>
   <body transition:animate="none" data-motion={pageMotion} class:list={["min-h-screen bg-background font-sans text-foreground antialiased", { "home-page": home }]}>
     <div class="site-page relative isolate min-h-screen">
+      <a class="site-skip-link" href="#main-content">Skip to content</a>
       <header transition:persist="site-header" class="site-header site-shell">
         <nav class="site-nav" aria-label="Main navigation" data-site-nav>
           <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Enguerrand Allamel</a>
@@ -257,7 +260,8 @@ const commandItems = searchItems.map(item => ({
           nav.setAttribute("data-nav-ready", "");
           nav.addEventListener("keydown", (event) => {
             if (event.key !== "Tab" || !nav.hasAttribute("data-open")) return;
-            const links = nav.querySelectorAll("a[href], button");
+            const links = Array.from(nav.querySelectorAll("a[href], button:not([disabled])"))
+              .filter(node => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden" && !node.closest("[inert]"));
             const first = links[0];
             const last = links[links.length - 1];
             if (event.shiftKey && document.activeElement === first) {

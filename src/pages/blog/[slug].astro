@@ -34,21 +34,39 @@ const structuredData = published ? {
 ---
 
 <BaseLayout noindex={!published} title={post.data.title} description={post.data.description} type="article" publishedTime={published ? `${publishDate}T00:00:00.000Z` : undefined} structuredData={structuredData}>
-  <article>
-    <header class="site-page-header border-b border-border/70">
+  <article class="blog-article">
+    <header class="site-page-header blog-post-header">
       <a href="/blog/" class="site-back-link">← Back to blog</a>
       {!published && <p class="mb-3 text-sm font-semibold text-primary">Local preview · {post.data.draft ? "Draft" : "Scheduled"}</p>}
       {publishDate && <p class="site-page-meta"><time datetime={publishDate}>{formatPostDate(publishDate)}</time><span>· By Enguerrand Allamel</span></p>}
       <h1 class="site-page-title break-words">{post.data.title}</h1>
       <p class="site-lead">{post.data.description}</p>
       {post.data.tags.length > 0 && (
-        <ul aria-label="Tags" class="mt-5 flex flex-wrap gap-2 text-xs text-muted-foreground">
-          {post.data.tags.map((tag) => <li class="rounded-full border border-border/80 bg-secondary/55 px-3 py-1">{tag}</li>)}
+        <ul aria-label="Tags" class="blog-post-tags">
+          {post.data.tags.map((tag) => <li>{tag}</li>)}
         </ul>
       )}
     </header>
-    <div class="site-open-surface prose site-reading-measure prose-headings:scroll-mt-28 prose-p:leading-relaxed mt-8 break-words [overflow-wrap:anywhere] prose-pre:max-w-full prose-pre:overflow-x-auto">
+    <div class="prose site-reading-measure blog-post-body prose-headings:scroll-mt-28 break-words [overflow-wrap:anywhere] prose-pre:max-w-full prose-pre:overflow-x-auto">
       <Content />
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .blog-article {max-width:48rem;}
+  .blog-post-header {border-bottom:1px solid hsl(var(--border));}
+  .blog-post-header .site-page-title {max-width:26ch;line-height:1.2;}
+  .blog-post-header .site-page-meta {margin-top:8px;margin-bottom:14px;}
+  .blog-post-header .site-lead {max-width:62ch;font-size:1.0625rem;line-height:1.75;}
+  .blog-post-tags {display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:18px;color:hsl(var(--muted-foreground));font-size:.8125rem;line-height:1.6;}
+  .blog-post-body {margin-top:32px;font-size:1rem;line-height:1.8;}
+  .blog-post-body :global(h2) {margin-top:2em;margin-bottom:.75em;font-size:1.5rem;line-height:1.35;}
+  .blog-post-body :global(h3) {font-size:1.25rem;line-height:1.45;}
+  .blog-post-body :global(p),.blog-post-body :global(li) {line-height:1.8;}
+  .blog-post-body :global(a) {text-underline-offset:3px;}
+  .blog-post-body :global(a:focus-visible) {outline:2px solid hsl(var(--ring));outline-offset:4px;border-radius:2px;}
+  .blog-post-body :global(blockquote) {border-color:hsl(var(--primary) / .4);font-style:normal;}
+  .blog-post-body :global(img) {height:auto;border-radius:4px;}
+  @media(max-width:600px) {.blog-post-body {margin-top:24px;}}
+</style>

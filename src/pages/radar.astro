@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
 import {
   ArrowRight,
@@ -77,25 +78,23 @@ const topicIcons = {
 ---
 
 <BaseLayout title="Technical Radar" description="A curated technical library of useful repositories across security, Kubernetes, software delivery, AI, and developer tooling.">
-  <header class="site-page-header radar-header" data-reveal>
-    <p class="site-eyebrow">Selected technical resources</p>
-    <h1 class="site-page-title">Radar</h1>
+  <PageIntro title="Radar" eyebrow="Selected technical resources" art="/images/illustrations/field-guide.webp" class="radar-header">
     <p class="site-page-meta">
       <span>{starsGroups.length} topics</span>
       <span aria-hidden="true">·</span>
       <span>Updated {starsDate(starsDataset.generated_at)}</span>
     </p>
-  </header>
+  </PageIntro>
 
   {signals.length > 0 && (
-    <section class="site-section-divider radar-section" aria-labelledby="radar-signals-title" data-reveal data-reveal-group>
-      <h2 id="radar-signals-title" class="site-section-title" data-reveal-item>Current signals</h2>
+    <section class="radar-section" aria-labelledby="radar-signals-title" data-reveal data-reveal-group>
+      <h2 id="radar-signals-title" class="site-section-title flex items-center gap-2" data-reveal-item><BookmarkSimple size={18} weight="duotone" className="text-primary" aria-hidden="true" />Current signals</h2>
       <div class="radar-signals mt-5">
         {signals.map((signal) => (
           <article class="radar-signal" data-reveal-item>
             <p class="site-eyebrow">{signal.category}</p>
             <h3 class="radar-signal-title">
-              <a class="site-link items-start text-foreground" href={signal.href} target="_blank" rel="noreferrer">
+              <a class="site-link items-start" href={signal.href} target="_blank" rel="noreferrer">
                 <span class="break-all">{signal.title}</span>
                 <ArrowUpRight size={18} className="motion-arrow motion-arrow-external shrink-0" aria-hidden="true" />
               </a>
@@ -107,16 +106,16 @@ const topicIcons = {
     </section>
   )}
 
-  <section class="site-section-divider radar-section" aria-labelledby="radar-topics-title" data-reveal>
+  <section class="radar-section" aria-labelledby="radar-topics-title" data-reveal>
     <SectionHeading id="radar-topics-title" title="Explore by topic" href="/github-stars/" action="All repository topics" />
 
-    <ul class="mt-5 grid border-t border-border sm:grid-cols-2 sm:gap-x-8">
+    <ul class="radar-topic-list mt-5 grid sm:grid-cols-2 sm:gap-x-8">
       {featuredGroups.map((group) => {
         const TopicIcon = topicIcons[group.slug] ?? BookmarkSimple;
         return (
           <li class="border-b border-border">
             <a class="group flex min-h-16 items-center justify-between gap-5 py-4" href={starsListHref(group.slug)}>
-              <span class="flex min-w-0 items-center gap-2 font-medium transition-colors duration-300 group-hover:text-primary">
+              <span class="radar-topic-title flex min-w-0 items-center gap-2">
                 <TopicIcon size={18} aria-hidden="true" />
                 <span>{starsListName(group.name)}</span>
               </span>
@@ -142,5 +141,21 @@ const topicIcons = {
       <span class="min-w-0 flex-1">Search talks, projects, topics, and pages</span>
       <kbd class="hidden shrink-0 rounded-md border border-border bg-background/75 px-2 py-1 font-sans text-xs text-muted-foreground sm:inline-flex">⌘ K</kbd>
     </button>
+    <a class="site-text-link radar-search-page" href="/search/">Open the search page →</a>
   </section>
 </BaseLayout>
+
+<style>
+  .radar-signals {border-top:0;}
+  .radar-signal {padding:24px 0;}
+  .radar-signal:last-child {border-bottom:0;}
+  .radar-signal > .site-eyebrow {color:hsl(var(--muted-foreground));font-weight:400;letter-spacing:0;}
+  .radar-signal-title {margin-top:0;font-size:20px;font-weight:500;line-height:1.4;}
+  .radar-signal-note {margin-top:0;font-size:16px;line-height:1.6;}
+  .radar-topic-title {color:hsl(var(--primary));font-family:var(--font-display);font-size:20px;font-weight:500;line-height:1.4;}
+  .radar-topic-list a {transition:background-color 180ms ease;}
+  .radar-topic-list a:hover,.radar-topic-list a:focus-visible {background:hsl(var(--primary)/.035);}
+  .radar-search-page {display:inline-flex;margin-top:12px;font-size:14px;}
+  @media(max-width:600px){.radar-signal {gap:8px;padding:20px 0;}.radar-signal-note {max-width:none;}}
+  @media(prefers-reduced-motion:reduce){.radar-topic-list a {transition:none;}}
+</style>

@@ -1,0 +1,48 @@
+/* Interior pages share Home's compact type and open surfaces. */
+body:not(.home-page) .site-main .site-page-title {
+  max-width: 26ch;
+  font-size: clamp(2rem, 4.2vw, 2.625rem);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -.025em;
+}
+body:not(.home-page) .site-main .site-lead {
+  max-width: 60ch;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+body:not(.home-page) .site-main .site-section-title {
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
+  line-height: 1.25;
+  font-weight: 500;
+}
+body:not(.home-page) .site-main .prose {
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-links: hsl(var(--primary));
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.site-skip-link {
+  position: absolute;
+  z-index: 100;
+  top: 8px;
+  left: max(16px, calc((100vw - 64rem) / 2));
+  padding: 10px 16px;
+  border: 1px solid hsl(var(--primary));
+  border-radius: var(--radius-md);
+  background: hsl(var(--background));
+  color: hsl(var(--primary));
+  transform: translateY(-160%);
+}
+.site-skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+body:not(.home-page) .site-main .prose :where(h2, h3, h4) {
+  font-weight: 500;
+}

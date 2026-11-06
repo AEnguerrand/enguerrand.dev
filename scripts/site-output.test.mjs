@@ -79,15 +79,15 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Topics I'm spending time on lately.",
   ]) assert.ok(!homeText.includes(filler), `Home must omit filler subtitle: ${filler}`);
   for (const value of [
-    "AI-first development security",
-    "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down.",
+    "AI development security",
+    "Guardrails for AI coding tools and agent workflows that help teams ship safely.",
     "Security automation in delivery platforms",
-    "Embedding practical controls across CI/CD pipelines, cloud infrastructure, and Kubernetes platforms so secure defaults are part of the path to production.",
+    "Security checks in CI/CD, cloud infrastructure, and Kubernetes.",
     "Detection and response",
-    "Improving cloud-native detection, SIEM coverage, and response workflows so incidents are easier to understand and faster to contain.",
+    "Clearer cloud alerts and response workflows, with better SIEM coverage.",
     "Secure-by-default platform patterns",
-    "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
-  ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
+    "Architecture reviews, threat models, and secure platform defaults.",
+  ]) assert.ok(homeText.includes(value), `Home must render the authorized exploration copy: ${value}`);
   const exploration = home.nodes.find(n => n.tagName === "exploration-list");
   const explorationItems = walk(exploration).filter(n => n.tagName === "article");
   assert.equal(explorationItems.length, 4);

@@ -11,10 +11,19 @@ export const starsDataset: StarredDataset = data;
 export const starsGroups = starsDataset.groups.filter(group => group.repos.length > 0);
 export const starsPageSize = 36;
 
-export const starsListName = (name: string) => name
-  .replace(/componements/gi, "components")
-  .replace(/^[^A-Za-z0-9]+/u, "")
-  .trim();
+const topicLabels: Record<string, string> = {
+  "Others": "Other tools",
+  "AWS - Control Tower / Orga": "AWS Control Tower and organization tools",
+  "See on conference": "Conference finds",
+  "SAFE Collection of SAFE components": "SAFE components",
+  "Dev": "Development",
+  "Infra-As-Code": "Infrastructure as code",
+  "To Classify": "Unsorted",
+};
+export const starsListName = (name: string) => {
+  const cleaned = name.replace(/componements/gi, "components").replace(/^[^A-Za-z0-9]+/u, "").trim();
+  return topicLabels[cleaned] ?? cleaned;
+};
 export function starsListHref(slug: string, page = 1): string {
   return `/github-stars/${encodeURIComponent(slug)}/${page === 1 ? "" : `${page}/`}`;
 }
