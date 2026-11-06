@@ -3,7 +3,7 @@ import GeographicGlobe from "./GeographicGlobe.astro";
 import { createGlobeProjection, globeFrame, talkPlaces } from "@/lib/talk-globe";
 
 interface Props {
-  talks: { id: string; title: string; location?: string }[];
+  talks: { id: string; title: string; location?: string; event?: string }[];
 }
 const { talks } = Astro.props;
 const frame = globeFrame(createGlobeProjection());
@@ -43,7 +43,7 @@ const online = talks.filter((talk) => talk.location === "Online");
           <circle class="globe-pin-target" r="25" />
           <circle class="globe-pin-halo" r="9" />
           <circle class="globe-pin" r="4" />
-          <text class="globe-label" x="13" y="4" aria-hidden="true">{marker.label} {marker.flag}</text>
+          <text class="globe-label" x={marker.x > 235 ? -13 : 13} text-anchor={marker.x > 235 ? "end" : "start"} y="4" aria-hidden="true">{marker.label} {marker.flag}</text>
         </g>
       ))}
     </svg>
@@ -54,11 +54,11 @@ const online = talks.filter((talk) => talk.location === "Online");
           <details id={`globe-place-${place.id}`} data-globe-place={place.id}>
             <summary>{place.label} <span class="globe-flag" aria-hidden="true">{place.flag}</span><span class="globe-count">{place.talks.length}</span></summary>
             <ul>
-              {place.talks.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a><span class="globe-venue">{talk.location}</span></li>)}
+              {place.talks.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a>{talk.event && <span class="globe-venue">{talk.event}</span>}</li>)}
             </ul>
           </details>
         ))}
-        {online.length > 0 && <details><summary>Online<span class="globe-count">{online.length}</span></summary><ul>{online.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a></li>)}</ul></details>}
+        {online.length > 0 && <details><summary>Online<span class="globe-count">{online.length}</span></summary><ul>{online.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a>{talk.event && <span class="globe-venue">{talk.event}</span>}</li>)}</ul></details>}
       </div>
     </figcaption>
   </figure>
@@ -96,7 +96,7 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-locations summary:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
   .globe-locations ul { display: grid; gap: 12px; padding: 0 4px 16px; list-style: none; }
   .globe-locations a { display: inline-block; padding-block: 4px; font-size: .875rem; color: hsl(var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
-  .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; }
+  .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1.5; }
   @media (max-width: 767px) {
     .talk-globe-stage {grid-column:1;grid-row:2;width:min(100%,12rem);margin-inline:auto;}
     figcaption { grid-column: 1; grid-row: 3; width: 100%; }

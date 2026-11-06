@@ -122,7 +122,7 @@ class TalkGlobe extends HTMLElement {
         const degrees = 180 / sphere.getBoundingClientRect().width;
         projection.rotate([
           dragRotation[0] + dx * degrees,
-          Math.max(-85, Math.min(85, dragRotation[1] - dy * degrees)),
+          Math.max(-90, Math.min(90, dragRotation[1] - dy * degrees)),
           0,
         ]);
         render();

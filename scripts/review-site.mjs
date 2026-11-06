@@ -61,7 +61,7 @@ try {
     const destination = join(output, label);
     await mkdir(destination);
     const pageCount = await snapshotOutput(dist, destination);
-    console.log(`Capturing ${label}: ${pageCount} built pages, 28 browser views`);
+    console.log(`Capturing ${label}: ${pageCount} built pages, 30 browser views`);
     report[label === "base" ? "baseline" : label] = { pageCount, ...await captureBrowser(dist, destination, label === "candidate") };
   }
   const diff = spawnSync("git", ["diff", "--no-index", "--text", "--", join(output, "base/text-and-links.json"), join(output, "candidate/text-and-links.json")], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });

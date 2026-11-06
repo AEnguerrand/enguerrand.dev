@@ -8,7 +8,8 @@ export async function captureRegressions(browser, origin, output, candidate) {
     ...[320, 390, 767].map(width => ({ name: `navigation-${width}`, width, kind: "navigation" })),
     { name: "navigation-motion-390", width: 390, kind: "navigation", motion: "no-preference" },
     ...[390, 1440].map(width => ({ name: `search-return-${width}`, width, kind: "search" })),
-    { name: "scenery-home-motion-1440", width: 1440, kind: "scenery", page: "home", motion: "no-preference" },
+    ...[390, 1440].map(width => ({ name: `talk-globe-${width}`, width, kind: "globe" })),
+    { name: "scenery-home-motion-3440", width: 3440, kind: "scenery", page: "home", motion: "no-preference" },
     ...[1920, 2560, 3440].flatMap(width => ["home", "projects"].map(page => ({
       name: `scenery-${page}-${width}`, width, kind: "scenery", page,
     }))),
@@ -108,6 +109,28 @@ export async function captureRegressions(browser, origin, output, candidate) {
         await input.fill("slsa");
         await expectCount(4);
         metrics = { initialQuery: true, returnVisit: true, filters: true, backForward: true, emptyState: true };
+      } else if (test.kind === "globe") {
+        await page.goto(`${origin}/talks/`, { waitUntil: "networkidle" });
+        const globe = page.locator("talk-globe");
+        const markers = globe.locator("[data-globe-marker]");
+        assert.equal(await markers.count(), 3);
+        for (const marker of await markers.all()) {
+          assert.equal(await marker.getAttribute("visibility"), "visible", "All talk cities start in view");
+          assert.equal(await marker.getAttribute("tabindex"), "0", "Each visible city is keyboard reachable");
+        }
+        const orientation = JSON.parse(await globe.locator("geographic-globe").getAttribute("data-orientation"));
+        assert.equal(orientation[1], -90, "The initial view looks down from the North Pole");
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+        metrics = { initialCities: 3, orientation };
+        await page.screenshot({ path: join(output, `${test.name}.png`), fullPage: false, animations: "disabled" });
+        for (const [city, event] of [["Paris", "AWS Summit Paris 2025"], ["Hong Kong", "KubeCon + CloudNativeCon + Open Source Summit China 2024"], ["Salt Lake City", "KubeCon + CloudNativeCon North America 2024"]]) {
+          // Opening the summary turns the globe, so restore the initial view between cities.
+          await page.reload({ waitUntil: "networkidle" });
+          const pin = page.getByRole("button", { name: `Show talks in ${city}`, exact: true });
+          await pin.focus();
+          await page.keyboard.press("Enter");
+          await page.locator("[data-globe-place][open] .globe-venue").filter({ hasText: event }).waitFor({ state: "visible" });
+        }
       } else {
         await page.goto(`${origin}${test.page === "home" ? "/" : "/projects/"}`, { waitUntil: "networkidle" });
         await page.locator(".harbour-art").scrollIntoViewIfNeeded();
@@ -132,11 +155,17 @@ export async function captureRegressions(browser, origin, output, candidate) {
         // Save the image before checking limits, so baseline failures stay reviewable.
         await page.screenshot({ path: join(output, `${test.name}.png`), fullPage: true, animations: "disabled" });
         assert.equal(metrics.overflow, false, "Scenery must not cause horizontal scrolling");
-        assert.ok(metrics.footer.width <= 1441, "Footer scene width must stay bounded");
-        assert.ok(metrics.footer.height <= (test.page === "home" ? 560 : 440), "Footer height must stay bounded");
+        assert.ok(Math.abs(metrics.footer.x) < 1 && Math.abs(metrics.footer.width - test.width) < 1,
+          "Footer artwork must reach both viewport edges");
+        assert.ok(metrics.footer.height <= (test.page === "home" ? 840 : 680), "Footer height must stay bounded");
         if (test.page === "home") {
-          assert.ok(metrics.forest.width <= 1441, "Hero crop width must stay bounded");
-          assert.ok(metrics.painting.height <= 650, "Hero painting must not grow behind the text");
+          assert.ok(Math.abs(metrics.forest.x) < 1 && Math.abs(metrics.forest.width - test.width) < 1,
+            "Hero artwork must reach both viewport edges");
+          assert.ok(metrics.forest.height <= 560, "The visible hero crop must stay bounded");
+          const horizon = metrics.painting.y + metrics.painting.height * .7;
+          assert.ok(horizon > metrics.forest.y + metrics.forest.height * .15 &&
+            horizon < metrics.forest.y + metrics.forest.height * .85,
+            "Keep the painted mountain and lake horizon inside the visible crop");
         }
         for (const key of ["x", "y", "width", "height"]) {
           assert.ok(Math.abs(metrics.scene[key] - metrics.image[key]) < 1, `Image ${key} must match the scene`);
@@ -148,7 +177,7 @@ export async function captureRegressions(browser, origin, output, candidate) {
     } catch (error) {
       errors.push(error.message);
     } finally {
-      if (test.kind !== "scenery" || !metrics)
+      if (!["scenery", "globe"].includes(test.kind) || !metrics)
         await page.screenshot({ path: join(output, `${test.name}.png`), fullPage: false, animations: "disabled" });
       if (candidate) await context.tracing.stop({ path: join(output, `${test.name}.zip`) });
       await context.close();
