@@ -1,6 +1,48 @@
 # Redesign visual QA
 
-final result: passed for the local design review; the final combined report records the source validation result
+final result: passed
+
+## Selected 404 and Radar headers — 6 November 2026
+
+The author selected the first displayed option and explicitly kept the shared navbar and footer. This pass changes the 404 introduction and opts Radar into a larger illustration layout. Existing page typography, the homepage, navigation, harbour artwork, article copy and saved bookmark data are protected. Completion requires the local visual review, the combined site checks and a draft PR update. Merge and deployment are outside this task.
+
+### Visual target and capture conditions
+
+- Selected source: `output/interior-headers/option-1.png`, copied from `/Users/enguerrandallamel/.codex/generated_images/01a1af32-8cfe-71b1-bd1b-c62576149af9/exec-7e01b70a-7233-4761-a2ff-9f75cdfff318.png`.
+- The source is 1374 × 1145 pixels with two content-only excerpts. It has no browser frame, navbar or footer. Its design-board captions are not website content.
+- Implementation: `output/interior-headers/dev/chromium-404-1440.png` and `chromium-radar-1440.png`, captured at a 1440 × 900 CSS viewport and device scale factor 1. Full-page heights differ with route content.
+- Full-view comparison: `output/interior-headers/dev/comparison-board.png`. Focused comparisons: `compare-404-header.png` and `compare-radar-header.png`. Each puts source on the left and implementation on the right.
+- `comparison-dimensions.json` records each crop and scale. Focused source regions are scaled to the site's 1024-pixel content column; implementation header captures are 1024 × 376 pixels, with a 1024 × 280 content crop. The design board is not a full-page height specification. The site's existing 42-pixel desktop H1 and 16-pixel body text take priority over the larger raster mockup text.
+- All comparisons use the initial loaded page, pale theme and reduced motion. Full-page captures wait for the existing lazy harbour image. The development toolbar is tooling, not deployed content. The final built output receives a separate capture under `output/interior-headers/compiled/`.
+
+### Findings and comparison history
+
+- Resolved P2: the first implementation gave the illustration 34% of the desktop grid and a 240-pixel image box. Both objects looked too small beside the selected reference. The final layout uses 42% and a 280-pixel box. The 601–900-pixel layout retains a smaller art column. `first-pass/` preserves the initial captures and comparisons; `dev/` contains the revised comparisons and checks.
+- No actionable P0, P1 or P2 differences remain in the inspected views. The large illustration layout is opt-in, so other page introductions keep their existing layout.
+- A first capture attempt included Astro's development-toolbar headings in a locator. The site heading locator was scoped to `main`. A later capture returned before a lazy footer image loaded. The capture now waits for that image before measurement. These were evidence-collection fixes; neither required product changes.
+
+### Fidelity and behavior
+
+- Typography: existing Fraunces headings, Space Grotesk body, font weights and compact type sizes remain. Text is live HTML. The phone title and description use the full content width.
+- Layout: open two-column introductions match the selected direction. On phones, the small illustration sits beside the eyebrow above the title. It does not narrow the description or recovery links. Radar keeps all three signals and the complete bookmark library below the intro.
+- Colors and surfaces: existing pale background, navy ink, blue links, button shape and focus styles remain. No new cards, borders, shadows or scenic background were added.
+- Artwork: `public/images/illustrations/off-course.webp` is a 1024 × 640 transparent WebP (97,344 bytes). The built-in image generator recreated the selected paper boat, folded map, small mountains, dashed route and blue watercolor pool, with no text or UI. Alpha edges were inspected on the pale background. Original generated file: `/Users/enguerrandallamel/.codex/generated_images/01a1b33e-3b42-7463-a1a9-932db9de7d52/exec-a11687ac-e102-499f-9c4c-b2b7addb118a.png`. Radar reuses the checked-in field guide; the shared harbour source is unchanged.
+- Icons: existing Phosphor icons remain. The 404 signpost is replaced by the selected raster illustration. Decorative images have empty alt text; no CSS or SVG art substitutes were introduced.
+- Content: the 404 heading is “A little off course.”, with the existing error explanation, Home action and a new native Search link. Page metadata, `noindex`, and the Error 404 eyebrow remain. Radar labels, notes, counts, dates, links and metadata are unchanged.
+- Interaction: Home and Search recovery links work; keyboard focus is visible. Radar search opens, finds the KubeCon SLSA talk and closes with Escape. Both pages keep native links without JavaScript. No new hydration or browser script is needed.
+
+### Checks and limits
+
+`output/interior-headers/dev/checks.json` records 24 route views: Chromium at 320, 390, 600, 601, 768, 1024, 1440 and 2560 pixels; WebKit and Firefox at 390 and 1440. All have one H1, no horizontal overflow, loaded local images, no Astro islands and no page errors or failed local assets. Seven additional flow checks cover the two recovery links, Radar search, both pages without JavaScript, and both pages with synthetic 200% text at 320 pixels.
+
+The final combined report validates the completed source separately. Its exact revisions, source hash and post-commit binding are recorded in the PR. No check, publication rule, workflow permission or shared shell file was changed for this pass. GitHub Actions stays disabled.
+
+Headless engines do not prove physical-device behavior, installed Safari, native zoom or screen-reader support. Local preview routing does not prove production HTTP 404 behavior. The audit's four remaining device, screen-reader and production checks remain open. There are no additional design decisions blocking this selected header work.
+
+## Earlier design review
+
+The following sections record the earlier redesign and audit passes. Their evidence and limits keep their original scope.
+
 
 ## Scope and visual references
 
