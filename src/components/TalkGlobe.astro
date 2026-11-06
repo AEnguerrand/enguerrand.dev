@@ -3,9 +3,10 @@ import GeographicGlobe from "./GeographicGlobe.astro";
 import { createGlobeProjection, globeFrame, talkPlaces } from "@/lib/talk-globe";
 
 interface Props {
+  journey?: boolean;
   talks: { id: string; title: string; location?: string; event?: string }[];
 }
-const { talks } = Astro.props;
+const { talks, journey = false } = Astro.props;
 const frame = globeFrame(createGlobeProjection());
 const groups = talkPlaces.map((place) => ({
   ...place,
@@ -14,7 +15,7 @@ const groups = talkPlaces.map((place) => ({
 const online = talks.filter((talk) => talk.location === "Online");
 ---
 
-<talk-globe>
+<talk-globe data-journey={journey || undefined}>
   <figure class="talk-globe" aria-label="Talk locations around the world">
     <div class="talk-globe-stage">
     <GeographicGlobe mode="sphere" />
@@ -39,16 +40,17 @@ const online = talks.filter((talk) => talk.location === "Online");
       <path class="globe-land" data-globe-land d={frame.land} />
       <circle class="globe-shade" cx="180" cy="180" r="156" fill="url(#globe-light)" />
       {frame.markers.filter((marker) => groups.some((group) => group.id === marker.id)).map((marker) => (
-        <g class="talk-globe-marker" data-globe-marker={marker.id} transform={`translate(${marker.x} ${marker.y})`} visibility={marker.visible ? "visible" : "hidden"}>
+        <a href={journey ? `#talk-place-${marker.id}` : undefined} aria-label={journey ? `Show talks in ${marker.label}` : undefined} class="talk-globe-marker" data-globe-marker={marker.id} transform={`translate(${marker.x} ${marker.y})`} visibility={marker.visible ? "visible" : "hidden"}>
           <circle class="globe-pin-target" r="25" />
           <circle class="globe-pin-halo" r="9" />
           <circle class="globe-pin" r="4" />
+          {journey && <rect class="globe-label-backplate" x={marker.x > 235 ? -(marker.label.length * 4.7 + 29) : 10} y="-8" width={marker.label.length * 4.7 + 19} height="16" rx="2" />}
           <text class="globe-label" x={marker.x > 235 ? -13 : 13} text-anchor={marker.x > 235 ? "end" : "start"} y="4" aria-hidden="true">{marker.label} {marker.flag}</text>
-        </g>
+        </a>
       ))}
     </svg>
     </div>
-    <figcaption>
+    {!journey && <figcaption>
       <div class="globe-locations">
         {groups.map((place) => (
           <details id={`globe-place-${place.id}`} data-globe-place={place.id}>
@@ -60,7 +62,7 @@ const online = talks.filter((talk) => talk.location === "Online");
         ))}
         {online.length > 0 && <details><summary>Online<span class="globe-count">{online.length}</span></summary><ul>{online.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a>{talk.event && <span class="globe-venue">{talk.event}</span>}</li>)}</ul></details>}
       </div>
-    </figcaption>
+    </figcaption>}
   </figure>
 </talk-globe>
 
@@ -97,11 +99,20 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-locations ul { display: grid; gap: 12px; padding: 0 4px 16px; list-style: none; }
   .globe-locations a { display: inline-block; padding-block: 4px; font-size: .875rem; color: hsl(var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
   .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1.5; }
-  @media (max-width: 767px) {
+  [data-journey] :global(geographic-globe) {filter:saturate(1.2) brightness(1.08);}
+  [data-journey] .talk-globe-stage {width:100%;margin:0;}
+  [data-journey] .globe-label {font-size:8.5px;stroke:none;}
+  .globe-label-backplate {fill:hsl(var(--background) / .94);pointer-events:none;}
+  [data-journey] .globe-pin-halo {r:5.5px;}
+  [data-journey] .globe-pin {r:3px;stroke-width:1.3px;}
+  [data-journey] .talk-globe-marker {cursor:pointer;outline:none;}
+  @media (max-width: 850px) {
     .talk-globe-stage {grid-column:1;grid-row:2;width:min(100%,12rem);margin-inline:auto;}
     figcaption { grid-column: 1; grid-row: 3; width: 100%; }
     .globe-locations {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;}
     .globe-locations details[open] {grid-column:1 / -1;}
     .globe-label {font-size:16px;}
+    [data-journey] .globe-label {font-size:12px;stroke:hsl(var(--background));stroke-width:4px;}
+    .globe-label-backplate {display:none;}
   }
 </style>

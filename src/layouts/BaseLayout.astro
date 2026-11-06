@@ -8,6 +8,7 @@ import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib
 
 interface Props {
   home?: boolean;
+  footerScene?: "harbour" | "coast";
   motion?: "full" | "subtle" | "static";
   title?: string;
   description?: string;
@@ -24,6 +25,7 @@ interface Props {
 
 const {
   home = false,
+  footerScene = "harbour",
   motion,
   title,
   description,
@@ -188,12 +190,12 @@ const commandItems = searchItems.map(item => ({
         </nav>
       </header>
 
-      <main class="site-main site-shell">
+      <main class:list={["site-main site-shell", { "journey-main": footerScene === "coast" }]}>
         <span id="main-content" tabindex="-1" class="skip-target" aria-label="Main content"></span>
         <slot />
       </main>
 
-      <HarbourFooter showBlog={showBlog} home={home} />
+      <HarbourFooter showBlog={showBlog} home={home} scene={footerScene} />
     </div>
     <CommandPalette items={commandItems} />
     <script is:inline>
@@ -541,3 +543,7 @@ const commandItems = searchItems.map(item => ({
     </script>
   </body>
 </html>
+
+<style>
+  .journey-main {padding-bottom:0;z-index:1;}
+</style>

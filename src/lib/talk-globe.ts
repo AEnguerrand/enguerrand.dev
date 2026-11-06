@@ -14,7 +14,7 @@ export const talkPlaces = [
 ];
 
 export const createGlobeProjection = () => geoOrthographic()
-  .translate([180, 180]).scale(156).rotate([-10, -90]).precision(.7);
+  .translate([180, 180]).scale(156).rotate([-40, -90]).precision(.7);
 
 export function globeFrame(projection: ReturnType<typeof createGlobeProjection>) {
   const path = geoPath(projection);

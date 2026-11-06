@@ -1,21 +1,42 @@
-# Painted site redesign: local review
+# Talks journey design review
 
-## Result
+final result: passed
 
-The approved design uses a layered forest hero and a full harbour footer on Home, with a shorter harbour on other pages. Projects share a compact layout. Exploration stays open. Resume typography and dates are consistent; LinkedIn has a primary button. Search shares its index with the command palette, retains URL state, uses one mobile filter, and closes on the first Escape. Mobile navigation starts closed when scripting is enabled and stays usable without JavaScript.
+## Scope
 
-Talks keeps real geographic mapping, location selection, clouds, relief, and motion with a lighter painted palette. The harbour has two staggered plane sequences; the hero plane and ferry motion are excluded. Article text, personal claims, content URLs, publication rules, and dates are preserved. The only content-file edit is the Search interface description.
+Implement the attached Conference journey design on `/talks/`: a large polar globe, curved talk timeline, pale cloud background, and coastal footer. Keep the existing site header, Fraunces headings, Space Grotesk text, blue accent, native links, and static Astro output. Preserve talk articles, dates, URLs, resources, metadata, structured data, and all other page designs. Stop before merge or deployment.
 
-## Evidence
+## Visual evidence
 
-Before PR preparation, `check:site`, `build`, `test:site` (50 tests including a retired terrain prototype), and whitespace checks passed. Browser inspections covered Home, Talks, Projects, Radar, About, Resume, Search, KubeCon NA 2024, OWASP France October 2025, Blog, and Kubernetes repositories at 390, 820, and 1440px. No horizontal overflow, missing image, or site JavaScript exception was found. Mobile menu, command search, filter reload, keyboard focus, and globe location selection were checked. Screenshots are local in `output/playwright/`.
+- User source: `codex-clipboard-c687f73e-88f6-490f-b916-eb83243001c6.png`; preserved locally in `output/journey-qa/source.png`.
+- Matched comparison: `output/journey-qa/comparison.png`. Source left, implementation right. Both use 916 CSS pixels of width at device scale 1. The browser viewport is 916 × 1717; the full implementation capture is 1793 pixels tall because it retains full event names, a resource link, and the shared footer controls.
+- Final responsive captures: `output/journey-qa/final-{320,390,768,916,1440,3440}.png`.
+- Capture and focused behavior check: `output/journey-qa/capture.mjs`.
+- These local files are ignored evidence, not shipped site assets. The combined review package and exact final source revision are recorded in PR #37.
 
-Final PR validation uses `npm run review:site -- --base origin/main` against the latest main branch. Its generated report records the exact revisions, source hash, check results, text/link differences, and baseline/candidate images. The PR links that report. Unused terrain, ferry, portrait, and earlier art experiments remain local and are excluded from the commit.
+## Comparison history
 
-## Review-check changes
+1. The first capture showed clipped Paris and Salt Lake City pins, excess timeline spacing, and city labels with heavy text outlines. Adjusted the globe crop, row spacing, and label backplates.
+2. The next comparison showed a route crossing the older year heading on wide screens. Footer artwork also covered the resource link. Adjusted the wide-screen spacing and stacking order; decorative images cannot intercept input.
+3. At tablet width, long titles crowded the right column. The page now stacks at 850 pixels and below. Added space between the last event and the resource note.
+4. Inspected the final full-view comparison and phone, tablet, desktop, and ultrawide captures. No open P0, P1, or P2 findings.
 
-The author requested removal of the skip link. The browser review checks the first navigation link and its visible keyboard outline on the candidate; baseline skip-link activation remains checked when present. Candidate search must close on the first Escape. Full-page captures scroll through the page first so lazy-loaded scenery appears. The output tests retain the published-blog fixture requirements. New tests cover the final geographic globe, pine layers, and harbour flight paths; the unused terrain prototype is excluded.
+## Fidelity and adaptations
 
-## Limits
+- The main composition, title scale, year hierarchy, curved route, plane, palette, and coastal ending follow the source. No cards, repeated city accordion, or extra headings were added.
+- The globe remains interactive. Its real city coordinates differ from the illustrative positions in the mockup. The North Pole is the initial center; rotation stays still until the user drags. All three city pins and labels fit the initial viewport.
+- City markers are native links to the first matching talk. Keyboard activation moves focus to that article. The timeline and all five talk links are server-rendered.
+- The index uses the existing short talk titles and full conference names. A redundant parenthesized month/year is omitted from the event label because the date appears above it. Source content and talk pages are unchanged.
+- The clouds, plane route, and coast are generated decorative WebP assets. They are not full-page screenshots. The existing 3D globe and geographic fallback remain live components.
+- The coast and sky span the viewport. Text and globe sizes stop growing on very wide screens. Phone and tablet layouts use a contained globe and a straight list guide so long titles remain readable.
+- The existing header and footer links keep their spacing and destinations. Coastal artwork applies only to Talks.
 
-Browser screenshots do not prove physical-device behavior, screen-reader support, live video playback, or measured performance. External embeds are blocked in the combined comparison. Earlier live-embed checks produced two third-party permissions-policy messages. Build warnings include an empty blog collection and a large Three.js chunk. Map geometry is retained; terrain exaggeration, paint colours, clouds, and flight paths are artistic. No merge or deployment is authorized by this review.
+## Focused checks
+
+Passed at 320, 390, 768, 916, 1440, and 3440 pixels: no horizontal overflow; three visible pins and labels; each city link activates with Enter and focuses its matching article; no page errors. With JavaScript disabled, all five talk links and all three city anchors remain present. With normal motion, the initial polar view stays still; drag changes orientation; keyboard selection still works after drag.
+
+The existing static-output and browser regression checks now assert the intended native city-anchor flow instead of the removed city accordion. They also check heading order, IDs, local anchors, viewport bounds, event names, and full-page Talks screenshots. These expectation changes are visible for human review. The required combined site review runs after the final source commit.
+
+## Limits and open decision
+
+This is local Chromium evidence, not physical-device or screen-reader proof. Browser checks do not verify external video playback. The generated coast and clouds are close visual matches, not exact copies of the reference painting. The author's design approval remains open. No merge or deployment is included.

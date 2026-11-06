@@ -130,7 +130,7 @@ class GeographicGlobe extends HTMLElement {
       this.resizeObserver=new ResizeObserver(resize);
       this.resizeObserver.observe(canvas);
       canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.contextLost=true;this.dataset.motion='paused';this.removeAttribute('data-ready');this.renderer?.setAnimationLoop(null);},{signal});
-      if(this.dataset.mode==='sphere')this.orient(JSON.parse(this.dataset.orientation||'[-10,-24,0]'));
+      if(this.dataset.mode==='sphere')this.orient(JSON.parse(this.dataset.orientation||'[-40,-90,0]'));
       resize();
       this.setAttribute('data-ready','');
       this.sync();

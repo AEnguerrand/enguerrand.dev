@@ -1,11 +1,12 @@
 ---
 import HarbourLanding from "./HarbourLanding.astro";
 import { EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
-interface Props { showBlog?: boolean; home?: boolean }
-const { showBlog = false, home = false } = Astro.props;
+interface Props { showBlog?: boolean; home?: boolean; scene?: "harbour" | "coast" }
+const { showBlog = false, home = false, scene = "harbour" } = Astro.props;
 const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/projects/',label:'Projects'}, ...(showBlog ? [{href:'/blog/',label:'Blog'}] : []), {href:'/radar/',label:'Radar'}, {href:'/search/',label:'Search'}, {href:'/privacy/',label:'Privacy'}];
 ---
-<footer class="harbour-footer site-shell" aria-label="Site footer">
+<footer class:list={["harbour-footer site-shell", { coastal: scene === "coast" }]} aria-label="Site footer">
+  {scene === "coast" && <img class="coast-art" src="/images/talks/journey-coast.webp" alt="" width="2048" height="768" loading="lazy" decoding="async" />}
   <div class="harbour-footer-copy">
     <p>Based in Vancouver, BC, Canada</p>
     <nav class="harbour-social" aria-label="Contact links">
@@ -15,12 +16,12 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
     </nav>
     <nav aria-label="Footer navigation">{links.map(link => <a href={link.href}>{link.label}</a>)}</nav>
   </div>
-  <div class:list={["harbour-art", { compact: !home }]} aria-hidden="true">
+  {scene === "harbour" && <div class:list={["harbour-art", { compact: !home }]} aria-hidden="true">
     <div class="harbour-scene">
       <img src="/images/scenic/vancouver-harbour-map-aligned.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" />
       <HarbourLanding />
     </div>
-  </div>
+  </div>}
   <div class="harbour-copyright">© {new Date().getUTCFullYear()} Enguerrand Allamel</div>
 </footer>
 <style>
@@ -41,5 +42,10 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
 .harbour-copyright {position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100vw;padding:32px 20px 14px;font-size:.75rem;color:#fff;background:linear-gradient(transparent,#15384be6);text-shadow:0 1px 2px #15384b;}
 @media(min-width:1800px){.harbour-scene,.compact .harbour-scene{top:40%;transform:translateY(-40%);}}
 @media(max-width:600px){.harbour-footer{padding-top:44px;}.harbour-footer nav{gap:0 18px;margin-top:20px;}.harbour-art img{object-position:center;}}
+.coastal {padding-top:clamp(260px,30vw,460px);padding-bottom:16px;}
+.coast-art {pointer-events:none;position:absolute;z-index:0;top:-70px;left:50%;transform:translateX(-50%);width:100vw;max-width:none;height:100%;object-fit:cover;object-position:center;mask-image:linear-gradient(transparent,black 18%,black 80%,transparent);}
+.coastal nav {margin-top:0;}
+.coastal .harbour-copyright {position:relative;left:auto;transform:none;width:auto;padding:20px 0 0;color:hsl(var(--muted-foreground));background:none;text-shadow:none;}
+.coastal .harbour-footer-copy {background:hsl(var(--background) / .75);box-shadow:0 0 35px 25px hsl(var(--background) / .75);}
 @media print{.harbour-art{display:none;}.harbour-copyright{position:static;transform:none;width:auto;background:none;color:inherit;text-shadow:none;}}
 </style>

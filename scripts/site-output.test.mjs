@@ -107,10 +107,17 @@ test("Talks and Projects indexes start directly with useful content", async () =
   assert.ok(globe, "Talks must show the location globe");
   assert.equal(walk(globe).filter((node) => attrs(node).class?.split(" ").includes("talk-globe-marker")).length, 3);
   for (const location of ["Paris", "Hong Kong", "Salt Lake City", "Online"])
-    assert.ok(text(globe).includes(location), `Talk globe must include ${location}`);
+    assert.ok(talksText.includes(location), `Talks must include ${location}`);
   assert.ok(walk(globe).some((node) => node.tagName === "svg" && attrs(node).viewBox === "0 0 360 360"));
   assert.ok(walk(globe).some((node) => attrs(node)["data-globe-land"] !== undefined && attrs(node).d?.length > 1000), "Globe must render coastlines before JavaScript");
-  assert.equal(walk(globe).filter((node) => node.tagName === "a").length, 5, "All talks must remain reachable without globe motion");
+  const cityLinks = walk(globe).filter(node => node.tagName === "a");
+  assert.equal(cityLinks.length, 3, "City markers must be native links before JavaScript");
+  for (const link of cityLinks) {
+    const target = attrs(link).href?.slice(1);
+    assert.ok(target && talksIndex.nodes.some(node => attrs(node).id === target), "Each city links to a rendered talk");
+  }
+  const main = talksIndex.nodes.find(node => node.tagName === "main");
+  assert.equal(walk(main).filter(node => node.tagName === "a" && attrs(node).href?.startsWith("/talks/")).length, 5, "All talks remain reachable without JavaScript");
 });
 
 test("Talk keeps source resources, full structured title, and a stable calendar date", async () => {

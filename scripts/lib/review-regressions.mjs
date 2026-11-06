@@ -8,7 +8,7 @@ export async function captureRegressions(browser, origin, output, candidate) {
     ...[320, 390, 767].map(width => ({ name: `navigation-${width}`, width, kind: "navigation" })),
     { name: "navigation-motion-390", width: 390, kind: "navigation", motion: "no-preference" },
     ...[390, 1440].map(width => ({ name: `search-return-${width}`, width, kind: "search" })),
-    ...[390, 1440].map(width => ({ name: `talk-globe-${width}`, width, kind: "globe" })),
+    ...[320, 390, 768, 916, 1440, 3440].map(width => ({ name: `talk-globe-${width}`, width, kind: "globe" })),
     { name: "scenery-home-motion-3440", width: 3440, kind: "scenery", page: "home", motion: "no-preference" },
     ...[1920, 2560, 3440].flatMap(width => ["home", "projects"].map(page => ({
       name: `scenery-${page}-${width}`, width, kind: "scenery", page,
@@ -122,14 +122,40 @@ export async function captureRegressions(browser, origin, output, candidate) {
         assert.equal(orientation[1], -90, "The initial view looks down from the North Pole");
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
         metrics = { initialCities: 3, orientation };
-        await page.screenshot({ path: join(output, `${test.name}.png`), fullPage: false, animations: "disabled" });
-        for (const [city, event] of [["Paris", "AWS Summit Paris 2025"], ["Hong Kong", "KubeCon + CloudNativeCon + Open Source Summit China 2024"], ["Salt Lake City", "KubeCon + CloudNativeCon North America 2024"]]) {
-          // Opening the summary turns the globe, so restore the initial view between cities.
-          await page.reload({ waitUntil: "networkidle" });
-          const pin = page.getByRole("button", { name: `Show talks in ${city}`, exact: true });
+        await page.evaluate(async () => {
+          await document.fonts.ready;
+          await Promise.all([...document.images].map(image => { image.loading = "eager"; return image.decode(); }));
+        });
+        metrics.layout = await page.evaluate(() => {
+          const levels = [...document.querySelectorAll("main h1,main h2,main h3")].map(node => Number(node.tagName.slice(1)));
+          const ids = [...document.querySelectorAll("[id]")].map(node => node.id);
+          return { h1: document.querySelectorAll("h1").length,
+            skippedHeading: levels.some((level, index) => level > (levels[index - 1] ?? 0) + 1),
+            duplicateIds: ids.length !== new Set(ids).size,
+            missingAnchors: [...document.querySelectorAll('a[href^="#"]')].map(link => link.getAttribute("href").slice(1)).filter(id => id && !document.getElementById(id)),
+            pinsInViewport: [...document.querySelectorAll(".globe-pin,.globe-label")].every(node => {
+              const box = node.getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth;
+            }),
+          };
+        });
+        await page.screenshot({ path: join(output, `${test.name}.png`), fullPage: true, animations: "disabled" });
+        assert.equal(metrics.layout.h1, 1);
+        assert.equal(metrics.layout.skippedHeading, false);
+        assert.equal(metrics.layout.duplicateIds, false);
+        assert.deepEqual(metrics.layout.missingAnchors, []);
+        assert.equal(metrics.layout.pinsInViewport, true, "Initial city pins and labels must fit the viewport");
+        for (const [city, event] of [["Paris", "OWASP France Chapter Meetup"], ["Hong Kong", "KubeCon + CloudNativeCon + Open Source Summit China 2024"], ["Salt Lake City", "KubeCon + CloudNativeCon North America 2024"]]) {
+          const pin = page.getByRole("link", { name: `Show talks in ${city}`, exact: true });
+          const target = await pin.getAttribute("href");
+          assert.match(target, /^#talk-place-/, "Cities use native document anchors");
           await pin.focus();
           await page.keyboard.press("Enter");
-          await page.locator("[data-globe-place][open] .globe-venue").filter({ hasText: event }).waitFor({ state: "visible" });
+          await page.waitForURL(`${origin}/talks/${target}`);
+          const article = page.locator(target);
+          assert.equal(await article.evaluate(node => node === document.activeElement), true, "Selection transfers keyboard focus to the talk");
+          assert.ok((await article.innerText()).includes(event));
+          const box = await article.boundingBox();
+          assert.ok(box.y >= 0 && box.y < 900, "The selected talk must scroll into view");
         }
       } else {
         await page.goto(`${origin}${test.page === "home" ? "/" : "/projects/"}`, { waitUntil: "networkidle" });

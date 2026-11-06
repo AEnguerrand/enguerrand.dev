@@ -12,7 +12,8 @@ class TalkGlobe extends HTMLElement {
     if (!land || !grid) return;
     const abort = new AbortController();
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    let paused = false;
+    const journey = this.hasAttribute("data-journey");
+    let paused = journey;
     let visible = false;
     let hovering = false;
     let focused = false;
@@ -29,12 +30,13 @@ class TalkGlobe extends HTMLElement {
       land.setAttribute("d", frame.land);
       grid.setAttribute("d", frame.grid);
       for (const marker of frame.markers) {
-        const node = this.querySelector<SVGGElement>(`[data-globe-marker="${marker.id}"]`);
+        const node = this.querySelector<SVGElement>(`[data-globe-marker="${marker.id}"]`);
         if (!node) continue;
         node.setAttribute("visibility", marker.visible ? "visible" : "hidden");
         node.setAttribute("tabindex", marker.visible ? "0" : "-1");
         node.setAttribute("aria-hidden", String(!marker.visible));
         node.setAttribute("transform", `translate(${marker.x} ${marker.y})`);
+        node.querySelector("rect")?.setAttribute("x", marker.x > 235 ? String(-(marker.label.length * 4.7 + 29)) : "10");
         const label = node.querySelector("text");
         label?.setAttribute("x", marker.x > 235 ? "-13" : "13");
         label?.setAttribute("text-anchor", marker.x > 235 ? "end" : "start");
@@ -80,7 +82,7 @@ class TalkGlobe extends HTMLElement {
       sync();
     };
     this.querySelectorAll<HTMLDetailsElement>("[data-globe-place]").forEach((details) => {
-      const marker = this.querySelector<SVGGElement>(`[data-globe-marker="${details.dataset.globePlace}"]`);
+      const marker = this.querySelector<SVGElement>(`[data-globe-marker="${details.dataset.globePlace}"]`);
       marker?.setAttribute("role", "button");
       marker?.setAttribute("aria-label", `Show talks in ${talkPlaces.find(place => place.id === details.dataset.globePlace)?.label}`);
       marker?.setAttribute("aria-controls", details.id);
@@ -103,6 +105,13 @@ class TalkGlobe extends HTMLElement {
       details.addEventListener("toggle", () => {
         marker?.setAttribute("aria-expanded", String(details.open));
         if (details.open) turnTo(details.dataset.globePlace);
+      }, { signal: abort.signal });
+    });
+    if (journey) this.querySelectorAll<SVGAElement>("[data-globe-marker]").forEach(marker => {
+      marker.addEventListener("click", event => {
+        if (suppressClick && event.detail !== 0) { event.preventDefault(); return; }
+        const id = marker.getAttribute("href")?.slice(1);
+        if (id) document.getElementById(id)?.focus({ preventScroll: true });
       }, { signal: abort.signal });
     });
     const sphere = this.querySelector("svg")!;
