@@ -1,38 +1,38 @@
-# Talks page design review
+# Talks and shared website design review
 
 final result: passed
 
-## Current scope
+## Author direction
 
-The author rejected the first large Conference journey implementation: its text and globe were too large, its artwork reached into the navigation, and its style did not fit Home. The current direction uses the homepage content grid and restrained type scale. The navbar must remain unchanged. Keep the interactive polar globe, real talk content, event names, and coastal ending. Stop before merge or deployment.
+Use the homepage as the visual reference. The author rejected oversized Talks typography and artwork behind the navbar. The author then required the same navbar and footer on every page, reuse of the existing footer image, and a persistent design rule. These instructions take precedence over the initial Conference journey mockup.
 
-## Changes
+## Final design
 
-- Use the shared page heading, capped at 48 px; use the homepage's 32 px phone heading scale. The previous desktop heading reached 94 px.
-- Use 20 px Fraunces talk titles, 16 px introduction text, and 12–14 px event metadata. Remove permanent link underlines; retain hover and keyboard focus states.
-- Place the globe beside the introduction and recent talks. Its frame is capped at 600 px; the previous frame reached 1020 px. Stack it at tablet and phone widths.
-- Replace the large flight-path illustration with a simple timeline guide. Remove the unused route asset. Align older talks with the shared content grid.
-- Reduce cloud opacity from .65 to .22. Start all Talks artwork below the navbar, with a transparent top fade.
-- Keep navbar markup, CSS, and behavior unchanged. No edits to BaseLayout, shared CSS, or navigation scripts are part of this refinement.
-- Keep article content, dates, URLs, resources, metadata, structured data, and the coastal footer unchanged.
+- Talks uses the shared content grid, a 32–48 px page heading, 20 px Fraunces talk titles, and 12–16 px supporting text. The globe frame is capped at 600 px and stacks on narrow screens.
+- A simple timeline guide replaces the large flight path. Clouds are subtle and start below the navbar. The old route image is removed.
+- Every page uses the homepage navbar, including its Home link. Only active-page indicators vary. Removed the old script that changed the link label on other routes.
+- Every page uses the existing HarbourFooter component, image, links, crop, and motion rules. Removed the alternate coast scene, compact page variant, footerScene prop, and newly generated footer image.
+- The homepage navbar and footer design remain the reference. No replacement footer artwork was generated for this correction.
+- Saved the rule in `docs/design-guidelines.md`, linked it from `AGENTS.md`, and appended the requested preference to memory.
+- Article content, dates, URLs, resources, metadata, structured data, fonts, and palette remain intact.
 
 ## Visual evidence
 
-- The initial concept remains in `output/journey-qa/source.png`; the author's later correction takes precedence over its oversized composition.
-- Homepage comparison: `output/journey-refinement/home-comparison.png`. Home and revised Talks use the same 1440 × 900 viewport, device scale 1, Chromium, fonts, and reduced-motion setting. Inspected both views together.
-- Previous composition: `output/journey-refinement/before-1440.png`.
-- Revised full-page captures: `output/journey-refinement/after-{320,390,768,916,1440,3440}.png`.
-- Capture and measurement script: `output/journey-refinement/capture.mjs`.
-- Evidence is local and ignored by Git. The final combined review package and exact source revision are recorded in PR #37.
+Local ignored evidence is in `output/journey-refinement/`:
 
-## Checks and findings
+- `shared-home-comparison.png`: Home and revised Talks side by side at 1440 × 900, device scale 1, Chromium, identical fonts and reduced-motion setting.
+- `shared-{390,768,1440,3440}.png`: final full-page Talks views with the common navbar and harbour footer.
+- `shared-shell.mjs`: measured Home, Talks, and Projects navbar links, font styles, element geometry, footer text, footer image, and crop geometry at all four widths. All match Home; no horizontal overflow.
+- `after-{320,390,768,916,1440,3440}.png`: earlier refinement captures that verified the reduced typography and artwork boundaries, before the final common-footer correction.
 
-The focused check compares navbar text, element rectangles, fonts, padding, gaps, background color/image, and display values against the previous preview. All values are unchanged at 320, 390, 768, 916, 1440, and 3440 pixels. A first comparison differed only in browser serialization of the no-image background position (`0%` versus `0px`); comparison now checks the actual background color and image properties.
+Inspected the matched view and final phone/desktop captures. No open P0, P1, or P2 findings in this scoped review. Full final regression evidence and exact revisions are recorded in PR #37 after the final source commit.
 
-At all six widths, there is no horizontal overflow. The navbar ends at y=64; the cloud artwork starts at y=104 on narrow screens and y=112 on desktop. The heading measures 32–48 px, and talk titles measure 20 px. Reviewed the responsive captures, the Home comparison, spacing, copy, colors, and image placement. No open P0, P1, or P2 findings in this scoped review.
+## Regression controls
 
-The existing 34-view combined regression profile checks headings, anchors, visible city pins and labels, keyboard activation, mobile navigation, Search return visits, page resources, JavaScript output, and console errors. No checks or expectations were changed for this refinement. The full suite runs after the final source commit.
+A new static-output test checks every generated page against Home for navigation labels/destinations, footer text/links, and the existing harbour image. Mobile navigation flows also check that the Home label stays unchanged after route transitions.
+
+Wide-screen checks now require Home and Projects to use identical footer heights. Both use the unchanged homepage height limit of 840 px. This intentionally replaces the old 680 px inner-page limit because the author removed per-page footer variants; the expectation change is visible for review. Existing pin, keyboard, heading, anchor, overflow, resource, console, and JavaScript checks remain.
 
 ## Limits and open decision
 
-The globe keeps real city coordinates, a North Pole start, native city anchors, and a geographic fallback. Local Chromium evidence does not prove physical-device behavior, Safari rendering, screen-reader support, or live external video playback. The author has not yet approved the refined design. No merge or deployment is included.
+The globe keeps real city coordinates, a North Pole start, native city anchors, drag, and a static geographic fallback. Local Chromium checks do not prove physical-device behavior, Safari rendering, screen-reader support, or live external video playback. The author's design approval remains open. No merge or deployment is included.

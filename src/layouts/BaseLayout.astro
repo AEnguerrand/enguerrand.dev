@@ -8,7 +8,6 @@ import { canonicalUrl, serializeJsonLd, siteDescription, siteImage } from "@/lib
 
 interface Props {
   home?: boolean;
-  footerScene?: "harbour" | "coast";
   motion?: "full" | "subtle" | "static";
   title?: string;
   description?: string;
@@ -25,7 +24,6 @@ interface Props {
 
 const {
   home = false,
-  footerScene = "harbour",
   motion,
   title,
   description,
@@ -168,7 +166,7 @@ const commandItems = searchItems.map(item => ({
     <div class="site-page relative isolate min-h-screen">
       <header transition:persist="site-header" class="site-header site-shell">
         <nav class="site-nav" aria-label="Main navigation" data-site-nav>
-          <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>{home ? "Home" : "Enguerrand Allamel"}</a>
+          <a class="site-brand" href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Home</a>
           <button
             class="site-nav-toggle"
             type="button"
@@ -190,12 +188,12 @@ const commandItems = searchItems.map(item => ({
         </nav>
       </header>
 
-      <main class:list={["site-main site-shell", { "journey-main": footerScene === "coast" }]}>
+      <main class="site-main site-shell">
         <span id="main-content" tabindex="-1" class="skip-target" aria-label="Main content"></span>
         <slot />
       </main>
 
-      <HarbourFooter showBlog={showBlog} home={home} scene={footerScene} />
+      <HarbourFooter showBlog={showBlog} />
     </div>
     <CommandPalette items={commandItems} />
     <script is:inline>
@@ -208,8 +206,6 @@ const commandItems = searchItems.map(item => ({
         window.__siteRevealObserver?.disconnect();
 
         const currentPath = window.location.pathname;
-        const brand = document.querySelector(".site-brand");
-        if (brand) brand.textContent = currentPath === "/" ? "Home" : "Enguerrand Allamel";
         document.querySelectorAll(".site-nav a").forEach((link) => {
           const linkPath = new URL(link.href, window.location.origin).pathname;
           const isCurrent = linkPath === "/"
@@ -543,7 +539,3 @@ const commandItems = searchItems.map(item => ({
     </script>
   </body>
 </html>
-
-<style>
-  .journey-main {padding-bottom:0;z-index:1;}
-</style>

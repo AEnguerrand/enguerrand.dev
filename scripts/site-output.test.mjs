@@ -395,6 +395,22 @@ test("SEO: search can be crawled to read noindex and internal links use canonica
 
 
 // The review found heading and fragment issues outside the original two-page sample.
+test("Every page reuses the homepage navigation and footer", () => {
+  const links = node => walk(node).filter(item => item.tagName === "a")
+    .map(item => ({ href: attrs(item).href, label: text(item).replace(/\s+/g, " ").trim() }));
+  const shell = nodes => {
+    const nav = nodes.find(node => node.tagName === "nav" && attrs(node)["aria-label"] === "Main navigation");
+    const footer = nodes.find(node => node.tagName === "footer");
+    assert.ok(nav && footer, "Each page needs the shared navigation and footer");
+    return { navigation: links(nav), footerLinks: links(footer),
+      footerText: text(footer).replace(/\s+/g, " ").trim(),
+      footerImages: walk(footer).filter(node => node.tagName === "img").map(node => attrs(node).src) };
+  };
+  const expected = shell(home.nodes);
+  assert.deepEqual(expected.footerImages, ["/images/scenic/vancouver-harbour-map-aligned.webp"]);
+  for (const { file, nodes } of builtPages) assert.deepEqual(shell(nodes), expected, file);
+});
+
 test("All generated pages keep ordered headings, unique IDs, valid fragments, and static output", () => {
   const byPath = new Map(builtPages.map(p => [new URL(canonical(p.nodes)).pathname, p]));
   for (const {file, html, nodes} of builtPages) {

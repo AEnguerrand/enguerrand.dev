@@ -1,12 +1,11 @@
 ---
 import HarbourLanding from "./HarbourLanding.astro";
 import { EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
-interface Props { showBlog?: boolean; home?: boolean; scene?: "harbour" | "coast" }
-const { showBlog = false, home = false, scene = "harbour" } = Astro.props;
+interface Props { showBlog?: boolean }
+const { showBlog = false } = Astro.props;
 const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/projects/',label:'Projects'}, ...(showBlog ? [{href:'/blog/',label:'Blog'}] : []), {href:'/radar/',label:'Radar'}, {href:'/search/',label:'Search'}, {href:'/privacy/',label:'Privacy'}];
 ---
-<footer class:list={["harbour-footer site-shell", { coastal: scene === "coast" }]} aria-label="Site footer">
-  {scene === "coast" && <img class="coast-art" src="/images/talks/journey-coast.webp" alt="" width="2048" height="768" loading="lazy" decoding="async" />}
+<footer class="harbour-footer site-shell" aria-label="Site footer">
   <div class="harbour-footer-copy">
     <p>Based in Vancouver, BC, Canada</p>
     <nav class="harbour-social" aria-label="Contact links">
@@ -16,12 +15,12 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
     </nav>
     <nav aria-label="Footer navigation">{links.map(link => <a href={link.href}>{link.label}</a>)}</nav>
   </div>
-  {scene === "harbour" && <div class:list={["harbour-art", { compact: !home }]} aria-hidden="true">
+  <div class="harbour-art" aria-hidden="true">
     <div class="harbour-scene">
       <img src="/images/scenic/vancouver-harbour-map-aligned.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" />
       <HarbourLanding />
     </div>
-  </div>}
+  </div>
   <div class="harbour-copyright">© {new Date().getUTCFullYear()} Enguerrand Allamel</div>
 </footer>
 <style>
@@ -34,18 +33,11 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
 .harbour-footer .harbour-social {margin-top:0;gap:0 24px;}
 .harbour-social a {gap:7px;}
 .harbour-art {position:relative;width:100vw;left:50%;transform:translateX(-50%);height:min(56.25vw,clamp(560px,28vw,840px));overflow:hidden;mask-image:linear-gradient(to bottom,transparent,black 7%);}
-.harbour-art.compact {height:clamp(150px,31vw,clamp(440px,22vw,680px));}
 /* Crop the full-width painting and aircraft in the same coordinates. */
 .harbour-scene {position:absolute;inset:auto 0;top:20%;transform:translateY(-20%);aspect-ratio:16/9;}
-.compact .harbour-scene {top:10%;transform:translateY(-10%);}
 .harbour-art img {width:100%;height:100%;object-fit:cover;object-position:center;}
 .harbour-copyright {position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100vw;padding:32px 20px 14px;font-size:.75rem;color:#fff;background:linear-gradient(transparent,#15384be6);text-shadow:0 1px 2px #15384b;}
-@media(min-width:1800px){.harbour-scene,.compact .harbour-scene{top:40%;transform:translateY(-40%);}}
+@media(min-width:1800px){.harbour-scene{top:40%;transform:translateY(-40%);}}
 @media(max-width:600px){.harbour-footer{padding-top:44px;}.harbour-footer nav{gap:0 18px;margin-top:20px;}.harbour-art img{object-position:center;}}
-.coastal {padding-top:clamp(260px,30vw,460px);padding-bottom:16px;}
-.coast-art {pointer-events:none;position:absolute;z-index:0;top:-70px;left:50%;transform:translateX(-50%);width:100vw;max-width:none;height:100%;object-fit:cover;object-position:center;mask-image:linear-gradient(transparent,black 18%,black 80%,transparent);}
-.coastal nav {margin-top:0;}
-.coastal .harbour-copyright {position:relative;left:auto;transform:none;width:auto;padding:20px 0 0;color:hsl(var(--muted-foreground));background:none;text-shadow:none;}
-.coastal .harbour-footer-copy {background:hsl(var(--background) / .75);box-shadow:0 0 35px 25px hsl(var(--background) / .75);}
 @media print{.harbour-art{display:none;}.harbour-copyright{position:static;transform:none;width:auto;background:none;color:inherit;text-shadow:none;}}
 </style>

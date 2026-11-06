@@ -53,6 +53,7 @@ export async function captureRegressions(browser, origin, output, candidate) {
           await toggle.waitFor({ state: "visible" });
           assert.equal(await toggle.getAttribute("aria-expanded"), "false");
           assert.equal(await page.locator("main").evaluate(node => node.inert), false);
+          assert.equal(await page.locator(".site-brand").innerText(), "Home", "Navbar branding stays the same on every route");
         };
         for (const label of ["Talks", "Projects"]) {
           await assertClosed();
@@ -183,7 +184,12 @@ export async function captureRegressions(browser, origin, output, candidate) {
         assert.equal(metrics.overflow, false, "Scenery must not cause horizontal scrolling");
         assert.ok(Math.abs(metrics.footer.x) < 1 && Math.abs(metrics.footer.width - test.width) < 1,
           "Footer artwork must reach both viewport edges");
-        assert.ok(metrics.footer.height <= (test.page === "home" ? 840 : 680), "Footer height must stay bounded");
+        assert.ok(metrics.footer.height <= 840, "The shared homepage footer height must stay bounded");
+        if (test.page === "projects") {
+          const home = results.find(result => result.route === `scenery-home-${test.width}`);
+          assert.equal(metrics.footer.height, home?.metrics?.footer.height,
+            "Every page must use the same footer crop as Home");
+        }
         if (test.page === "home") {
           assert.ok(Math.abs(metrics.forest.x) < 1 && Math.abs(metrics.forest.width - test.width) < 1,
             "Hero artwork must reach both viewport edges");
