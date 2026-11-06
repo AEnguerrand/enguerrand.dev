@@ -23,6 +23,19 @@ export async function captureRegressions(browser, origin, output, candidate) {
     if (candidate) await context.tracing.start({ screenshots: true, snapshots: true });
     const page = await context.newPage();
     page.setDefaultTimeout(8000);
+    // History changes the URL before Astro swaps the document and runs its scripts.
+    // Wait for the destination to be ready before the next sequential interaction.
+    const navigate = async (action, url) => {
+      await page.evaluate(() => {
+        window.__reviewNavigation = new Promise(resolve => {
+          document.addEventListener("astro:page-load", () => resolve(), { once: true });
+        });
+      });
+      await action();
+      await page.waitForURL(url);
+      await page.waitForFunction(() => window.__reviewNavigation.then(() =>
+        !document.documentElement.hasAttribute("data-astro-transition")));
+    };
     const errors = [];
     page.on("pageerror", error => errors.push(error.message));
     page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
@@ -43,16 +56,13 @@ export async function captureRegressions(browser, origin, output, candidate) {
         for (const label of ["Talks", "Projects"]) {
           await assertClosed();
           await toggle.click();
-          await page.getByRole("navigation", { name: "Main navigation", exact: true })
-            .getByRole("link", { name: label, exact: true }).click();
-          await page.waitForURL(`${origin}/${label.toLowerCase()}/`);
+          await navigate(() => page.getByRole("navigation", { name: "Main navigation", exact: true })
+            .getByRole("link", { name: label, exact: true }).click(), `${origin}/${label.toLowerCase()}/`);
           await assertClosed();
         }
-        await page.goBack();
-        await page.waitForURL(`${origin}/talks/`);
+        await navigate(() => page.goBack(), `${origin}/talks/`);
         await assertClosed();
-        await page.goForward();
-        await page.waitForURL(`${origin}/projects/`);
+        await navigate(() => page.goForward(), `${origin}/projects/`);
         await assertClosed();
         await toggle.click();
         await page.keyboard.press("Escape");
@@ -71,10 +81,8 @@ export async function captureRegressions(browser, origin, output, candidate) {
           document.querySelector("[data-search-count]")?.textContent === `${expected} results`, count);
         await expectCount(2);
         const footer = page.getByRole("navigation", { name: "Footer navigation" });
-        await footer.getByRole("link", { name: "Talks", exact: true }).click();
-        await page.waitForURL(`${origin}/talks/`);
-        await footer.getByRole("link", { name: "Search", exact: true }).click();
-        await page.waitForURL(`${origin}/search/`);
+        await navigate(() => footer.getByRole("link", { name: "Talks", exact: true }).click(), `${origin}/talks/`);
+        await navigate(() => footer.getByRole("link", { name: "Search", exact: true }).click(), `${origin}/search/`);
         await input.fill("slsa");
         await expectCount(4);
         const filter = async value => {
@@ -86,15 +94,13 @@ export async function captureRegressions(browser, origin, output, candidate) {
         assert.equal(new URL(page.url()).searchParams.get("filter"), "project");
         await filter("all");
         await expectCount(4);
-        await page.locator('[data-search-results] a[href="/talks/kubecon-na-2024/"]').click();
-        await page.waitForURL(`${origin}/talks/kubecon-na-2024/`);
-        await page.goBack();
-        await page.waitForURL(`${origin}/search/?q=slsa`);
+        await navigate(() => page.locator('[data-search-results] a[href="/talks/kubecon-na-2024/"]').click(),
+          `${origin}/talks/kubecon-na-2024/`);
+        await navigate(() => page.goBack(), `${origin}/search/?q=slsa`);
         await expectCount(4);
         assert.equal(await input.inputValue(), "slsa");
-        await page.goForward();
-        await page.waitForURL(`${origin}/talks/kubecon-na-2024/`);
-        await page.goBack();
+        await navigate(() => page.goForward(), `${origin}/talks/kubecon-na-2024/`);
+        await navigate(() => page.goBack(), `${origin}/search/?q=slsa`);
         await expectCount(4);
         await input.fill("zznoresultzz");
         await expectCount(0);
