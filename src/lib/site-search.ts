@@ -25,7 +25,7 @@ export interface SearchItem {
 const pages = [
   ["home", "Home", "/", "Enguerrand Allamel, platform security, selected talks and current exploration topics."],
   ["talks", "Talks", "/talks/", "Conference talks, workshops, videos, slides and labs."],
-  ["projects", "Projects", "/projects/", "Independent software, open source projects and tools for paper records."],
+  ["projects", "Side projects", "/projects/", "Side projects and independent software by Enguerrand Allamel."],
   ["radar", "Radar", "/radar/", "Selected technical signals and a library of GitHub bookmarks."],
   ["blog", "Blog", "/blog/", "Articles and field notes on life in Canada, security, and AI."],
   ["about", "About", "/about/", "About Enguerrand Allamel, his work, biography and public resume."],
