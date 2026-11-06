@@ -1,42 +1,38 @@
-# Talks journey design review
+# Talks page design review
 
 final result: passed
 
-## Scope
+## Current scope
 
-Implement the attached Conference journey design on `/talks/`: a large polar globe, curved talk timeline, pale cloud background, and coastal footer. Keep the existing site header, Fraunces headings, Space Grotesk text, blue accent, native links, and static Astro output. Preserve talk articles, dates, URLs, resources, metadata, structured data, and all other page designs. Stop before merge or deployment.
+The author rejected the first large Conference journey implementation: its text and globe were too large, its artwork reached into the navigation, and its style did not fit Home. The current direction uses the homepage content grid and restrained type scale. The navbar must remain unchanged. Keep the interactive polar globe, real talk content, event names, and coastal ending. Stop before merge or deployment.
+
+## Changes
+
+- Use the shared page heading, capped at 48 px; use the homepage's 32 px phone heading scale. The previous desktop heading reached 94 px.
+- Use 20 px Fraunces talk titles, 16 px introduction text, and 12–14 px event metadata. Remove permanent link underlines; retain hover and keyboard focus states.
+- Place the globe beside the introduction and recent talks. Its frame is capped at 600 px; the previous frame reached 1020 px. Stack it at tablet and phone widths.
+- Replace the large flight-path illustration with a simple timeline guide. Remove the unused route asset. Align older talks with the shared content grid.
+- Reduce cloud opacity from .65 to .22. Start all Talks artwork below the navbar, with a transparent top fade.
+- Keep navbar markup, CSS, and behavior unchanged. No edits to BaseLayout, shared CSS, or navigation scripts are part of this refinement.
+- Keep article content, dates, URLs, resources, metadata, structured data, and the coastal footer unchanged.
 
 ## Visual evidence
 
-- User source: `codex-clipboard-c687f73e-88f6-490f-b916-eb83243001c6.png`; preserved locally in `output/journey-qa/source.png`.
-- Matched comparison: `output/journey-qa/comparison.png`. Source left, implementation right. Both use 916 CSS pixels of width at device scale 1. The browser viewport is 916 × 1717; the full implementation capture is 1793 pixels tall because it retains full event names, a resource link, and the shared footer controls.
-- Final responsive captures: `output/journey-qa/final-{320,390,768,916,1440,3440}.png`.
-- Capture and focused behavior check: `output/journey-qa/capture.mjs`.
-- These local files are ignored evidence, not shipped site assets. The combined review package and exact final source revision are recorded in PR #37.
+- The initial concept remains in `output/journey-qa/source.png`; the author's later correction takes precedence over its oversized composition.
+- Homepage comparison: `output/journey-refinement/home-comparison.png`. Home and revised Talks use the same 1440 × 900 viewport, device scale 1, Chromium, fonts, and reduced-motion setting. Inspected both views together.
+- Previous composition: `output/journey-refinement/before-1440.png`.
+- Revised full-page captures: `output/journey-refinement/after-{320,390,768,916,1440,3440}.png`.
+- Capture and measurement script: `output/journey-refinement/capture.mjs`.
+- Evidence is local and ignored by Git. The final combined review package and exact source revision are recorded in PR #37.
 
-## Comparison history
+## Checks and findings
 
-1. The first capture showed clipped Paris and Salt Lake City pins, excess timeline spacing, and city labels with heavy text outlines. Adjusted the globe crop, row spacing, and label backplates.
-2. The next comparison showed a route crossing the older year heading on wide screens. Footer artwork also covered the resource link. Adjusted the wide-screen spacing and stacking order; decorative images cannot intercept input.
-3. At tablet width, long titles crowded the right column. The page now stacks at 850 pixels and below. Added space between the last event and the resource note.
-4. Inspected the final full-view comparison and phone, tablet, desktop, and ultrawide captures. No open P0, P1, or P2 findings.
+The focused check compares navbar text, element rectangles, fonts, padding, gaps, background color/image, and display values against the previous preview. All values are unchanged at 320, 390, 768, 916, 1440, and 3440 pixels. A first comparison differed only in browser serialization of the no-image background position (`0%` versus `0px`); comparison now checks the actual background color and image properties.
 
-## Fidelity and adaptations
+At all six widths, there is no horizontal overflow. The navbar ends at y=64; the cloud artwork starts at y=104 on narrow screens and y=112 on desktop. The heading measures 32–48 px, and talk titles measure 20 px. Reviewed the responsive captures, the Home comparison, spacing, copy, colors, and image placement. No open P0, P1, or P2 findings in this scoped review.
 
-- The main composition, title scale, year hierarchy, curved route, plane, palette, and coastal ending follow the source. No cards, repeated city accordion, or extra headings were added.
-- The globe remains interactive. Its real city coordinates differ from the illustrative positions in the mockup. The North Pole is the initial center; rotation stays still until the user drags. All three city pins and labels fit the initial viewport.
-- City markers are native links to the first matching talk. Keyboard activation moves focus to that article. The timeline and all five talk links are server-rendered.
-- The index uses the existing short talk titles and full conference names. A redundant parenthesized month/year is omitted from the event label because the date appears above it. Source content and talk pages are unchanged.
-- The clouds, plane route, and coast are generated decorative WebP assets. They are not full-page screenshots. The existing 3D globe and geographic fallback remain live components.
-- The coast and sky span the viewport. Text and globe sizes stop growing on very wide screens. Phone and tablet layouts use a contained globe and a straight list guide so long titles remain readable.
-- The existing header and footer links keep their spacing and destinations. Coastal artwork applies only to Talks.
-
-## Focused checks
-
-Passed at 320, 390, 768, 916, 1440, and 3440 pixels: no horizontal overflow; three visible pins and labels; each city link activates with Enter and focuses its matching article; no page errors. With JavaScript disabled, all five talk links and all three city anchors remain present. With normal motion, the initial polar view stays still; drag changes orientation; keyboard selection still works after drag.
-
-The existing static-output and browser regression checks now assert the intended native city-anchor flow instead of the removed city accordion. They also check heading order, IDs, local anchors, viewport bounds, event names, and full-page Talks screenshots. These expectation changes are visible for human review. The required combined site review runs after the final source commit.
+The existing 34-view combined regression profile checks headings, anchors, visible city pins and labels, keyboard activation, mobile navigation, Search return visits, page resources, JavaScript output, and console errors. No checks or expectations were changed for this refinement. The full suite runs after the final source commit.
 
 ## Limits and open decision
 
-This is local Chromium evidence, not physical-device or screen-reader proof. Browser checks do not verify external video playback. The generated coast and clouds are close visual matches, not exact copies of the reference painting. The author's design approval remains open. No merge or deployment is included.
+The globe keeps real city coordinates, a North Pole start, native city anchors, and a geographic fallback. Local Chromium evidence does not prove physical-device behavior, Safari rendering, screen-reader support, or live external video playback. The author has not yet approved the refined design. No merge or deployment is included.
