@@ -12,7 +12,7 @@ Use ASD-STE100 Simplified Technical English (STE) by default.
 
 ## UI contract
 
-- Follow [the design guidelines](docs/design-guidelines.md). Reuse the homepage navbar and existing harbour footer on every page. Do not add page-specific navbar/footer designs or create new footer images.
+- Follow [the design guidelines](docs/design-guidelines.md). Reuse one navbar and the existing harbour footer on every page. Hide the navbar name on Home; show “Enguerrand Allamel” as the home link elsewhere. Do not add page-specific navbar/footer designs or create new footer images.
 
 - Preserve the Fraunces headings, Space Grotesk body text, blue accent, pale background, and restrained surfaces.
 - Use Astro, Tailwind, and the existing components in `src/components/ui/`. Keep the current layout, spacing, card shapes, and shadows unless the user requests a design change.

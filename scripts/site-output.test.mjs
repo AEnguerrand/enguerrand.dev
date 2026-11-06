@@ -407,6 +407,7 @@ test("Every page reuses the homepage navigation and footer", () => {
       footerImages: walk(footer).filter(node => node.tagName === "img").map(node => attrs(node).src) };
   };
   const expected = shell(home.nodes);
+  assert.deepEqual(expected.navigation[0], { href: "/", label: "Enguerrand Allamel" });
   assert.deepEqual(expected.footerImages, ["/images/scenic/vancouver-harbour-map-aligned.webp"]);
   for (const { file, nodes } of builtPages) assert.deepEqual(shell(nodes), expected, file);
 });

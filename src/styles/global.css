@@ -514,6 +514,8 @@ body[data-motion="static"] :is(.site-action, .site-action-button):is(:hover, :ac
 .site-header { position: relative; top: 0; padding-top: 24px; }
 .site-nav { width: 100%; justify-content: space-between; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
 .site-brand { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.025em; }
+/* Keep navigation aligned; the homepage introduction already identifies the author. */
+.home-page .site-brand { visibility: hidden; pointer-events: none; }
 @media(max-width:767px) { .site-brand { font-size: 1.2rem; } .site-nav-links { inset: 0; } }
 
 /* Local scenic artwork sits behind the compact page introduction. */

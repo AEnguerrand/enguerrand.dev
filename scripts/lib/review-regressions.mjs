@@ -53,7 +53,9 @@ export async function captureRegressions(browser, origin, output, candidate) {
           await toggle.waitFor({ state: "visible" });
           assert.equal(await toggle.getAttribute("aria-expanded"), "false");
           assert.equal(await page.locator("main").evaluate(node => node.inert), false);
-          assert.equal(await page.locator(".site-brand").innerText(), "Home", "Navbar branding stays the same on every route");
+          assert.equal((await page.locator(".site-brand").textContent()).trim(), "Enguerrand Allamel");
+          assert.equal(await page.locator(".site-brand").isVisible(), new URL(page.url()).pathname !== "/",
+            "The name is hidden only on Home");
         };
         for (const label of ["Talks", "Projects"]) {
           await assertClosed();
@@ -75,7 +77,11 @@ export async function captureRegressions(browser, origin, output, candidate) {
         await page.waitForFunction(() => !document.querySelector("[data-site-nav-links]").inert);
         await page.setViewportSize({ width: test.width, height: 900 });
         await assertClosed();
-        metrics = { internalLinks: 2, backForward: true, escapeFocus: true, resize: true };
+        await navigate(() => page.locator(".site-brand").click(), `${origin}/`);
+        await assertClosed();
+        await navigate(() => page.goBack(), `${origin}/projects/`);
+        await assertClosed();
+        metrics = { internalLinks: 2, backForward: true, escapeFocus: true, resize: true, homeBrandVisibility: true };
       } else if (test.kind === "search") {
         await page.goto(`${origin}/search/?q=slsa&filter=talk`, { waitUntil: "networkidle" });
         const input = page.getByLabel("Query", { exact: true });

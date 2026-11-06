@@ -108,13 +108,17 @@ export async function captureBrowser(dist, output, candidate) {
             const node = document.activeElement;
             const style = getComputedStyle(node);
             const box = node.getBoundingClientRect();
-            return { href: node.getAttribute("href"), visible: box.top >= 0 && box.bottom > 0 && box.left >= 0, outline: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0 };
+            return { tag: node.tagName, label: node.getAttribute("aria-label"), href: node.getAttribute("href"), visible: style.visibility !== "hidden" && box.width > 0 && box.height > 0 && box.top >= 0 && box.bottom > 0 && box.left >= 0, outline: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0 };
           });
-          // The author removed the skip link. Keep first-link focus coverage on
-          // the candidate; retain skip-link activation checks for the baseline.
+          // Home hides the brand, so the first control is the phone menu or Talks link.
+          // Other pages keep the name as the home link; retain the baseline skip-link check.
           const expectsSkip = !candidate && await page.locator('a[href="#main-content"]').count() > 0;
-          const expectedFirstLink = expectsSkip ? "#main-content" : "/";
-          if (skip.href !== expectedFirstLink || !skip.visible || !skip.outline) errors.push(`First keyboard link: ${JSON.stringify(skip)}`);
+          const homeWithoutBrand = candidate && route === "/";
+          const expectedFirstLink = expectsSkip ? "#main-content" : homeWithoutBrand ? "/talks/" : "/";
+          const correctControl = homeWithoutBrand && width < 768
+            ? skip.tag === "BUTTON" && skip.label === "Open navigation"
+            : skip.tag === "A" && skip.href === expectedFirstLink;
+          if (!correctControl || !skip.visible || !skip.outline) errors.push(`First keyboard control: ${JSON.stringify(skip)}`);
           if (expectsSkip) {
             await page.keyboard.press("Enter");
             if (await page.evaluate(() => document.activeElement.id) !== "main-content") errors.push("Skip link did not move focus");
