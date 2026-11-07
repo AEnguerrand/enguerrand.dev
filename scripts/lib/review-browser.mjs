@@ -151,6 +151,14 @@ export async function captureBrowser(dist, output, candidate) {
     const page = await context.newPage();
     await page.goto(origin);
     if (!await page.locator('main a[href="/talks/kubecon-na-2024/"]').count()) throw new Error("Talk link missing without JavaScript");
+    await page.goto(`${origin}/talks/kubecon-na-2024/`);
+    const recording = page.locator("talk-video");
+    const fallback = recording.locator("a");
+    if (await fallback.count() !== 1 || !await fallback.isVisible()) throw new Error("Video fallback missing without JavaScript");
+    if (!/^https:\/\//.test(await fallback.getAttribute("href") ?? "")) throw new Error("Video fallback URL is invalid");
+    if (await recording.locator("iframe").count() || await recording.locator("[data-video-load]").isVisible()) throw new Error("Video needs a usable native fallback without JavaScript");
+    await fallback.focus();
+    if (!await fallback.evaluate(node => node === document.activeElement)) throw new Error("Video fallback is not keyboard focusable");
     await context.close();
     await writeFile(join(output, "checks.json"), `${JSON.stringify(results, null, 2)}\n`);
     return { browser: browser.version(), results };

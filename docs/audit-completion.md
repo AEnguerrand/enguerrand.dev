@@ -89,6 +89,14 @@ GitHub Actions stays disabled at the author's request. No merge, deployment or p
 | Large text | The site name and long headings wrap at narrow widths. The video placeholder grows with its text. | 320-pixel synthetic 200% text checks. These do not claim native browser zoom or OS text-size coverage. |
 | Review workflow | Pull requests can target stacked branches. Manual runs require an explicit base, and the workflow records exact revisions. | Local shell fixtures cover invalid refs, mismatched revisions and self-comparisons. GitHub Actions stays disabled at the author's request. |
 
+## Project labels and video follow-up
+
+Home and Projects now use the same project-type captions: “macOS app”, “Web app”, and “Weather website”. These replace the mixed platform, readiness, and country labels. Descriptions, project links, layout, navbar, and footer stay the same.
+
+The extra provider link below the talk player is removed. With JavaScript disabled, a native “Watch on YouTube” or “Watch on Vimeo” link appears inside the placeholder. The original video URLs also remain in Sources and resources. The browser checks require the extra link to be absent during normal activation and require a visible, keyboard-focusable fallback without JavaScript. Video loading and focus checks remain in place.
+
+The source-bound result and rendered previews are recorded in the follow-up PR and `output/project-labels/review.md`. A05 and A14 retain their existing status; these presentation edits do not close them.
+
 ## SEO follow-up
 
 The first five SEO improvements are implemented. The visible page content, design, navbar, and footer stay the same. Search Console is deferred until after release.

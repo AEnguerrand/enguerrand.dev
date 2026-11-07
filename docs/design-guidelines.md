@@ -15,6 +15,7 @@ The homepage is the visual reference for every page on enguerrand.dev. Keep the 
 ## Page content
 
 - Match the homepage's content width, spacing, type hierarchy, and simple list treatment.
+- Project captions describe the project type, such as “macOS app”, “Web app”, or “Weather website”. Home and Projects use the same caption from the shared project data.
 - Keep introductions compact. Use shared page styles rather than oversized mockup typography. Talk titles use the homepage's 20 px Fraunces style.
 - Keep native links, clear keyboard focus, one H1, and ordered section headings. Preserve article content and metadata.
 - Decorative artwork supports the content. It must not obscure links, extend behind navigation, or cause horizontal scrolling.

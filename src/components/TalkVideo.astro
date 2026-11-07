@@ -16,10 +16,9 @@ const provider = new URL(embedUrl).hostname.includes("vimeo.com") ? "Vimeo" : "Y
         Load video
       </button>
       <p id="video-load-note" data-video-note hidden>The {provider} player loads only when you select “Load video”.</p>
-      <noscript><p>To watch this recording, open the video source below.</p></noscript>
+      <noscript><p class="video-source"><a href={sourceUrl} class="site-text-link">Watch on {provider} ↗</a></p></noscript>
     </div>
   </div>
-  <p class="video-source"><a href={sourceUrl} class="site-text-link">Open video source on {provider} ↗</a></p>
 </talk-video>
 
 <script>
@@ -67,6 +66,5 @@ const provider = new URL(embedUrl).hostname.includes("vimeo.com") ? "Vimeo" : "Y
   .video-placeholder p {max-width:38ch;color:hsl(var(--muted-foreground));font-size:.875rem;line-height:1.6;}
   .video-frame :global(iframe) {grid-area:1 / 1;width:100%;height:auto;aspect-ratio:16 / 9;border:0;}
   .video-frame :global(iframe:focus-visible) {outline:2px solid hsl(var(--ring));outline-offset:-4px;}
-  .video-source {margin-top:12px;font-size:.875rem;line-height:1.6;}
   .video-source a {display:inline-flex;align-items:center;min-height:44px;}
 </style>
