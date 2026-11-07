@@ -140,7 +140,7 @@ const getPreview = (item: SearchItem) => {
     data-search-empty
     class="search-empty hidden"
   >
-    No matches found. Try another word or choose All.
+    No matches found. Try another word.
   </div>
 </div>
 
@@ -376,7 +376,9 @@ const getPreview = (item: SearchItem) => {
       results.replaceChildren(...renderedItems.map((item) => createResultItem(item)));
       empty.textContent = state.filter === "post" && selectedItems.length === 0
         ? "No posts are published yet. Choose another content type."
-        : "No matches found. Try another word or choose All.";
+        : state.filter === "all"
+          ? "No matches found. Try another word."
+          : "No matches found. Try another word or choose All.";
       empty.classList.toggle("hidden", renderedItems.length > 0);
       results.classList.toggle("hidden", renderedItems.length === 0);
       setFilterButtonStyles();

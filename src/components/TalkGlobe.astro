@@ -117,4 +117,8 @@ const online = talks.filter((talk) => talk.location === "Online");
     [data-journey] .globe-label, [data-journey] [data-label-ready] .globe-label {font-size:13px;stroke:hsl(var(--background));stroke-width:4px;}
     .globe-label-backplate {display:none;}
   }
+  @media (max-width: 600px) {
+    /* The 280px phone globe scales 16 SVG units to about 12.4 CSS pixels. */
+    [data-journey] .globe-label, [data-journey] [data-label-ready] .globe-label {font-size:16px;}
+  }
 </style>

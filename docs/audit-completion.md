@@ -4,7 +4,7 @@ This records the implementation work from the 6 November 2026 design and technic
 
 ## Current status
 
-All 19 items have implementation changes. Thirteen have passed local checks; six still need a specific author, device, screen-reader or live check. These counts do not mean that all items are closed.
+All 19 items have implementation changes. Thirteen have passed local checks, and the author approved A08 and A19 on 6 November 2026 ("8,19: Good"). Four checks remain open: A02 and A04 on a physical phone, A05 with a screen reader, and A14 after an authorized release. Local checks do not replace these checks.
 
 | Item | Implementation and local evidence | Status and remaining work |
 | --- | --- | --- |
@@ -15,7 +15,7 @@ All 19 items have implementation changes. Thirteen have passed local checks; six
 | A05: Language markup | French text has language markup. Session, notes and slides use separate fields with the author-confirmed languages. | Open: verify French pronunciation with a screen reader. |
 | A06: Search fallback | Controls stay disabled until search starts. Native browse links remain available. Disabled JavaScript and forced initialization failure checks passed. | Local checks passed. |
 | A07: Talk subjects | Supply-chain subjects share a collection. Subjects, tools and events have separate groups. Existing topic routes and search were checked. | Local checks passed; labels remain part of the overall author review. |
-| A08: Talk copy | The edit proposal reduces repetition, uses distinct takeaways and labels the AWS abstract accurately. Existing titles and resources remain. | Open: the author must accept the edited copy. |
+| A08: Talk copy | The edit proposal reduces repetition, uses distinct takeaways and labels the AWS abstract accurately. Existing titles and resources remain. | Author approved on 6 November 2026. |
 | A09: Project detail | Each project has useful detail from linked public project documentation. Actions and destinations were checked. | Local checks passed; content remains part of the overall author review. |
 | A10: Phone talk layout | The phone globe frame and gaps use less height. Narrow layouts, labels and talk rows were inspected. | Local checks passed; the size remains a design choice for author review. |
 | A11: Topic hierarchy | Topic pages use a short Talks section label and compact talk titles. Headings and narrow layouts were checked. | Local checks passed. |
@@ -26,23 +26,37 @@ All 19 items have implementation changes. Thirteen have passed local checks; six
 | A16: Repository labels | All 22 categories have clear labels and short descriptions, shared by the topic directory, category pages, Radar and search. Safe wallet services and unsorted bookmarks have explicit names. Slugs, counts and saved repository records stay unchanged. | Local checks passed: all 22 descriptions, category links and counts, phone/tablet/desktop layouts, and native links without JavaScript. |
 | A17: Empty Blog search | Search no longer promises articles when the Blog has no published posts. Draft and future-post filters remain. | Local checks passed. |
 | A18: About links | Descriptions now match Projects and Talks. Existing sections and destinations remain. | Local checks passed; copy remains part of the overall author review. |
-| A19: Resume copy | Completed-role verbs use past tense. Speaking and project entries link to existing evidence. | Open: the author must accept the copy. |
+| A19: Resume copy | Completed-role verbs use past tense. Speaking and project entries link to existing evidence. | Author approved on 6 November 2026. |
 
 **New follow-up G01:** The user reported uneven white backgrounds around the globe city labels. The label backgrounds now use measured text and flag bounds with even padding. Chromium, WebKit and Firefox checks cover font loading, resize, drag and anchors. A separate flag span preserves the emoji when the city text uses a halo. Geometry and focused visual checks passed; this remains local browser evidence. Track it separately from A16 and the original audit items.
 
+## Responsive recheck follow-ups
+
+These three items come from the later all-page responsive recheck. They are separate from the original 19 items and the earlier Radar history fix.
+
+| Item | Change | Status and local evidence |
+| --- | --- | --- |
+| R01: Phone globe labels | At phone widths, city labels use 16 SVG units, about 12.4 CSS pixels in the existing 280-pixel globe. The halo, flags, city links and tap circles remain. | Fixed. Chromium, WebKit and Firefox checks pass at 320–1440 pixels, including the 600/601-pixel change. Labels remain in view with no overlap, and all three keyboard links work. No-JavaScript captures pass. Physical-phone checks remain A02/A04. |
+| R02: Search empty text | The All filter says “No matches found. Try another word.” A narrower type can also suggest choosing All. The empty Blog message remains separate. | Fixed. Unmatched All/project queries, filter changes, the no-posts state and return to matching results pass in all three browser engines. Search history is also covered by the final combined review. |
+| R03: Audit status | A08/A19 now record the author's approval. Only A02/A04/A05/A14 remain open from the original audit. | Fixed. A08/A19 approval and the four remaining external checks are recorded here. The original audit and PR 38 receive the final report and source identity. |
+
+The navbar, footer, artwork, article text and author-content files are unchanged by these follow-ups. Focused evidence is saved in `output/responsive-small-fixes/`; the required final combined report and exact source identity are recorded in PR 38 and the original audit file. A prior report does not validate later source.
+
 ## Evidence and final validation
 
-The previous complete review covers base `a722020063ca7eb135f496b4aff8dfc5715f135d` and candidate `4bc1e1677273c1e66ed3337859e27e744eb80f8a`. Report: `artifacts/site-review/2026-11-06T22-13-25.733Z-6dbc1714`. Source SHA-256: `08d8fbc434fbdf00e9e59b363cd2a8256d8e039cd2b8d41fe37c4ef94f7c72f5`. The report ran from a dirty working tree; `commit-binding.json` binds the same source hash to that clean candidate. It records passing type, build, whitespace and test checks: 86 tests and 38 Chromium checks. A separate route crawl passed for 70 routes and 140 views. Extra A01, A06 and A12 checks are in `output/audit-completion/exact-audit-followup.json`.
+The pre-fix responsive review is in `output/responsive-recheck-2026-11-06/`. It covers candidate `89ef4035cefb6b9cd2abddb8098fc1f8f29ed25f`, with 280 Chromium views across 70 routes, 40 focused WebKit/Firefox views and 23 interaction checks. It identified R01–R03 above; it is not proof of the later fixes.
 
-The previous report proves that candidate only. A16 checks are in `output/a16-category/checks.json` (22 categories and 12 page views); G01 measurements, images and limits are in `output/a16-globe/`. The required combined review runs again on the final source before commit. Its exact report, source hash and commit binding are attached to PR 38 and the current-status section of the original audit. Do not use the previous report as proof for later source.
+Fresh focused evidence for these fixes is in `output/responsive-small-fixes/`: phone label comparisons, three-engine views, native city links, filter-specific empty messages, the no-posts state and return to results. The final combined review runs on the finished source. Its exact base, candidate, source hash, working-tree state and commit binding are recorded in PR 38 and the current-status section of the original audit. A report from a dirty working tree is not proof for its HEAD alone.
 
-GitHub Actions stays disabled at the author's request. No merge, deployment or publication is authorized. Author review of the copy and design remains open. Browser emulation does not prove physical-phone behavior, screen-reader output, native zoom or installed Safari behavior.
+Earlier implementation evidence remains in `output/audit-completion/`, `output/a16-category/`, `output/a16-globe/`, `output/interior-headers/` and `output/talks-about/`. Each result retains its original source identity.
+
+GitHub Actions stays disabled at the author's request. No merge, deployment or publication is authorized. A08 and A19 are approved; other copy and design review remains separate. Browser emulation does not prove physical-phone behavior, screen-reader output, native zoom or installed Safari behavior.
 
 ## Fixes
 
 | Item | Result | Evidence |
 | --- | --- | --- |
-| R01: Radar history | Back and Forward preserve each topic's query, language, status and page. An outgoing page cannot change the destination URL. | Browser regressions cover cross-topic, paginated and query-only history at phone and desktop widths. |
+| Radar history (earlier follow-up) | Back and Forward preserve each topic's query, language, status and page. An outgoing page cannot change the destination URL. | Browser regressions cover cross-topic, paginated and query-only history at phone and desktop widths. |
 | A04: Talks load cost | The same globe maps have phone and desktop sizes. The initial view still shows Paris, Hong Kong and Salt Lake City from above the North Pole. | Asset hashes, byte budgets, before/after resource records and rendered comparisons. |
 | A05: Languages | Session, notes and slides have separate fields. The author confirmed French for OWASP Paris and AWS Summit Paris; English for both KubeCon talks and Wiz. Chinese slides are marked as an automatic translation. | Author reply, original notes and slide sources, static output and topic tests. |
 | A07: Topics | Subjects, tools and events have separate groups. Supply chain resolves to Software supply chain security. The old URL still works and contains the full related talk set. | All 16 existing topic routes remain. Alias and search tests check the combined set. |
@@ -73,7 +87,7 @@ The shell script is now one fingerprinted module. The Stars HTML limit stays at 
 
 ## What remains outside local proof
 
-- The author must review the edited copy and proposed illustrations. Passing tests do not give author approval.
+- A08 and A19 have author approval. Other copy and proposed illustrations remain subject to author review; passing tests do not give that approval.
 - A physical phone, installed Safari, a screen reader and native text zoom still need manual checks. Playwright WebKit is not a claim about an iPhone or the installed Safari app.
 - One recorded YouTube playback check succeeded. This does not prove every provider or recording will always play.
 - GitHub Actions remains disabled by explicit request. No remote CI result is claimed.
