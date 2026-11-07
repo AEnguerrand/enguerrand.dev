@@ -10,6 +10,7 @@ import PageIntro from "@/components/PageIntro.astro";
     description="The link may be outdated or the page may have moved."
     art="/images/illustrations/off-course.webp"
     artSize="large"
+    class="off-course-intro"
   >
     <div class="site-action-row">
       <a class="site-action site-action-primary" href="/">Go back home</a>
@@ -17,3 +18,18 @@ import PageIntro from "@/components/PageIntro.astro";
     </div>
   </PageIntro>
 </BaseLayout>
+
+<style>
+  @media(prefers-reduced-motion:no-preference){
+    :global(body:not([data-motion="static"]) .off-course-intro .page-intro-art) {
+      transform-origin:50% 70%;
+      animation:boat-settle 2200ms ease-in-out 250ms 1;
+    }
+  }
+  @keyframes boat-settle {
+    0%,100% {transform:none;}
+    25% {transform:translateY(-2px) rotate(-2deg);}
+    60% {transform:translateY(1px) rotate(1deg);}
+    82% {transform:rotate(-.4deg);}
+  }
+</style>

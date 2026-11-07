@@ -13,6 +13,22 @@ class TalkGlobe extends HTMLElement {
     const abort = new AbortController();
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const journey = this.hasAttribute("data-journey");
+    const timeline = journey ? this.closest(".talk-journey")?.querySelector<HTMLElement>(".journey-years") : null;
+    const syncSelectedTalk = () => {
+      if (!timeline) return;
+      const destination = document.getElementById(location.hash.slice(1));
+      const selected = timeline.querySelector<HTMLElement>("[data-talk-selected]");
+      if (selected === destination) return;
+      selected?.removeAttribute("data-talk-selected");
+      if (destination?.matches("article[id]") && timeline.contains(destination)) destination.setAttribute("data-talk-selected", "");
+    };
+    if (timeline) {
+      // WebKit can retain the previous :target after same-page history navigation.
+      timeline.setAttribute("data-highlight-ready", "");
+      syncSelectedTalk();
+      window.addEventListener("hashchange", syncSelectedTalk, { signal: abort.signal });
+      window.addEventListener("popstate", syncSelectedTalk, { signal: abort.signal });
+    }
     let paused = journey;
     let visible = false;
     let hovering = false;
@@ -124,7 +140,15 @@ class TalkGlobe extends HTMLElement {
       marker.addEventListener("click", event => {
         if (suppressClick && event.detail !== 0) { event.preventDefault(); return; }
         const id = marker.getAttribute("href")?.slice(1);
-        if (id) document.getElementById(id)?.focus({ preventScroll: true });
+        const destination = id ? document.getElementById(id) : null;
+        destination?.focus({ preventScroll: true });
+        // Replay the cue when the same city is selected again.
+        for (const animation of destination?.getAnimations() ?? []) {
+          if (animation instanceof CSSAnimation && animation.animationName.startsWith("talk-arrival")) {
+            animation.currentTime = 0;
+            animation.play();
+          }
+        }
       }, { signal: abort.signal });
     });
     const sphere = this.querySelector("svg")!;
@@ -167,7 +191,14 @@ class TalkGlobe extends HTMLElement {
     void document.fonts.ready.then(() => { if (!abort.signal.aborted) render(); });
     render();
     sync();
-    this.cleanup = () => { cancelAnimationFrame(raf); observer.disconnect(); resizeObserver.disconnect(); abort.abort(); };
+    this.cleanup = () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      resizeObserver.disconnect();
+      abort.abort();
+      timeline?.removeAttribute("data-highlight-ready");
+      timeline?.querySelector("[data-talk-selected]")?.removeAttribute("data-talk-selected");
+    };
   }
 
   disconnectedCallback() { this.cleanup?.(); }

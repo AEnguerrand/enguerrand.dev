@@ -52,6 +52,16 @@ Focused checks cover 27 cases in Chromium, WebKit and Firefox: hidden paint when
 
 The font check found the same loaded fonts on Home, Talks and Projects, including after client navigation: Fraunces headings and Space Grotesk body text. Home's title uses weight 600; interior titles use 500. The Home introduction is also larger. These style differences explain the visual change; no font or typography rule was changed in this follow-up.
 
+## Motion and text follow-up
+
+The author requested two small motion effects and the proposed text edits, with the shared navbar and footer unchanged.
+
+- Selecting a globe city gives its matching talk a soft blue highlight that fades after 2.4 seconds. Selecting the same city replays the cue. The native anchor and keyboard focus remain. Reduced motion uses a steady highlight; native links also work without JavaScript.
+- The existing 404 illustration gently rocks once for 2.2 seconds, then stops. It stays still with reduced motion. No artwork was created or replaced.
+- The Home hero and About introduction name Procurify as the current employer, as requested by the author and already recorded in the resume. About and the secondary project descriptions use simpler text. The Home statement, Projects heading, talk records, resource links, metadata and article text remain.
+
+Focused browser evidence is in `output/playwright/motion-copy/`. It covers city selection, repeated selection, keyboard focus, history, reduced motion, the 404 home link and no-JavaScript behavior. The final combined review and its commit binding are recorded in PR 38 and the current-status section of the original audit. Earlier phone acceptance remains tied to its tested candidate; it is not a claim that the new motion was tested on that phone. A05/A14 remain open.
+
 ## Evidence and final validation
 
 The pre-fix responsive review is in `output/responsive-recheck-2026-11-06/`. It covers candidate `89ef4035cefb6b9cd2abddb8098fc1f8f29ed25f`, with 280 Chromium views across 70 routes, 40 focused WebKit/Firefox views and 23 interaction checks. It identified R01–R03 above; it is not proof of the later fixes.

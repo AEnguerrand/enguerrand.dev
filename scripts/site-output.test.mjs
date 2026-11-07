@@ -441,7 +441,7 @@ test("All generated pages keep ordered headings, unique IDs, valid fragments, an
 });
 
 test("Review fixes keep the concise Home introduction, talks list, and search state", async () => {
-  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer based in Vancouver. Here I share talks, notes, and the software I'm building./);
+  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer at Procurify, based in Vancouver\. Here I share talks, notes, and side projects\./);
   const archive = await page("talks/index.html");
   assert.equal(archive.nodes.filter(n => n.tagName === "h3").length, 5);
   for (const heading of archive.nodes.filter(n => n.tagName === "h3"))

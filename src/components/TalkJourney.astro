@@ -59,6 +59,17 @@ const firstInPlace = new Map(talkPlaces.map(place => [place.id, talks.find(talk 
 .journey-year li::before {content:"";position:absolute;top:5px;left:-26px;width:8px;height:8px;border:2px solid hsl(var(--background));border-radius:50%;background:hsl(var(--primary));box-sizing:content-box;transition:box-shadow 180ms ease,transform 180ms ease;}
 .journey-year li:has(a:hover)::before,.journey-year li:has(:focus-visible)::before {box-shadow:0 0 0 4px hsl(var(--primary) / .1);transform:scale(1.1);}
 .journey-year article {scroll-margin-top:8rem;}
+/* Native city anchors also identify the selected talk without JavaScript. */
+.journey-years:not([data-highlight-ready]) article:target,
+.journey-years article[data-talk-selected] {border-radius:4px;background-color:hsl(var(--primary) / .02);box-shadow:0 0 0 8px hsl(var(--primary) / .1);}
+@media(prefers-reduced-motion:no-preference){
+  .journey-years:not([data-highlight-ready]) article:target,
+.journey-years article[data-talk-selected] {animation:talk-arrival 2400ms ease-out both;}
+}
+@keyframes talk-arrival {
+  0%,30% {background-color:hsl(var(--primary) / .02);box-shadow:0 0 0 8px hsl(var(--primary) / .1);}
+  100% {background-color:transparent;box-shadow:0 0 0 8px transparent;}
+}
 .journey-meta {margin:0 0 6px;font-size:.75rem;line-height:1.5;color:hsl(var(--muted-foreground));}
 .journey-event {margin:6px 0 0;font-size:.875rem;line-height:1.5;color:hsl(var(--muted-foreground));}
 .journey-year h3 {margin:0;font-size:1.25rem;font-weight:500;line-height:1.35;letter-spacing:-.015em;}
