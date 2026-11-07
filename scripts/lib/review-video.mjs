@@ -25,12 +25,13 @@ export async function checkVideoActivation(page, origin, navigate) {
       const before = providerRequests.length;
       assert.equal(await video.locator('iframe').count(), 0, 'The player waits for activation');
       assert.equal(before, index, 'Only the earlier activated player can request a provider');
-      assert.match(await video.locator('.video-source a').getAttribute('href'), /^https:\/\//);
+      assert.equal(await video.locator('a').count(), 0, 'The enabled player has no duplicate provider link');
       const request = page.waitForRequest(request => /youtube|vimeo/.test(new URL(request.url()).hostname));
       await button.focus(); await page.keyboard.press(index ? 'Space' : 'Enter');
       await request;
       const iframe=video.locator('iframe'); await iframe.waitFor();
       assert.equal(await iframe.count(), 1);
+      assert.equal(await video.locator('a').count(), 0, 'The loaded player has no duplicate provider link');
       assert.ok(await iframe.getAttribute('title'));
       assert.equal(await iframe.evaluate(node=>node===document.activeElement), true, 'Focus follows activation');
       assert.equal(providerRequests.length, before+1, 'Only activation loads the provider');

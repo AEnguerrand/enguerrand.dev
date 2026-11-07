@@ -172,7 +172,9 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
   assert.equal(attrs(video)["data-embed-url"], "https://www.youtube.com/embed/0w_dBmvu5l8");
   const button = walk(video).find((n) => "data-video-load" in attrs(n));
   assert.ok("hidden" in attrs(button), "Without JavaScript use the native video link");
-  assert.ok(walk(video).some((n) => n.tagName === "a" && attrs(n).href === "https://www.youtube.com/watch?v=0w_dBmvu5l8"));
+  assert.equal(walk(video).filter((n) => n.tagName === "a").length, 0, "The enabled player has no duplicate provider link");
+  const videoWithoutJs = walk(parse(talk.html, { scriptingEnabled: false })).find((n) => n.tagName === "talk-video");
+  assert.ok(walk(videoWithoutJs).some((n) => n.tagName === "a" && attrs(n).href === "https://www.youtube.com/watch?v=0w_dBmvu5l8"));
 });
 
 test("Stars and Radar use the checked-in dataset in production output", async () => {
