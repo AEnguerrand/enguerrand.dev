@@ -1,4 +1,5 @@
 ---
+import { canonicalUrl } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageIntro from "@/components/PageIntro.astro";
 import { canonicalTopic, canonicalTopics, countTopics, topicDescription, topicHref, topicKind, topicRoutes, topicSlug, topicTitle } from "@/lib/topics";
@@ -24,7 +25,7 @@ const relatedTopics = countTopics(talks)
 
 const name = topicTitle(topic);
 const description = topicDescription(topic);
-const topicUrl = new URL(`/topics/${topicSlug(topic)}/`, Astro.site).toString();
+const topicUrl = canonicalUrl(`/topics/${topicSlug(topic)}/`, Astro.site ?? new URL("https://enguerrand.dev"));
 const structuredData = [
   {
     "@type": "CollectionPage",

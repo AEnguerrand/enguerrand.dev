@@ -60,6 +60,14 @@ const topicAliases: Record<string, string> = {
   "supply chain": "software supply chain security",
 };
 
+// Keep legacy topic routes, but give synonyms one public search URL.
+export function canonicalTopicPath(path: string): string {
+  for (const [alias, topic] of Object.entries(topicAliases)) {
+    if (path === `/topics/${topicSlug(alias)}/`) return `/topics/${topicSlug(topic)}/`;
+  }
+  return path;
+}
+
 export type TopicKind = "subject" | "technology" | "community";
 
 export const topicGroups: { kind: TopicKind; id: string; title: string }[] = [

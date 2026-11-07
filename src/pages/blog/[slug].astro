@@ -1,7 +1,7 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { canonicalUrl } from "@/lib/seo";
+import { canonicalUrl, socialImagePath } from "@/lib/seo";
 import { formatPostDate, getPosts, isPublishedPost } from "@/lib/posts";
 
 export async function getStaticPaths() {
@@ -27,7 +27,7 @@ const structuredData = published ? {
   author: { "@type": "Person", "@id": new URL("/#person", siteUrl).toString(), name: "Enguerrand Allamel", url: siteUrl.toString() },
   mainEntityOfPage: articleUrl,
   url: articleUrl,
-  image: new URL("/og-image.jpg", siteUrl).toString(),
+  image: new URL(socialImagePath(articleUrl), siteUrl).toString(),
   isPartOf: { "@id": new URL("/#website", siteUrl).toString() },
   keywords: post.data.tags,
 } : undefined;

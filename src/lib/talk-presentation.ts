@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import { socialImagePath } from "./seo";
 import { topicTitle } from "./topics";
 
 export function getTalkPresentation(
@@ -113,7 +114,7 @@ export function getTalkPresentation(
       url: talkUrl,
       author: { "@type": "Person", "@id": new URL("/#person", site).toString(), name: "Enguerrand Allamel", url: site.toString() },
       publisher: { "@id": "https://enguerrand.dev/#person" },
-      image: new URL("/og-image.jpg", site).toString(),
+      image: new URL(socialImagePath(talkUrl), site).toString(),
       keywords: talk.data.tags?.join(", "),
       about: (talk.data.tags ?? []).map((tag) => ({
         "@type": "Thing",

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import { createHash } from "node:crypto";
+import sharp from "sharp";
 import { parse } from "parse5";
 
 const output = new URL("../dist/", import.meta.url);
@@ -330,7 +332,10 @@ test("SEO: every indexed page has unique metadata, a matching canonical, and a s
     assert.ok(title && description, `${file}: missing metadata`);
     const url = canonical(nodes);
     const expectedPath = file === "404.html" ? "/404/" : file === "index.html" ? "/" : `/${file.replace(/index\.html$/, "")}`;
-    assert.equal(url, `https://enguerrand.dev${expectedPath}`, file);
+    const expectedCanonical = expectedPath === "/topics/supply-chain/" ? "/topics/software-supply-chain-security/" : expectedPath;
+    assert.equal(url, `https://enguerrand.dev${expectedCanonical}`, file);
+    if (expectedPath !== expectedCanonical)
+      assert.ok(!sitemapUrls.includes(`https://enguerrand.dev${expectedPath}`), `${file}: alias in sitemap`);
     assert.equal(meta(nodes, "og:url"), url, file);
     assert.equal(meta(nodes, "og:title"), title, file);
     assert.equal(meta(nodes, "twitter:description"), description, file);
@@ -346,6 +351,57 @@ test("SEO: every indexed page has unique metadata, a matching canonical, and a s
   }
   for (const url of sitemapUrls)
     assert.ok(builtPages.some(({ nodes }) => canonical(nodes) === url), `Sitemap URL has no page: ${url}`);
+});
+
+test("SEO: the empty blog stays out of search until a published post exists", async () => {
+  const { nodes } = await page("blog/index.html");
+  assert.equal(meta(nodes, "robots").includes("noindex"), !hasPosts);
+  const sitemap = await load("sitemap-0.xml");
+  assert.equal(sitemap.includes("<loc>https://enguerrand.dev/blog/</loc>"), hasPosts);
+});
+
+test("SEO: profile metadata identifies the current employer and the projects description is useful", async () => {
+  for (const { file, nodes } of builtPages) {
+    const person = graph(nodes).find((node) => node["@type"] === "Person");
+    assert.equal(person.jobTitle, "Senior Platform Security Engineer", file);
+    assert.deepEqual(person.worksFor, { "@type": "Organization", name: "Procurify" }, file);
+  }
+  for (const file of ["index.html", "about/index.html"])
+    assert.match(meta((await page(file)).nodes, "description"), /Senior Platform Security Engineer at Procurify/);
+  assert.match(meta(projectsPage.nodes, "description"), /scanning documents, managing paper archives, and recording local weather/);
+});
+
+test("SEO: each canonical page has a distinct, valid landscape sharing image", async () => {
+  const images = new Map();
+  const hashes = new Set();
+  for (const { file, nodes } of builtPages) {
+    const imageUrl = meta(nodes, "og:image");
+    const image = new URL(imageUrl);
+    assert.equal(image.origin, "https://enguerrand.dev", file);
+    const path = new URL(canonical(nodes)).pathname;
+    assert.equal(image.pathname, `/og${path}${path.endsWith("/") ? "index" : ""}.png`, file);
+    assert.equal(meta(nodes, "og:image:width"), "1200", file);
+    assert.equal(meta(nodes, "og:image:height"), "630", file);
+    assert.equal(meta(nodes, "twitter:image"), imageUrl, file);
+    assert.equal(meta(nodes, "twitter:image:alt"), meta(nodes, "og:image:alt"), file);
+    assert.ok(meta(nodes, "og:image:alt").includes(meta(nodes, "og:title")), file);
+    const webpage = graph(nodes).find((node) => node["@id"] === `${canonical(nodes)}#webpage`);
+    assert.equal(webpage.primaryImageOfPage.url, imageUrl, file);
+    if (images.has(imageUrl)) {
+      assert.equal(canonical(nodes), images.get(imageUrl), `${file}: shared image for unrelated pages`);
+      continue;
+    }
+    const buffer = await readFile(new URL(`.${decodeURIComponent(image.pathname)}`, output));
+    const info = await sharp(buffer).metadata();
+    assert.equal(info.format, "png", file);
+    assert.equal(info.width, 1200, file);
+    assert.equal(info.height, 630, file);
+    const hash = createHash("sha256").update(buffer).digest("hex");
+    assert.ok(!hashes.has(hash), `${file}: duplicate card contents`);
+    hashes.add(hash);
+    images.set(imageUrl, canonical(nodes));
+  }
+  assert.equal(images.size, builtPages.length - 1, "Only the known topic alias shares an image");
 });
 
 test("SEO: page, profile, and article structured data agree with public URLs", () => {
@@ -393,8 +449,8 @@ test("SEO: search can be crawled to read noindex and internal links use canonica
     const image = new URL(meta(nodes, "og:image"));
     assert.equal(image.origin, "https://enguerrand.dev");
     assert.ok(builtFiles.includes(image.pathname.slice(1)), `${file}: missing social image`);
-    assert.equal(meta(nodes, "og:image:width"), "1536");
-    assert.equal(meta(nodes, "og:image:height"), "1536");
+    assert.equal(meta(nodes, "og:image:width"), "1200");
+    assert.equal(meta(nodes, "og:image:height"), "630");
   }
 });
 

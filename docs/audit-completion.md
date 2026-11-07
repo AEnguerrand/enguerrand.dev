@@ -89,6 +89,26 @@ GitHub Actions stays disabled at the author's request. No merge, deployment or p
 | Large text | The site name and long headings wrap at narrow widths. The video placeholder grows with its text. | 320-pixel synthetic 200% text checks. These do not claim native browser zoom or OS text-size coverage. |
 | Review workflow | Pull requests can target stacked branches. Manual runs require an explicit base, and the workflow records exact revisions. | Local shell fixtures cover invalid refs, mismatched revisions and self-comparisons. GitHub Actions stays disabled at the author's request. |
 
+## SEO follow-up
+
+The first five SEO improvements are implemented. The visible page content, design, navbar, and footer stay the same. Search Console is deferred until after release.
+
+| Item | Change | Acceptance check |
+| --- | --- | --- |
+| SEO01: Topic alias | `/topics/supply-chain/` remains accessible and points search engines to `/topics/software-supply-chain-security/`. Metadata and structured data use that preferred URL. | The sitemap contains the preferred URL and excludes the alias. Existing links and talk content remain available. |
+| SEO02: Empty Blog | The Blog uses `noindex, follow` until it has a published post. The sitemap follows the rendered robots and canonical tags. | Empty and draft/future-only fixtures exclude the Blog. A published-post fixture includes the Blog and article. No draft route, text, or sharing image is emitted. |
+| SEO03: Search descriptions | Home and About name the current Procurify role. Projects describes the current side projects. | Meta descriptions, social descriptions, and page structured data agree. Visible copy is unchanged. |
+| SEO04: Current employer | Person structured data includes `worksFor: Procurify`. | The employer and job title agree across all generated pages. |
+| SEO05: Sharing cards | Each canonical page gets a 1200 × 630 PNG card with its own title and description. The topic alias shares the preferred page's image. | OG, Twitter, and article image URLs agree. Every referenced image exists, has the correct dimensions, and has distinct content for distinct pages. |
+
+Cards use build-only copies of the site's licensed Fraunces and Space Grotesk fonts. Satori embeds their outlines; Sharp writes the PNG files. These dependencies add no browser code. The compatible `satori` → `fflate` override uses patched version 0.7.5. It is separate from the existing `postcss-selector-parser` override.
+
+The existing publication filter remains authoritative. The new tests cover the three publication states, intentional canonical alias, employer data, and generated sharing assets. The combined review still checks the original site contracts. The canonical test names the one allowed alias and explicitly rejects its sitemap entry. Image-size assertions now require 1200 × 630. The publication fixture clears the inherited Node test-runner context and requires a positive test count; previously the nested runner could skip its files and return success.
+
+The final combined report and source binding are recorded in PR 38. `output/seo-improvements/review.md` records the local result, comparison with the preceding candidate, card previews, and limits. Local metadata checks do not prove indexing, search rankings, or how a third-party service caches a preview.
+
+A05 and A14 remain open. After an authorized release, verify the live canonical tags, sitemap, robots tags, and sharing-image responses, then set up Search Console and submit the sitemap. No release, remote CI, or indexing result is claimed here.
+
 ## Asset measurements
 
 Fresh local Chromium contexts compare the previous proposal with this implementation. At 390 pixels and device scale factor 1, initial Talks resources fall from about 4.17 MB to 1.20 MB. The four globe maps fall from 2,581,194 to 125,170 bytes. Desktop maps total 429,844 bytes. The 640-pixel harbour copy is 68,070 bytes; the original is 451,772 bytes. All are derived from the checked-in originals.

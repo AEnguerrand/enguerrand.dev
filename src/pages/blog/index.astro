@@ -7,7 +7,7 @@ import { formatPostDate, getPosts, isPublishedPost, postHref } from "@/lib/posts
 const posts = await getPosts({ includeUnpublished: import.meta.env.DEV });
 ---
 
-<BaseLayout noindex={import.meta.env.DEV} title="Blog" description="Notes on platform security, software delivery, and practical tools by Enguerrand Allamel.">
+<BaseLayout noindex={import.meta.env.DEV || !posts.some((post) => isPublishedPost(post.data))} title="Blog" description="Notes on platform security, software delivery, and practical tools by Enguerrand Allamel.">
   <PageIntro title="Blog" />
 
   <section class="site-section-divider blog-index" aria-label="Blog posts" data-reveal>

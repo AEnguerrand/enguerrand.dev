@@ -20,7 +20,8 @@ function loadSource(path, dependencies = {}) {
 }
 
 const topics = loadSource("src/lib/topics.ts");
-const { getTalkPresentation } = loadSource("src/lib/talk-presentation.ts", { "./topics": topics });
+const seo = loadSource("src/lib/seo.ts", { "./topics": topics });
+const { getTalkPresentation } = loadSource("src/lib/talk-presentation.ts", { "./topics": topics, "./seo": seo });
 const schema = loadSource("src/content.config.ts", {
   "astro:content": { defineCollection: (value) => value },
   "astro/loaders": { glob: (value) => value },
@@ -106,4 +107,15 @@ test("talk schema validates the separate language and translation fields", () =>
   assert.equal(schema.safeParse({ ...baseTalk.data, resources: [
     { label: "Slides", url: "https://example.test/slides.pdf", language: "Chinese", translation: "unknown" },
   ] }).success, false);
+});
+
+
+test("canonical URLs consolidate topic aliases without changing other routes", () => {
+  const site = new URL("https://enguerrand.dev");
+  assert.equal(seo.canonicalUrl("/topics/supply-chain?from=nav#talks", site), "https://enguerrand.dev/topics/software-supply-chain-security/");
+  for (const path of ["/", "/talks/", "/topics/software-supply-chain-security/", "/404.html"])
+    assert.equal(seo.canonicalUrl(path, site), `https://enguerrand.dev${path}`);
+  assert.equal(seo.socialImagePath("/topics/supply-chain/"), "/og/topics/software-supply-chain-security/index.png");
+  assert.equal(seo.socialImagePath("/"), "/og/index.png");
+  assert.equal(seo.socialImagePath("/index/"), "/og/index/index.png");
 });
