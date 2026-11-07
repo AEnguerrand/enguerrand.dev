@@ -3,9 +3,10 @@ import GeographicGlobe from "./GeographicGlobe.astro";
 import { createGlobeProjection, globeFrame, talkPlaces } from "@/lib/talk-globe";
 
 interface Props {
-  talks: { id: string; title: string; location?: string }[];
+  journey?: boolean;
+  talks: { id: string; title: string; location?: string; event?: string }[];
 }
-const { talks } = Astro.props;
+const { talks, journey = false } = Astro.props;
 const frame = globeFrame(createGlobeProjection());
 const groups = talkPlaces.map((place) => ({
   ...place,
@@ -14,24 +15,24 @@ const groups = talkPlaces.map((place) => ({
 const online = talks.filter((talk) => talk.location === "Online");
 ---
 
-<talk-globe>
+<talk-globe data-journey={journey || undefined}>
   <figure class="talk-globe" aria-label="Talk locations around the world">
     <div class="talk-globe-stage">
     <GeographicGlobe mode="sphere" />
     <svg class="talk-globe-visual" viewBox="0 0 360 360" role="group" aria-label="Interactive globe of talk locations" focusable="false">
       <defs>
         <radialGradient id="talk-ocean" cx="30%" cy="25%" r="80%">
-          <stop offset="0%" stop-color="#e1e9e8" />
-          <stop offset="65%" stop-color="#93b1bd" />
-          <stop offset="100%" stop-color="#526f7c" />
+          <stop offset="0%" stop-color="#d7e8e8" />
+          <stop offset="65%" stop-color="#accdd4" />
+          <stop offset="100%" stop-color="#8bb6c2" />
         </radialGradient>
         <filter id="talk-land-relief" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="1" stdDeviation=".7" flood-color="#163956" flood-opacity=".35" />
+          <feDropShadow dx="0" dy="1" stdDeviation=".7" flood-color="#163956" flood-opacity=".12" />
         </filter>
         <radialGradient id="globe-light" cx="32%" cy="28%" r="72%">
-          <stop offset="0%" stop-color="white" stop-opacity=".55" />
+          <stop offset="0%" stop-color="white" stop-opacity=".2" />
           <stop offset="65%" stop-color="white" stop-opacity="0" />
-          <stop offset="100%" stop-color="hsl(201 100% 14.3%)" stop-opacity=".25" />
+          <stop offset="100%" stop-color="hsl(201 100% 14.3%)" stop-opacity=".08" />
         </radialGradient>
       </defs>
       <circle class="globe-ocean" cx="180" cy="180" r="156" />
@@ -39,28 +40,29 @@ const online = talks.filter((talk) => talk.location === "Online");
       <path class="globe-land" data-globe-land d={frame.land} />
       <circle class="globe-shade" cx="180" cy="180" r="156" fill="url(#globe-light)" />
       {frame.markers.filter((marker) => groups.some((group) => group.id === marker.id)).map((marker) => (
-        <g class="talk-globe-marker" data-globe-marker={marker.id} transform={`translate(${marker.x} ${marker.y})`} visibility={marker.visible ? "visible" : "hidden"}>
-          <circle class="globe-pin-target" r="25" />
+        <a href={journey ? `#talk-place-${marker.id}` : undefined} aria-label={journey ? `Show talks in ${marker.label}` : undefined} class="talk-globe-marker" data-globe-marker={marker.id} transform={`translate(${marker.x} ${marker.y})`} visibility={marker.visible ? "visible" : "hidden"}>
+          <circle class="globe-pin-target" r="29" />
           <circle class="globe-pin-halo" r="9" />
           <circle class="globe-pin" r="4" />
-          <text class="globe-label" x="13" y="4" aria-hidden="true">{marker.label} {marker.flag}</text>
-        </g>
+          {journey && <rect class="globe-label-backplate" rx="3" />}
+          <text class="globe-label" x={marker.x > 235 ? -13 : 13} text-anchor={marker.x > 235 ? "end" : "start"} y="4" aria-hidden="true">{marker.label}{" "}<tspan class="globe-label-flag">{marker.flag}</tspan></text>
+        </a>
       ))}
     </svg>
     </div>
-    <figcaption>
+    {!journey && <figcaption>
       <div class="globe-locations">
         {groups.map((place) => (
           <details id={`globe-place-${place.id}`} data-globe-place={place.id}>
             <summary>{place.label} <span class="globe-flag" aria-hidden="true">{place.flag}</span><span class="globe-count">{place.talks.length}</span></summary>
             <ul>
-              {place.talks.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a><span class="globe-venue">{talk.location}</span></li>)}
+              {place.talks.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a>{talk.event && <span class="globe-venue">{talk.event}</span>}</li>)}
             </ul>
           </details>
         ))}
-        {online.length > 0 && <details><summary>Online<span class="globe-count">{online.length}</span></summary><ul>{online.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a></li>)}</ul></details>}
+        {online.length > 0 && <details><summary>Online<span class="globe-count">{online.length}</span></summary><ul>{online.map((talk) => <li><a href={`/talks/${talk.id}/`}>{talk.title}</a>{talk.event && <span class="globe-venue">{talk.event}</span>}</li>)}</ul></details>}
       </div>
-    </figcaption>
+    </figcaption>}
   </figure>
 </talk-globe>
 
@@ -84,10 +86,11 @@ const online = talks.filter((talk) => talk.location === "Online");
   figcaption { grid-column: 1; grid-row: 2; align-self: start; width: min(100%, 24rem); }
   .globe-ocean { fill: url(#talk-ocean); stroke: #a8c9df; stroke-width: .7; }
   .globe-grid { fill: none; stroke: #e0eff8; stroke-opacity: .25; stroke-width: .55; }
-  .globe-land { fill: #82978b; stroke: #d6dfd4; stroke-width: .35; filter: url(#talk-land-relief); }
+  .globe-land { fill: #a9bd9e; stroke: #e1e8d9; stroke-width: .35; filter: url(#talk-land-relief); }
   .globe-pin-halo { fill: hsl(var(--card) / .8); }
   .globe-pin { fill: hsl(var(--primary)); stroke: hsl(var(--card)); stroke-width: 1.5; }
   .globe-label { fill: hsl(var(--foreground)); font-family: var(--font-sans); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: hsl(var(--background)); stroke-width: 3px; stroke-linejoin: round; }
+  .globe-label-flag {stroke:none;paint-order:normal;}
   .globe-locations { border-top: 1px solid hsl(var(--border)); }
   .globe-locations details { border-bottom: 1px solid hsl(var(--border)); }
   .globe-locations summary { min-height: 44px; padding: 12px 4px; cursor: pointer; color: hsl(var(--primary)); font-size: .875rem; }
@@ -96,12 +99,26 @@ const online = talks.filter((talk) => talk.location === "Online");
   .globe-locations summary:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
   .globe-locations ul { display: grid; gap: 12px; padding: 0 4px 16px; list-style: none; }
   .globe-locations a { display: inline-block; padding-block: 4px; font-size: .875rem; color: hsl(var(--foreground)); text-decoration: underline; text-underline-offset: 3px; }
-  .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; }
-  @media (max-width: 767px) {
+  .globe-venue { display: block; color: hsl(var(--muted-foreground)); font-size: .75rem; line-height: 1.5; }
+  [data-journey] .talk-globe-stage {width:100%;margin:0;}
+  [data-journey] .globe-label {font-size:11px;}
+  [data-journey] [data-label-ready] .globe-label {stroke:none;}
+  .globe-label-backplate {fill:hsl(var(--background) / .94);visibility:hidden;pointer-events:none;}
+  [data-label-ready] .globe-label-backplate {visibility:inherit;}
+  [data-journey] .globe-pin-halo {r:5.5px;}
+  [data-journey] .globe-pin {r:3px;stroke-width:1.3px;}
+  [data-journey] .talk-globe-marker {cursor:pointer;outline:none;}
+  @media (max-width: 850px) {
     .talk-globe-stage {grid-column:1;grid-row:2;width:min(100%,12rem);margin-inline:auto;}
     figcaption { grid-column: 1; grid-row: 3; width: 100%; }
     .globe-locations {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;}
     .globe-locations details[open] {grid-column:1 / -1;}
     .globe-label {font-size:16px;}
+    [data-journey] .globe-label, [data-journey] [data-label-ready] .globe-label {font-size:13px;stroke:hsl(var(--background));stroke-width:4px;}
+    .globe-label-backplate {display:none;}
+  }
+  @media (max-width: 600px) {
+    /* The 280px phone globe scales 16 SVG units to about 12.4 CSS pixels. */
+    [data-journey] .globe-label, [data-journey] [data-label-ready] .globe-label {font-size:16px;}
   }
 </style>

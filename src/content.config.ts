@@ -14,7 +14,10 @@ const talks = defineCollection({
       event: z.string().optional(),
       location: z.string().optional(),
       summary: z.string().optional(),
+      // Keep the legacy field as source metadata, without inferring session language.
       language: z.array(z.string()).optional(),
+      sessionLanguages: z.array(z.string().trim().min(1)).optional(),
+      notesLanguages: z.array(z.string().trim().min(1)).optional(),
       sessionType: z.string().optional(),
       tags: z.array(z.string()).optional(),
       resources: z
@@ -22,6 +25,8 @@ const talks = defineCollection({
           z.object({
             label: z.string(),
             url: z.url(),
+            language: z.string().trim().min(1).optional(),
+            translation: z.enum(["automatic"]).optional(),
           })
         )
         .optional(),

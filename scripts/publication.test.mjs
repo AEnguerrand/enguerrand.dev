@@ -55,9 +55,12 @@ test("production builds cover empty, unpublished, and mixed blog content", { tim
         const title = hidden[id].match(/title: "([^"]+)"/)[1];
         assert.ok(!allHtml.includes(title), `${state}: leaked text ${title}`);
         assert.ok(!sitemap.includes(id), `${state}: leaked sitemap item ${id}`);
+        assert.ok(!files.some((file) => file.startsWith(`og/blog/${id}/`)), `${state}: leaked sharing card ${id}`);
       }
       const blog = await readFile(join(dist, "blog/index.html"), "utf8");
       assert.equal(blog.includes("No posts yet"), state !== "mixed", state);
+      assert.equal(/name="robots" content="noindex, follow"/.test(blog), state !== "mixed", `${state}: blog indexability`);
+      assert.equal(sitemap.includes("<loc>https://enguerrand.dev/blog/</loc>"), state === "mixed", `${state}: blog sitemap entry`);
       if (state === "mixed") {
         assert.ok(files.includes("blog/fixture-published/index.html"));
         for (const file of ["index.html", "blog/index.html", "search/index.html"])
@@ -65,9 +68,14 @@ test("production builds cover empty, unpublished, and mixed blog content", { tim
         assert.ok(sitemap.includes("https://enguerrand.dev/blog/fixture-published/"));
         const article = await readFile(join(dist, "blog/fixture-published/index.html"), "utf8");
         assert.match(article, /BlogPosting/);
+        // A child Node test runner must not inherit the parent's runner context.
+        // Otherwise Node can skip every file and return exit code zero.
+        const testEnv = { ...process.env };
+        delete testEnv.NODE_TEST_CONTEXT;
         const checks = spawnSync(process.execPath, ["--test", "scripts/site-output.test.mjs"], {
-          cwd: fixture, encoding: "utf8", timeout: 30_000, maxBuffer: 5 * 1024 * 1024,
+          cwd: fixture, encoding: "utf8", timeout: 30_000, maxBuffer: 5 * 1024 * 1024, env: testEnv,
         });
+        assert.match(checks.stdout, /(?:#|ℹ) tests [1-9]\d*/, "Published-content output checks must actually run");
         assert.equal(checks.status, 0, `Published-content output checks: ${checks.stdout}\n${checks.stderr}`);
       }
     }

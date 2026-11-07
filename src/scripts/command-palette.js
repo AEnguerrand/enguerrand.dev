@@ -1,0 +1,152 @@
+(() => {
+    const initializeCommandPalette = () => {
+    const data = document.getElementById("site-command-data");
+    if (!data) return;
+    let items;
+    try { items = JSON.parse(data.textContent ?? "[]"); } catch { return; }
+    window.__commandPaletteController?.abort();
+    const controller = new AbortController();
+    window.__commandPaletteController = controller;
+
+    const dialog = document.getElementById("site-command-dialog");
+    const input = dialog?.querySelector("[data-command-input]");
+    const results = dialog?.querySelector("[data-command-results]");
+    const status = dialog?.querySelector("[data-command-status]");
+
+    if (!(dialog instanceof HTMLDialogElement) || !(input instanceof HTMLInputElement) || !results || !status) {
+      return;
+    }
+
+    let activeIndex = 0;
+    let visibleItems = items.slice(0, 8);
+
+    const normalize = (value) => String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+
+    const score = (item, tokens) => {
+      const title = normalize(item.title);
+      const searchable = `${title} ${normalize(item.kind)} ${normalize(item.keywords)}`;
+      let value = 0;
+
+      for (const token of tokens) {
+        if (!searchable.includes(token)) return -1;
+        if (title.startsWith(token)) value += 8;
+        else if (title.includes(token)) value += 5;
+        else value += 1;
+      }
+
+      return value;
+    };
+
+    const setActive = (index) => {
+      const links = Array.from(results.querySelectorAll("a"));
+      if (!links.length) {
+        input.removeAttribute("aria-activedescendant");
+        return;
+      }
+      activeIndex = (index + links.length) % links.length;
+      links.forEach((link, linkIndex) => {
+        const isActive = linkIndex === activeIndex;
+        link.toggleAttribute("data-active", isActive);
+        link.setAttribute("aria-selected", String(isActive));
+      });
+      input.setAttribute("aria-activedescendant", links[activeIndex].id);
+      links[activeIndex]?.scrollIntoView({ block: "nearest" });
+    };
+
+    const render = () => {
+      const query = normalize(input.value);
+      const tokens = query.split(/\s+/).filter(Boolean);
+      visibleItems = tokens.length
+        ? items
+            .map((item) => ({ item, score: score(item, tokens) }))
+            .filter((entry) => entry.score >= 0)
+            .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title))
+            .slice(0, 10)
+            .map((entry) => entry.item)
+        : items.slice(0, 8);
+
+      results.replaceChildren();
+      for (const [index, item] of visibleItems.entries()) {
+        const row = document.createElement("li");
+        const link = document.createElement("a");
+        const title = document.createElement("span");
+        const kind = document.createElement("span");
+        link.href = item.href;
+        link.className = "command-dialog-result";
+        link.id = `command-result-${index}`;
+        link.setAttribute("role", "option");
+        link.setAttribute("aria-selected", "false");
+        title.textContent = item.title;
+        kind.textContent = item.kind;
+        link.append(title, kind);
+        row.append(link);
+        results.append(row);
+      }
+
+      if (!visibleItems.length) {
+        const empty = document.createElement("li");
+        empty.className = "command-dialog-empty";
+        empty.textContent = "No results found.";
+        results.append(empty);
+      }
+
+      status.textContent = query
+        ? `${visibleItems.length} ${visibleItems.length === 1 ? "result" : "results"}`
+        : "Quick links";
+      setActive(0);
+    };
+
+    const open = () => {
+      if (!dialog.open) dialog.showModal();
+      input.setAttribute("aria-expanded", "true");
+      input.value = "";
+      render();
+      window.requestAnimationFrame(() => input.focus());
+    };
+
+    document.addEventListener("click", (event) => {
+      if (event.target instanceof Element && event.target.closest("[data-command-palette-open]")) {
+        event.preventDefault();
+        open();
+      }
+    }, { signal: controller.signal });
+    window.addEventListener("site-command:open", open, { signal: controller.signal });
+    input.addEventListener("input", render, { signal: controller.signal });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setActive(activeIndex + 1);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setActive(activeIndex - 1);
+      } else if (event.key === "Enter" && visibleItems.length > 0) {
+        event.preventDefault();
+        results.querySelectorAll("a")[activeIndex]?.click();
+      }
+    }, { signal: controller.signal });
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        dialog.close();
+      }
+    }, { signal: controller.signal });
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    }, { signal: controller.signal });
+    dialog.addEventListener("close", () => {
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
+    }, { signal: controller.signal });
+    };
+
+    if (!window.__commandPalettePageLoadBound) {
+      document.addEventListener("astro:page-load", initializeCommandPalette);
+      window.__commandPalettePageLoadBound = true;
+    }
+    initializeCommandPalette();
+  })();

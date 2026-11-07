@@ -29,13 +29,13 @@ npm run review:site -- --base origin/main
 
 The base ref resolves to a full commit before work starts. Use the intended target revision. The command checks whitespace across the base-to-HEAD diff and in local working-tree and staged changes, then runs `check:site`, `build`, and `test:site` once on the candidate. The publication tests make three additional builds in an isolated copy: empty, unpublished, and mixed content. These fixtures never enter the author's posts or the candidate output.
 
-The command extracts the base with `git archive`, installs its locked dependencies, and builds it in a temporary directory. It compares that output with the candidate using the same browser, fonts, viewport sizes, locale, time zone, and reduced-motion setting. The temporary baseline is removed when the command ends. The candidate output stays in `dist/`.
+The command extracts the base with `git archive`, installs its locked dependencies, and builds it in a temporary directory. It compares that output with the candidate using the same browser, fonts, viewport sizes, locale, time zone, and motion setting. The temporary baseline is removed when the command ends. The candidate output stays in `dist/`.
 
 Review packages have a unique directory under `artifacts/site-review/`:
 
 | File | Purpose |
 | --- | --- |
-| `review.html` | Image pairs for Home, KubeCon NA 2024, Blog, AWS Summit Paris 2025, and Stars at 390, 768, and 1440 pixels |
+| `review.html` | Image pairs for Home, KubeCon NA 2024, Blog, AWS Summit Paris 2025, and Stars at 390, 768, and 1440 pixels; navigation, Search return visits, and wide scenes |
 | `summary.md`, `report.json` | Revisions, source hash, working-tree state, check results, changed files, human-review paths, and limits |
 | `text-and-links.diff` | Changes to rendered main text, exact code-block text, links, metadata, and structured data across all built pages |
 | `base/`, `candidate/` | Output snapshots, JavaScript asset sizes, screenshots, and browser results; candidate traces include each route and viewport |
@@ -49,7 +49,9 @@ python3 -m http.server 4321 --directory PACKAGE/preview
 npx playwright show-trace PACKAGE/candidate/home-390.zip
 ```
 
-The browser checks one H1, heading order, IDs, local anchors, horizontal overflow, console errors, local HTTP failures, the first navigation link and its focus outline (plus skip-link activation on the earlier baseline), search open/query/close behavior (the candidate closes on the first Escape), and static talk links without JavaScript. They reject unexpected Astro islands on the tested routes. A feature that needs hydration must make that exception explicit in review.
+The browser checks one H1, heading order, IDs, local anchors, horizontal overflow, console errors, local HTTP failures, the first visible navigation control and its focus outline (the menu button on phone Home, the Talks link on desktop Home, and the name/home link elsewhere) (plus skip-link activation on the earlier baseline), search open/query/close behavior (the candidate closes on the first Escape), and static talk links without JavaScript. They reject unexpected Astro islands on the tested routes. A feature that needs hydration must make that exception explicit in review.
+
+The additional regression flows follow mobile links at 320, 390, and 767 pixels, then use Back, Forward, Escape, and a tablet resize. Search is checked on return visits, query URLs, type filters, history navigation, and empty results at 390 and 1440 pixels. Sequential navigation checks wait for Astro to load the destination and finish its transition before the next action; they do not test overlapping history transitions. Home and Projects have full-width coverage, bounded-height, and crop checks with image pairs at 1920, 2560, and 3440 pixels. Talks is checked at 320, 390, 768, 916, 1440, and 3440 pixels for three visible polar-view markers and labels, native city links, keyboard focus at the matching talk, headings, local anchors, and event names. Full-page captures show the compact Talks layout and shared harbour footer. The city checks replace the old accordion interaction because the new page links directly to timeline entries. A normal-motion mobile navigation flow and a normal-motion Home scene check at 3440 pixels supplement the reduced-motion comparisons. The full-width crop replaces the earlier 1440-pixel width limit at the author’s request. All pages now use the homepage footer crop, bounded at 840 pixels; the wide-screen comparison requires the Home and Projects footer heights to match. A static-output test checks that every page has the same navigation links, footer content, and existing harbour image as Home. The brand text is Enguerrand Allamel; Home hides it while the other routes show it. Navigation flows check this after internal navigation and history changes. The scene check verifies that the image and aircraft share the same frame; screenshots still need human review for composition. These checks run against both revisions. Expected baseline failures remain visible; candidate failures block the review.
 
 Review all visible differences. There is no automatic visual-baseline acceptance. The JavaScript inventory records asset bytes on disk; it does not measure network transfer or inline script bytes. The text diff covers generated public pages, so unpublished prose stays out of it. It preserves code-block indentation, tabs, blank lines, and trailing spaces in a separate `codeBlocks` field. Prose whitespace is normalized. Changed-file lists use NUL delimiters so filenames with accents, spaces, tabs, or newlines reach the human-review classification intact.
 
@@ -59,11 +61,11 @@ A clean working tree ties the report to the recorded candidate commit and source
 
 Checks stop at the first failed command. Later checks are not run. Baseline browser findings are recorded for comparison; candidate failures block a passing result. A report can pass while still listing paths that need author review. Path flags are advisory and do not prove the absence of personal claims elsewhere.
 
-External requests, including video embeds, are replaced with empty responses. Live playback and external destinations are not checked. Browser evidence uses Chromium and reduced motion. It does not prove other browsers, full-motion behavior, touch input, or screen-reader support.
+External requests, including video embeds, are replaced with empty responses. Live playback and external destinations are not checked. Browser evidence uses Chromium and mostly reduced motion. The two normal-motion checks do not prove every animation or physical touch behavior. Other browsers, screen-reader support, and physical devices still need separate checks.
 
 ## CI and approval
 
-The `Site review` workflow checks the exact PR head against its event's base commit. It uses Node.js 22, read-only repository permissions, and no saved checkout credentials. It uploads evidence for 14 days even after failure. It does not publish a preview, post comments, merge, or deploy. Existing Cloudflare deployment behavior is unchanged.
+The `Site review` workflow covers PRs targeting any branch, including stacked PRs. It checks the exact PR head against its event's base commit. A manual run requires an explicit base branch, tag ref or full commit SHA; it rejects a self-comparison and records both resolved revisions before running project code. It uses Node.js 22, read-only repository permissions, and no saved checkout credentials. It uploads evidence for 14 days even after failure. It does not publish a preview, post comments, merge, or deploy. Existing Cloudflare deployment behavior is unchanged.
 
 After the workflow has run, the repository owner can make `Site checks and review evidence` a required branch check and set a human merge rule that fits the account setup. Adding this workflow does not configure GitHub branch protection. Rerun against the new target revision if the base changes. CI results and checks are review evidence; author approval remains separate.
 

@@ -1,3 +1,4 @@
+import responsiveAssets from '../data/responsive-assets.json';
 import type { WebGLRenderer, Scene, OrthographicCamera, Group, Mesh, SphereGeometry, MeshPhongMaterial, ShaderMaterial, Texture } from 'three';
 
 class GeographicGlobe extends HTMLElement {
@@ -52,7 +53,9 @@ class GeographicGlobe extends HTMLElement {
       const canvas=this.querySelector('canvas')!;
       renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
       renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-      const texture=await new T.TextureLoader().loadAsync(this.dataset.mode==='sphere'?this.dataset.texture!:'/images/earth/vancouver-colour.webp');
+      const maps=this.dataset.mode==='sphere' ? (canvas.getBoundingClientRect().width <= 360 ? responsiveAssets.globe.phone : responsiveAssets.globe.desktop) : undefined;
+      if(maps) this.dataset.textureProfile=maps===responsiveAssets.globe.phone ? 'phone' : 'desktop';
+      const texture=await new T.TextureLoader().loadAsync(maps?.colour.src ?? '/images/earth/vancouver-colour.webp');
       if(signal.aborted){texture.dispose();renderer.dispose();return;}
       texture.colorSpace=T.SRGBColorSpace;
       if(this.dataset.mode!=='sphere'){
@@ -61,9 +64,9 @@ class GeographicGlobe extends HTMLElement {
         texture.offset?.set(-49.5/15.75,-135/9);
       }
       this.texture=texture;
-      this.normal=await new T.TextureLoader().loadAsync('/images/earth/earth-normal.webp');
-      this.elevation=await new T.TextureLoader().loadAsync('/images/earth/earth-elevation.webp');
-      this.cloudTexture=await new T.TextureLoader().loadAsync('/images/earth/earth-clouds.webp');
+      this.normal=await new T.TextureLoader().loadAsync(maps?.normal.src ?? '/images/earth/earth-normal.webp');
+      this.elevation=await new T.TextureLoader().loadAsync(maps?.elevation.src ?? '/images/earth/earth-elevation.webp');
+      this.cloudTexture=await new T.TextureLoader().loadAsync(maps?.clouds.src ?? '/images/earth/earth-clouds.webp');
       this.cloudTexture.colorSpace=T.SRGBColorSpace;
       // Preserve texture detail at the shallow viewing angle of the horizon.
       const anisotropy=Math.min(renderer.capabilities?.getMaxAnisotropy() ?? 1,8);
@@ -80,7 +83,7 @@ class GeographicGlobe extends HTMLElement {
       this.camera.position.z=3;
       this.earth=new T.Group();
       this.earth.rotation.x=10*Math.PI/180;
-      this.mesh=new T.Mesh(new T.SphereGeometry(1,this.dataset.mode==='sphere'?384:768,this.dataset.mode==='sphere'?256:512),new T.MeshPhongMaterial({map:texture,normalMap:this.normal,normalScale:new T.Vector2(this.dataset.mode === "sphere" ? .25 : .65,this.dataset.mode === "sphere" ? .25 : .65),displacementMap:this.elevation,displacementScale:this.dataset.mode==='sphere'?.006:.003,shininess:0,specular:0x47545a}));
+      this.mesh=new T.Mesh(new T.SphereGeometry(1,this.dataset.mode==='sphere'?128:768,this.dataset.mode==='sphere'?96:512),new T.MeshPhongMaterial({map:texture,normalMap:this.normal,normalScale:new T.Vector2(this.dataset.mode === "sphere" ? .08 : .65,this.dataset.mode === "sphere" ? .08 : .65),displacementMap:this.elevation,displacementScale:this.dataset.mode==='sphere'?.0015:.003,shininess:0,specular:0x47545a}));
       if (this.dataset.mode === "sphere") {
         // Group terrain colours into paint tones while preserving the original texture coordinates.
         this.mesh.material.onBeforeCompile = shader => {
@@ -92,19 +95,19 @@ class GeographicGlobe extends HTMLElement {
             float tone = (floor(level) + smoothstep(0.3, 0.7, fract(level))) / 8.0;
             // Keep land and sea distinct: the earlier single ramp made both grey.
             float water = step(terrain.r * 1.2, terrain.b) * step(terrain.g * 1.08, terrain.b);
-            vec3 land = mix(vec3(0.07, 0.16, 0.12), vec3(0.58, 0.64, 0.45), tone);
+            vec3 land = mix(vec3(0.40, 0.51, 0.32), vec3(0.66, 0.73, 0.48), tone);
             float snow = smoothstep(0.48, 0.78, value);
-            land = mix(land, vec3(0.8, 0.87, 0.9), snow);
-            vec3 sea = mix(vec3(0.075, 0.19, 0.30), vec3(0.16, 0.32, 0.46), tone);
+            land = mix(land, vec3(0.83, 0.88, 0.82), snow);
+            vec3 sea = mix(vec3(0.30, 0.47, 0.56), vec3(0.40, 0.59, 0.67), tone);
             vec3 pigment = mix(land, sea, water);
-            diffuseColor.rgb = mix(terrain, pigment, 0.8);
+            diffuseColor.rgb = mix(terrain, pigment, 0.9);
           `);
         };
-        this.mesh.material.customProgramCacheKey = () => "painted-sphere-v2";
+        this.mesh.material.customProgramCacheKey = () => "painted-sphere-v4";
       }
       this.mesh.rotation.y=33.12*Math.PI/180;
       this.earth.add(this.mesh);
-      this.clouds=new T.Mesh(new T.SphereGeometry(this.dataset.mode==='sphere'?1.037:1.003,128,96),new T.MeshPhongMaterial({map:this.cloudTexture,transparent:true,opacity:this.dataset.mode==='sphere'?.78:.28,depthWrite:false,shininess:0}));
+      this.clouds=new T.Mesh(new T.SphereGeometry(this.dataset.mode==='sphere'?1.006:1.003,128,96),new T.MeshPhongMaterial({map:this.cloudTexture,transparent:true,opacity:this.dataset.mode==='sphere'?.18:.28,depthWrite:false,shininess:0}));
       // Feather the cloud shell at the limb so it merges into the atmosphere instead of forming a ring.
       this.clouds.material.onBeforeCompile=shader=>{
         shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',
@@ -120,7 +123,7 @@ class GeographicGlobe extends HTMLElement {
       }));
       this.scene.add(this.earth,this.atmosphere);
       this.scene.add(new T.AmbientLight(0xfffcf5,1.7));
-      const sun=new T.DirectionalLight(0xfff0db,this.dataset.mode === "sphere" ? .9 : 1.65);sun.position.set(3,2,4);this.scene.add(sun);
+      const sun=new T.DirectionalLight(0xfff0db,this.dataset.mode === "sphere" ? .35 : 1.65);sun.position.set(3,2,4);this.scene.add(sun);
       const resize=()=>{
         const r=canvas.getBoundingClientRect();
         renderer!.setSize(r.width,r.height,false);
@@ -130,7 +133,7 @@ class GeographicGlobe extends HTMLElement {
       this.resizeObserver=new ResizeObserver(resize);
       this.resizeObserver.observe(canvas);
       canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.contextLost=true;this.dataset.motion='paused';this.removeAttribute('data-ready');this.renderer?.setAnimationLoop(null);},{signal});
-      if(this.dataset.mode==='sphere')this.orient(JSON.parse(this.dataset.orientation||'[-10,-24,0]'));
+      if(this.dataset.mode==='sphere')this.orient(JSON.parse(this.dataset.orientation||'[-40,-90,0]'));
       resize();
       this.setAttribute('data-ready','');
       this.sync();

@@ -1,51 +1,49 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { ArrowRight, FileText, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
 ---
 
 <BaseLayout
   title="About"
   pageType="ProfilePage"
-  description="About Enguerrand Allamel, a Senior Platform Security Engineer in Vancouver who builds secure cloud platforms and practical software."
+  description="About Enguerrand Allamel, Senior Platform Security Engineer at Procurify in Vancouver. Cloud security, software supply chains, and practical tools."
 >
-  <section class="site-page-header about-intro" data-reveal>
-    <p class="site-eyebrow">About me</p>
-    <h1 class="site-page-title max-w-3xl">
-      I build secure platforms and practical tools.
-    </h1>
-    <div class="mt-7 grid gap-8 text-lg leading-relaxed text-muted-foreground md:grid-cols-[1fr_13rem] md:items-start">
-      <div class="space-y-5">
-        <p>
-          I’m Enguerrand Allamel, a Senior Platform Security Engineer based in Vancouver, BC. My work connects cloud security, reliability, and developer platforms.
+  <div class="about-page">
+    <PageIntro title="About me" description="I build secure platforms and practical tools." class="about-intro" />
+    <div class="about-story">
+      <figure class="about-portrait">
+        <img
+          src="/avatar.webp"
+          alt="Enguerrand Allamel speaking at a conference"
+          width="224"
+          height="224"
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
+      <div class="about-copy" data-reveal>
+        <p class="about-lead">
+          I’m a Senior Platform Security Engineer at Procurify, based in Vancouver. I work on cloud security, reliable infrastructure, and tools for developers.
         </p>
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <a class="site-action site-action-primary group" href="/resume/">
+        <p>
+          I build security controls for AI development, AWS, Kubernetes, and software supply chains.
+        </p>
+        <p>
+          I also give talks and build Foliobruma, a private archive for paper records and family history.
+        </p>
+        <div class="about-actions">
+          <a class="site-action site-action-primary" href="/resume/">
             <FileText className="h-4 w-4" aria-hidden="true" /> Read my resume
             <ArrowRight className="motion-arrow h-4 w-4" aria-hidden="true" />
           </a>
-          <a class="site-link" href="https://github.com/AEnguerrand"><GithubLogo className="h-4 w-4" aria-hidden="true" /> GitHub</a>
-          <a class="site-link" href="https://www.linkedin.com/in/enguerrandallamel/"><LinkedinLogo className="h-4 w-4" aria-hidden="true" /> LinkedIn</a>
+          <div class="about-socials">
+            <a class="site-link" href="https://github.com/AEnguerrand"><GithubLogo className="h-4 w-4" aria-hidden="true" /> GitHub</a>
+            <a class="site-link" href="https://www.linkedin.com/in/enguerrandallamel/"><LinkedinLogo className="h-4 w-4" aria-hidden="true" /> LinkedIn</a>
+          </div>
         </div>
-        <p>
-          I focus on controls that help teams ship safely: AI development guardrails, AWS and Kubernetes security, software supply chain security, and useful automation.
-        </p>
-        <p>
-          Outside my day-to-day work, I speak about lessons from real systems and build Foliobruma, a private archive for paper records and family history.
-        </p>
       </div>
-      <img
-        src="/avatar.webp"
-        alt="Enguerrand Allamel speaking at a conference"
-        class="aspect-square w-40 rounded-full border border-border object-cover shadow-[0_12px_30px_hsl(var(--foreground)/0.08)] md:w-full"
-        width="224"
-        height="224"
-        loading="eager"
-        decoding="async"
-      />
     </div>
-
-  </section>
-
   <section class="site-section-divider about-focus" aria-labelledby="about-focus-title" data-reveal>
     <div class="about-focus-heading">
       <h2 id="about-focus-title" class="site-section-title">Areas of focus</h2>
@@ -56,13 +54,49 @@ import { ArrowRight, FileText, GithubLogo, LinkedinLogo } from "@phosphor-icons/
         <ArrowRight className="motion-arrow" size={20} aria-hidden="true" />
       </a>
       <a class="about-focus-item" href="/talks/">
-        <div><h3>Public work</h3><p>Talks, field notes, and practical examples from production systems.</p></div>
+        <div><h3>Talks & resources</h3><p>Recordings, slides, and notes from conference and community talks.</p></div>
         <ArrowRight className="motion-arrow" size={20} aria-hidden="true" />
       </a>
       <a class="about-focus-item" href="/projects/">
-        <div><h3>Independent tools</h3><p>Private, local-first software for documents, archives, and research.</p></div>
+        <div><h3>Side projects</h3><p>Software I build outside work.</p></div>
         <ArrowRight className="motion-arrow" size={20} aria-hidden="true" />
       </a>
     </div>
   </section>
+  </div>
 </BaseLayout>
+
+<style>
+  .about-page {display:grid;grid-template-columns:minmax(0,1fr) 32%;column-gap:48px;align-items:start;}
+  .about-page :global(.about-intro) {grid-column:1;grid-row:1;padding-bottom:24px;}
+  .about-page :global(.about-intro .site-page-title) {max-width:24ch;}
+  .about-story {display:contents;}
+  .about-portrait {grid-column:2;grid-row:1 / span 2;justify-self:end;width:min(100%,320px);margin-top:var(--page-start);padding:10px 10px 22px;border:1px solid hsl(var(--border) / .7);background:#fffaf0;box-shadow:0 4px 14px hsl(var(--foreground) / .06);transform:rotate(2deg);transition:transform 220ms ease,box-shadow 220ms ease;}
+  .about-portrait img {display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;}
+  .about-story:hover .about-portrait,.about-story:focus-within .about-portrait {transform:rotate(0);box-shadow:0 8px 18px hsl(var(--foreground) / .08);}
+  .about-copy {grid-column:1;grid-row:2;padding-bottom:40px;min-width:0;max-width:64ch;color:hsl(var(--muted-foreground));font-size:1rem;line-height:1.75;}
+  .about-copy > p + p {margin-top:18px;}
+  .about-copy .about-lead {color:hsl(var(--foreground));font-size:1.125rem;line-height:1.7;}
+  .about-actions {display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px;margin-top:24px;}
+  .about-socials {display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;}
+  .about-socials .site-link {min-height:44px;font-size:.875rem;}
+  .about-focus {grid-column:1 / -1;grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);gap:40px;}
+  .about-focus-heading h2 {font-size:1.5rem;line-height:1.3;}
+  .about-focus-list {border-top:0;}
+  .about-focus-item {min-height:0;padding:20px 0;gap:20px;}
+  .about-focus-item:first-child {padding-top:0;}
+  .about-focus-item h3 {font-size:1.25rem;line-height:1.4;}
+  .about-focus-item p {margin-top:5px;font-size:.9375rem;line-height:1.65;}
+  .about-focus-item:focus-visible {color:hsl(var(--primary));outline:2px solid hsl(var(--ring));outline-offset:5px;}
+  .about-focus-item:focus-visible :global(.motion-arrow) {transform:translateX(4px);}
+  @media(max-width:700px) {
+    .about-page {grid-template-columns:minmax(0,1fr) clamp(88px,27vw,132px);column-gap:20px;}
+    .about-portrait {grid-row:1;width:100%;padding:6px 6px 14px;}
+    .about-copy {grid-column:1 / -1;padding-bottom:32px;}
+    .about-focus {grid-template-columns:1fr;gap:20px;}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    .about-portrait,.about-story:hover .about-portrait,.about-story:focus-within .about-portrait {transform:none;transition:none;}
+    .about-focus-item:focus-visible :global(.motion-arrow) {transform:none;}
+  }
+</style>

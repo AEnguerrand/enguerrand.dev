@@ -52,5 +52,69 @@ export function topicDescription(topic: string): string {
 }
 
 export function topicHref(topic: string): string {
-  return `/topics/${topicSlug(topic)}/`;
+  return `/topics/${topicSlug(canonicalTopic(topic))}/`;
+}
+
+// Tags keep their original metadata and URLs. Browse true synonyms as one subject.
+const topicAliases: Record<string, string> = {
+  "supply chain": "software supply chain security",
+};
+
+// Keep legacy topic routes, but give synonyms one public search URL.
+export function canonicalTopicPath(path: string): string {
+  for (const [alias, topic] of Object.entries(topicAliases)) {
+    if (path === `/topics/${topicSlug(alias)}/`) return `/topics/${topicSlug(topic)}/`;
+  }
+  return path;
+}
+
+export type TopicKind = "subject" | "technology" | "community";
+
+export const topicGroups: { kind: TopicKind; id: string; title: string }[] = [
+  { kind: "subject", id: "subjects", title: "Subjects" },
+  { kind: "technology", id: "tools", title: "Tools and ecosystems" },
+  { kind: "community", id: "events", title: "Events and organisations" },
+];
+
+const topicKinds: Record<string, TopicKind> = {
+  aws: "technology",
+  javascript: "technology",
+  npm: "technology",
+  wiz: "technology",
+  "aws-summit": "community",
+  cloudnativecon: "community",
+  kubecon: "community",
+  ledger: "community",
+  owasp: "community",
+};
+
+export function canonicalTopic(topic: string): string {
+  const name = topic.trim().toLowerCase();
+  return topicAliases[name] ?? name;
+}
+
+export function canonicalTopics(topics: readonly string[]): string[] {
+  return Array.from(new Set(topics.map(canonicalTopic)));
+}
+
+export function topicKind(topic: string): TopicKind {
+  return topicKinds[canonicalTopic(topic)] ?? "subject";
+}
+
+export function countTopics(talks: readonly { data: { tags?: string[] } }[]) {
+  const counts = new Map<string, number>();
+  for (const talk of talks) {
+    for (const topic of canonicalTopics(talk.data.tags ?? [])) {
+      counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    }
+  }
+  return Array.from(counts, ([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || topicTitle(a.name).localeCompare(topicTitle(b.name), "en"));
+}
+
+export function topicRoutes(topics: readonly string[]) {
+  const canonical = canonicalTopics(topics);
+  const aliases = Object.keys(topicAliases).filter((alias) => canonical.includes(canonicalTopic(alias)));
+  const names = Array.from(new Set([...topics, ...canonical, ...aliases]));
+  return Array.from(new Map(names.map((topic) => [topicSlug(topic), topic])), ([slug, topic]) => ({ slug, topic }));
 }

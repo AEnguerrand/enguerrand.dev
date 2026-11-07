@@ -2,10 +2,14 @@ name: Site review
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      base:
+        description: 'Base branch, full refs/tags/name, or full commit SHA to compare'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -26,6 +30,53 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Resolve and record the exact review revisions
+        id: revisions
+        shell: bash
+        env:
+          REVIEW_PR_BASE: ${{ github.event.pull_request.base.sha }}
+          REVIEW_PUSH_BASE: ${{ github.event.before }}
+          REVIEW_BASE_INPUT: ${{ inputs.base }}
+          REVIEW_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          case "$GITHUB_EVENT_NAME" in
+            pull_request) base="$REVIEW_PR_BASE" ;;
+            push) base="$REVIEW_PUSH_BASE" ;;
+            workflow_dispatch)
+              if [[ -z "$REVIEW_BASE_INPUT" ]]; then
+                echo '::error::A manual review needs an explicit base branch, tag ref, or full commit SHA.'
+                exit 1
+              fi
+              if [[ "$REVIEW_BASE_INPUT" =~ ^[0-9a-fA-F]{40}$ ]]; then
+                base="$REVIEW_BASE_INPUT"
+              else
+                case "$REVIEW_BASE_INPUT" in
+                  refs/heads/*) base="refs/remotes/origin/${REVIEW_BASE_INPUT#refs/heads/}" ;;
+                  refs/tags/*|refs/remotes/origin/*) base="$REVIEW_BASE_INPUT" ;;
+                  *) base="refs/remotes/origin/$REVIEW_BASE_INPUT" ;;
+                esac
+                git check-ref-format "$base"
+              fi
+              ;;
+            *) echo '::error::Unsupported review event.'; exit 1 ;;
+          esac
+          base_sha=$(git rev-parse --verify --end-of-options "${base}^{commit}")
+          head_sha=$(git rev-parse --verify 'HEAD^{commit}')
+          if [[ "$head_sha" != "$REVIEW_EXPECTED_HEAD" ]]; then
+            echo '::error::The checkout does not match the event candidate.'
+            exit 1
+          fi
+          if [[ "$base_sha" == "$head_sha" ]]; then
+            echo '::error::The base and candidate must be different commits.'
+            exit 1
+          fi
+          printf 'base=%s\nhead=%s\n' "$base_sha" "$head_sha" >> "$GITHUB_OUTPUT"
+          mkdir -p artifacts/site-review
+          printf '{"event":"%s","base":"%s","head":"%s"}\n' \
+            "$GITHUB_EVENT_NAME" "$base_sha" "$head_sha" > artifacts/site-review/revisions.json
+          printf '## Review revisions\n\nBase: `%s`\n\nCandidate: `%s`\n\n' \
+            "$base_sha" "$head_sha" >> "$GITHUB_STEP_SUMMARY"
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -37,7 +88,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Validate and capture review evidence
         env:
-          REVIEW_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+          REVIEW_BASE: ${{ steps.revisions.outputs.base }}
         run: npm run review:site -- --base "$REVIEW_BASE"
       - name: Add the review summary
         if: always()

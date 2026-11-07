@@ -71,5 +71,7 @@ const percent = (value: number, full: number) => `${100 * value / full}%`;
   @media screen and (prefers-reduced-motion:no-preference) {
     .layers[data-ready] {display:block;}
   }
+  /* Keep the mountain and lake horizon in view as the panorama grows wider. */
+  @media(min-width:1440px) {.painting {top:55%;bottom:auto;transform:translate(-50%,-70%);}}
   @media(max-width:600px) {.forest {height:56%;} .painting {left:38%;transform:translateX(-38%);}}
 </style>

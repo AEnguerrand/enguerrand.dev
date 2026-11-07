@@ -7,24 +7,22 @@ date: "2025-04-09"
 event: "AWS Summit Paris 2025"
 location: "Paris, France"
 language: ["French", "English"]
+sessionLanguages: ["French"]
+notesLanguages: ["English", "French"]
 sessionType: "Conference talk"
-summary: "How Ledger unified cloud security with Wiz from code scanning to runtime detection and automated remediation."
+summary: "How Ledger used Wiz to connect code scanning, cloud risk management, and runtime protection."
 tags: ["aws", "aws-summit", "security", "cloud security", "wiz"]
 resources:
   - label: "Wiz Customer Story: Protecting Ledger's infrastructure"
     url: "https://www.wiz.io/customers/ledger"
 ---
 
-## Title / Titre
+## Abstract
 
-**English**: Rethinking Cloud Security, from Code to Real-time Protection
+Ledger strengthened its cloud infrastructure security with Wiz. This session covers how a shared approach to real-time detection and automated remediation helped simplify risk management, improve visibility, and make security part of each team's work.
 
-**French**: Sécurité cloud repensée, du code à la protection en temps réel
-
-## Description
-
-Découvrez comment Ledger, leader des portefeuilles sécurisés de crypto-monnaies, a renforcé la sécurité de son infrastructure Cloud avec Wiz. Grâce à une approche unifiée, de la détection en temps réel à la remédiation automatisée, Ledger a pu simplifier la gestion des risques, assurer une visibilité complète et démocratiser la sécurité auprès de ses équipes.
-
-### English Version
-
-Discover how Ledger, the leader in secure cryptocurrency wallets, strengthened its Cloud infrastructure security with Wiz. Through a unified approach, from real-time detection to automated remediation, Ledger was able to simplify risk management, ensure complete visibility, and democratize security across its teams.
+<section lang="fr" aria-labelledby="abstract-fr">
+<h2 id="abstract-fr">Résumé</h2>
+<p><strong>Sécurité cloud repensée, du code à la protection en temps réel</strong></p>
+<p>Ledger a renforcé la sécurité de son infrastructure cloud avec Wiz. Cette session présente comment une approche commune, de la détection en temps réel à la remédiation automatisée, a permis de simplifier la gestion des risques, d'améliorer la visibilité et d'intégrer la sécurité au travail des équipes.</p>
+</section>

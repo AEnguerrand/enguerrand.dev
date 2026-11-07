@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import SiteSearch from "@/components/sections/SiteSearch.astro";
 import { getSearchItems } from "@/lib/site-search";
 import { getEntry, render } from "astro:content";
@@ -59,19 +60,19 @@ function toSearchText(value: string | undefined, maxLength = 4500): string {
 }
 
 const sources = import.meta.glob<string>([
-  "./{index,projects,radar,github-stars,about,resume,privacy}.astro", "./talks/index.astro",
+  "./{index,projects,radar,github-stars,about,privacy}.astro", "./talks/index.astro",
   "../components/home/ScenicHero.astro",
 ], { eager: true, query: "?raw", import: "default" });
 const page = (await getEntry("pages", "search"))!;
 const searchItems = (await getSearchItems()).map(item => {
   let content = item.content;
-  if (item.kind === "page") {
+  if (item.kind === "page" && !content) {
     const sourcePath = item.href === "/" ? "./index.astro" : `.${item.href.replace(/\/$/, "")}.astro`;
     const source = item.href === "/talks/" ? sources["./talks/index.astro"] : sources[sourcePath];
     const hero = item.href === "/" ? sources["../components/home/ScenicHero.astro"] : "";
     content = stripAstroSource(source ?? "") + " " + stripAstroSource(hero ?? "");
   }
-  return { ...item, content: toSearchText(content) };
+  return { ...item, content: toSearchText(content, item.id === "page-resume" ? Infinity : 4500) };
 });
 const placeholder = page.data.placeholder ?? "Search this site";
 
@@ -81,10 +82,7 @@ const PageContent = renderedPage?.Content;
 ---
 
 <BaseLayout title={page.data.title ?? "Search"} noindex={true}>
-  <header class="site-page-header">
-    <h1 class="site-page-title">{page.data.title ?? "Search"}</h1>
-    <p class="site-lead">Find talks, projects, topics, and pages.</p>
-  </header>
+  <PageIntro title={page.data.title ?? "Search"} description="Find talks, projects, topics, and pages." />
 
   <SiteSearch items={searchItems} placeholder={placeholder} />
 

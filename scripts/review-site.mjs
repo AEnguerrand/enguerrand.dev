@@ -31,7 +31,7 @@ const report = {
   started: new Date().toISOString(), status: "running", changedFiles,
   humanReview: getHumanReviewPaths(changedFiles),
   checks: [],
-  limits: ["Author content and publication decisions need human review.", "Chromium only; screenshots use reduced motion and fixed viewports.", "External requests are replaced with empty responses; live resources and video playback are not checked.", "Automated keyboard and structure checks do not prove full screen-reader support.", "No merge, deployment, branch-rule update, or content publication is performed."],
+  limits: ["Author content and publication decisions need human review.", "Chromium only; fixed viewports and mostly reduced motion, with normal-motion navigation and scene checks.", "External requests are replaced with empty responses; live resources and video playback are not checked.", "Automated keyboard and structure checks do not prove full screen-reader support.", "No merge, deployment, branch-rule update, or content publication is performed."],
 };
 let baseline;
 function step(name, command, args, cwd = root) {
@@ -61,7 +61,7 @@ try {
     const destination = join(output, label);
     await mkdir(destination);
     const pageCount = await snapshotOutput(dist, destination);
-    console.log(`Capturing ${label}: ${pageCount} built pages, 15 browser views`);
+    console.log(`Capturing ${label}: ${pageCount} built pages, 30 browser views`);
     report[label === "base" ? "baseline" : label] = { pageCount, ...await captureBrowser(dist, destination, label === "candidate") };
   }
   const diff = spawnSync("git", ["diff", "--no-index", "--text", "--", join(output, "base/text-and-links.json"), join(output, "candidate/text-and-links.json")], { encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });

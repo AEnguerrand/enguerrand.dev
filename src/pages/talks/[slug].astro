@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import TalkVideo from "@/components/TalkVideo.astro";
 import { getCollection, render } from "astro:content";
 import { getTalkPresentation } from "@/lib/talk-presentation";
 import { topicHref, topicTitle } from "@/lib/topics";
@@ -10,26 +11,27 @@ export async function getStaticPaths() {
 const {talk} = Astro.props;
 const {Content} = await render(talk);
 const {formattedDate,resources,videoResource,videoEmbedUrl,talkMetadata,structuredData} = getTalkPresentation(talk,Astro.site);
+const contentLabel = talk.id === "aws-summit-paris-2025" ? "Read abstract" : "Read notes";
 const slides = resources.find(resource => /slides/i.test(resource.label));
-const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:"Read notes"};
-const secondary = primary.url !== "#content" ? {url:"#content",label:"Read notes ↓"} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
+const primary = videoEmbedUrl ? {url:"#video",label:"Watch talk"} : slides ? {url:slides.url,label:"View slides"} : {url:"#content",label:contentLabel};
+const secondary = primary.url !== "#content" ? {url:"#content",label:`${contentLabel} ↓`} : resources.length ? {url:"#resources",label:"View sources ↓"} : null;
 const quickResources = resources.filter(resource => /slides|presentation|lab/i.test(resource.label) && resource.url !== primary.url);
-const sectionClass = "site-article-section site-section-divider scroll-mt-40";
+const sectionClass = "site-article-section site-section-divider talk-section scroll-mt-40";
 ---
 <BaseLayout title={talk.data.seoTitle ?? talk.data.title} description={talk.data.summary} type="article" publishedTime={`${talk.data.date}T00:00:00.000Z`} structuredData={structuredData}>
-  <header class="site-page-header">
+  <header class="site-page-header talk-page-header">
     <a href="/talks/" class="site-back-link">← All talks</a>
     <p class="site-page-meta"><time datetime={talk.data.date}>{formattedDate}</time>{talk.data.event && <span>· {talk.data.event}</span>}</p>
-    <h1 class="site-page-title">{talk.data.displayTitle ?? talk.data.title}</h1>
+    <h1 class="site-page-title talk-title">{talk.data.displayTitle ?? talk.data.title}</h1>
     {talk.data.summary && <p class="site-lead">{talk.data.summary}</p>}
     <div class="site-action-row" aria-label="Session resources">
       <a href={primary.url} class="site-action site-action-primary h-auto min-h-10 max-w-full whitespace-normal text-center">{primary.label}</a>
       {secondary && <a href={secondary.url} class="site-text-link text-sm font-medium">{secondary.label}</a>}
-      {quickResources.map(resource => <a href={resource.url} class="site-text-link font-medium">{/lab/i.test(resource.label) ? "Lab" : /english|chinese/i.test(resource.label) ? resource.label : "Slides"} ↗</a>)}
+      {quickResources.map(resource => <a href={resource.url} class="site-text-link font-medium">{resource.displayLabel} ↗</a>)}
     </div>
-    <details id="overview" class="mt-5 border-t border-border pt-4 text-sm">
-      <summary class="w-fit cursor-pointer text-muted-foreground hover:text-foreground">Session details</summary>
-      <div class="space-y-3 pt-3">
+    <details id="overview" class="session-details">
+      <summary>Session details</summary>
+      <div class="session-details-body">
         <p class="text-sm">{talk.data.title}</p>
         {talk.data.author && <p class="text-muted-foreground">By {talk.data.author.join(", ")}</p>}
         <dl class="grid gap-2 sm:grid-cols-2">{talkMetadata.map(item => <div><dt class="text-xs text-muted-foreground">{item.label}</dt><dd>{item.value}</dd></div>)}</dl>
@@ -40,17 +42,44 @@ const sectionClass = "site-article-section site-section-divider scroll-mt-40";
   {videoEmbedUrl && (
     <section id="video" class={sectionClass} aria-labelledby="video-heading">
       <h2 id="video-heading" class="site-section-title">Watch talk</h2>
-      <div class="mt-5 overflow-hidden rounded-xl border border-border/70 bg-background/65">
-        <iframe class="aspect-video w-full" src={videoEmbedUrl} title={`Video recording for ${talk.data.title}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
-      </div>
-      {videoResource && <p class="mt-3 text-sm text-muted-foreground">Video not loading? <a href={videoResource.url} class="font-medium text-primary hover:underline">Open video source ↗</a></p>}
+      {videoResource && <TalkVideo embedUrl={videoEmbedUrl} sourceUrl={videoResource.url} title={talk.data.title} />}
     </section>
   )}
-  <section id="content" class={sectionClass} aria-label="Talk notes">
-    <div class="prose site-reading-measure prose-headings:mt-6 prose-p:leading-relaxed"><Content /></div>
+  <section id="content" class={sectionClass} aria-label={talk.id === "aws-summit-paris-2025" ? "Talk abstract" : "Talk notes"}>
+    <div class="prose site-reading-measure talk-notes prose-headings:mt-6 prose-p:leading-relaxed"><Content /></div>
   </section>
   <section id="resources" class={sectionClass} aria-labelledby="resources-heading">
     <h2 id="resources-heading" class="site-section-title">Sources and resources</h2>
-    {resources.length ? <ul class="site-list">{resources.map(resource => <li class="site-list-row py-3"><a href={resource.url} class="site-text-link text-sm font-medium">{resource.label} ↗</a></li>)}</ul> : <p class="mt-4 text-sm text-muted-foreground">No resources listed yet.</p>}
+    {resources.length ? <ul class="site-list">{resources.map(resource => (
+      <li class="site-list-row py-3">
+        <div>
+          <a href={resource.url} class="site-text-link text-sm font-medium">{resource.displayLabel} ↗</a>
+          {resource.language && !resource.displayLabel.toLowerCase().includes(resource.language.toLowerCase()) && (
+            <p class="mt-1 text-xs text-muted-foreground">{resource.language}</p>
+          )}
+        </div>
+      </li>
+    ))}</ul> : <p class="mt-4 text-sm text-muted-foreground">No resources listed yet.</p>}
   </section>
 </BaseLayout>
+
+<style>
+  .talk-page-header {max-width:48rem;}
+  .talk-page-header .site-page-meta {margin-top:20px;line-height:1.6;}
+  .talk-title {margin-top:12px;}
+  .talk-page-header .site-lead {max-width:65ch;margin-top:12px;font-size:1rem;line-height:1.7;}
+  .talk-page-header .site-action-row {margin-top:20px;gap:12px 20px;}
+  .session-details {margin-top:24px;border-top:1px solid hsl(var(--border));font-size:.875rem;}
+  .session-details summary {width:fit-content;min-height:44px;padding-block:12px;cursor:pointer;color:hsl(var(--muted-foreground));}
+  .session-details summary:hover,.session-details[open] summary {color:hsl(var(--foreground));}
+  .session-details summary:focus-visible {outline:2px solid hsl(var(--ring));outline-offset:3px;border-radius:2px;}
+  .session-details-body {display:grid;gap:16px;padding:4px 0 8px;line-height:1.6;}
+  .session-details-body dl {gap:12px 24px;}
+  .talk-section {max-width:48rem;}
+  .talk-section > .site-section-title {font-size:1.25rem;font-weight:500;line-height:1.4;}
+  .talk-notes :global(h2) {font-size:1.25rem;font-weight:500;line-height:1.4;}
+  .talk-notes :global(h3) {font-size:1.0625rem;font-weight:500;line-height:1.5;}
+  .talk-notes :global(> :first-child) {margin-top:0;}
+  .talk-section .site-list-row {padding-block:14px;}
+  .talk-section .site-list-row a {line-height:1.6;overflow-wrap:anywhere;}
+</style>

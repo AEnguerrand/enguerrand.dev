@@ -1,8 +1,9 @@
 ---
 import HarbourLanding from "./HarbourLanding.astro";
+import responsiveAssets from "@/data/responsive-assets.json";
 import { EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
-interface Props { showBlog?: boolean; home?: boolean }
-const { showBlog = false, home = false } = Astro.props;
+interface Props { showBlog?: boolean }
+const { showBlog = false } = Astro.props;
 const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/projects/',label:'Projects'}, ...(showBlog ? [{href:'/blog/',label:'Blog'}] : []), {href:'/radar/',label:'Radar'}, {href:'/search/',label:'Search'}, {href:'/privacy/',label:'Privacy'}];
 ---
 <footer class="harbour-footer site-shell" aria-label="Site footer">
@@ -15,9 +16,9 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
     </nav>
     <nav aria-label="Footer navigation">{links.map(link => <a href={link.href}>{link.label}</a>)}</nav>
   </div>
-  <div class:list={["harbour-art", { compact: !home }]} aria-hidden="true">
+  <div class="harbour-art" aria-hidden="true">
     <div class="harbour-scene">
-      <img src="/images/scenic/vancouver-harbour-map-aligned.webp" alt="" width="1672" height="941" loading="lazy" decoding="async" />
+      <img src="/images/scenic/vancouver-harbour-map-aligned.webp" srcset={`${responsiveAssets.harbour.map(image => `${image.src} ${image.width}w`).join(", ")}, /images/scenic/vancouver-harbour-map-aligned.webp 1672w`} sizes="100vw" alt="" width="1672" height="941" loading="lazy" decoding="async" />
       <HarbourLanding />
     </div>
   </div>
@@ -32,13 +33,12 @@ const links = [{href:'/',label:'Home'}, {href:'/talks/',label:'Talks'}, {href:'/
 .harbour-footer nav a:hover {color:hsl(var(--accent));text-decoration:underline;text-underline-offset:4px;}
 .harbour-footer .harbour-social {margin-top:0;gap:0 24px;}
 .harbour-social a {gap:7px;}
-.harbour-art {position:relative;width:100vw;left:50%;transform:translateX(-50%);aspect-ratio:16/9;overflow:hidden;mask-image:linear-gradient(to bottom,transparent,black 7%);}
-.harbour-art.compact {height:clamp(150px,31vw,440px);aspect-ratio:auto;}
-.harbour-scene {position:absolute;inset:0;}
-/* Crop the painting and the flight paths together, keeping the mountains in view. */
-.compact .harbour-scene {inset:auto 0;top:30%;transform:translateY(-30%);aspect-ratio:16/9;}
+.harbour-art {position:relative;width:100vw;left:50%;transform:translateX(-50%);height:min(56.25vw,clamp(560px,28vw,840px));overflow:hidden;mask-image:linear-gradient(to bottom,transparent,black 7%);}
+/* Crop the full-width painting and aircraft in the same coordinates. */
+.harbour-scene {position:absolute;inset:auto 0;top:20%;transform:translateY(-20%);aspect-ratio:16/9;}
 .harbour-art img {width:100%;height:100%;object-fit:cover;object-position:center;}
 .harbour-copyright {position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100vw;padding:32px 20px 14px;font-size:.75rem;color:#fff;background:linear-gradient(transparent,#15384be6);text-shadow:0 1px 2px #15384b;}
+@media(min-width:1800px){.harbour-scene{top:40%;transform:translateY(-40%);}}
 @media(max-width:600px){.harbour-footer{padding-top:44px;}.harbour-footer nav{gap:0 18px;margin-top:20px;}.harbour-art img{object-position:center;}}
 @media print{.harbour-art{display:none;}.harbour-copyright{position:static;transform:none;width:auto;background:none;color:inherit;text-shadow:none;}}
 </style>
