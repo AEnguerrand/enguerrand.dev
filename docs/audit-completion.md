@@ -4,14 +4,14 @@ This records the implementation work from the 6 November 2026 design and technic
 
 ## Current status
 
-All 19 items have implementation changes. Thirteen have passed local checks, and the author approved A08 and A19 on 6 November 2026 ("8,19: Good"). Four checks remain open: A02 and A04 on a physical phone, A05 with a screen reader, and A14 after an authorized release. Local checks do not replace these checks.
+All 19 items have implementation changes. Thirteen have passed local checks, and the author approved A08 and A19 ("8,19: Good"). The author also confirmed that the globe and loading look good on their phone and requested closure of A02 and A04. Only A05 (screen-reader pronunciation) and A14 (production caching/navigation after release) remain open.
 
 | Item | Implementation and local evidence | Status and remaining work |
 | --- | --- | --- |
 | A01: Menu focus | Visible controls form the focus loop. Home and inner-page checks cover forward/reverse wrap and Escape. The extra inner-page checks passed after Astro navigation at 390 and 767 pixels. | Local checks passed. |
-| A02: Globe gestures | Touch input waits for horizontal intent. Vertical gesture and city-anchor checks passed in Chromium emulation. | Open: confirm scrolling, rotation and city taps on a physical phone. |
+| A02: Globe gestures | Touch input waits for horizontal intent. Vertical gesture and city-anchor checks passed in Chromium emulation. | Closed: the author confirmed the globe works well on their phone and requested closure after testing candidate `d260f775ee52167b8fc28ad164584b109c556a0d`. |
 | A03: Resume search | Search uses the structured resume data. Terraform, Equativ and Procurify queries, existing results, filters and history were checked. | Local checks passed. |
-| A04: Talks load | Smaller maps reduce local resource bytes. Rendered checks preserve the three cities, initial view, fallback and anchors. | Open: check responsiveness on a physical phone. Local byte sizes are not field performance. |
+| A04: Talks load | Smaller maps reduce local resource bytes. Rendered checks preserve the three cities, initial view, fallback and anchors. | Closed: the author confirmed loading looks good on their phone and requested closure on the same candidate. This is user acceptance, not a timed performance benchmark. |
 | A05: Language markup | French text has language markup. Session, notes and slides use separate fields with the author-confirmed languages. | Open: verify French pronunciation with a screen reader. |
 | A06: Search fallback | Controls stay disabled until search starts. Native browse links remain available. Disabled JavaScript and forced initialization failure checks passed. | Local checks passed. |
 | A07: Talk subjects | Supply-chain subjects share a collection. Subjects, tools and events have separate groups. Existing topic routes and search were checked. | Local checks passed; labels remain part of the overall author review. |
@@ -19,7 +19,7 @@ All 19 items have implementation changes. Thirteen have passed local checks, and
 | A09: Project detail | Each project has useful detail from linked public project documentation. Actions and destinations were checked. | Local checks passed; content remains part of the overall author review. |
 | A10: Phone talk layout | The phone globe frame and gaps use less height. Narrow layouts, labels and talk rows were inspected. | Local checks passed; the size remains a design choice for author review. |
 | A11: Topic hierarchy | Topic pages use a short Talks section label and compact talk titles. Headings and narrow layouts were checked. | Local checks passed. |
-| A12: Skip link | The shared link appears on first focus and moves focus to main content. Extra phone checks passed after Astro navigation. | Local checks passed. |
+| A12: Skip link | The shared link is clipped until keyboard focus and moves focus to main content. A later fix prevents off-screen paint during elastic scrolling. | Local keyboard, navigation and hidden-paint checks passed; native phone overscroll is not simulated. |
 | A13: Artwork delivery | Smaller copies of the same artwork serve phone widths. Wide views and normal/reduced-motion resource behavior were checked. | Local checks passed. |
 | A14: Asset caching | Local Wrangler checks confirm immutable caching for fingerprinted assets and revalidation for HTML and mutable images. | Open: verify live headers and navigation after a separately authorized release. |
 | A15: Video activation | The player loads on request. Pointer, keyboard, focus and native fallback checks passed. One live YouTube recording played. | Local activation checks passed. The playback check does not prove every provider or recording. |
@@ -36,11 +36,21 @@ These three items come from the later all-page responsive recheck. They are sepa
 
 | Item | Change | Status and local evidence |
 | --- | --- | --- |
-| R01: Phone globe labels | At phone widths, city labels use 16 SVG units, about 12.4 CSS pixels in the existing 280-pixel globe. The halo, flags, city links and tap circles remain. | Fixed. Chromium, WebKit and Firefox checks pass at 320–1440 pixels, including the 600/601-pixel change. Labels remain in view with no overlap, and all three keyboard links work. No-JavaScript captures pass. Physical-phone checks remain A02/A04. |
+| R01: Phone globe labels | At phone widths, city labels use 16 SVG units, about 12.4 CSS pixels in the existing 280-pixel globe. The halo, flags, city links and tap circles remain. | Fixed. Chromium, WebKit and Firefox checks pass at 320–1440 pixels, including the 600/601-pixel change. Labels remain in view with no overlap, and all three keyboard links work. No-JavaScript captures pass. The author has since closed A02/A04 after their phone test. |
 | R02: Search empty text | The All filter says “No matches found. Try another word.” A narrower type can also suggest choosing All. The empty Blog message remains separate. | Fixed. Unmatched All/project queries, filter changes, the no-posts state and return to matching results pass in all three browser engines. Search history is also covered by the final combined review. |
-| R03: Audit status | A08/A19 now record the author's approval. Only A02/A04/A05/A14 remain open from the original audit. | Fixed. A08/A19 approval and the four remaining external checks are recorded here. The original audit and PR 38 receive the final report and source identity. |
+| R03: Audit status | A08/A19 now record the author's approval. A02/A04 now have phone acceptance; only A05/A14 remain open from the original audit. | Fixed. A08/A19 approval, A02/A04 phone acceptance and the two remaining checks are recorded here. The original audit and PR 38 receive the final report and source identity. |
 
 The navbar, footer, artwork, article text and author-content files are unchanged by these follow-ups. Focused evidence is saved in `output/responsive-small-fixes/`; the required final combined report and exact source identity are recorded in PR 38 and the original audit file. A prior report does not validate later source.
+
+## Phone acceptance and skip-link follow-up
+
+The author tested the local phone preview of `d260f775ee52167b8fc28ad164584b109c556a0d` and said: “the globe and loading look good on my phone.” They explicitly requested closure of A02 and A04. Device model, OS, browser version and load timings were not supplied; do not infer them or claim coverage of other devices.
+
+The author also reported “Skip to content” appearing above the navbar during scrolling. The link had been moved above the page with a transform. It now stays visually clipped and transparent until keyboard focus, so exposing the page edge cannot reveal it. The native anchor, focus outline and main-content destination remain. The navbar and footer design are unchanged. Focused evidence is in `output/skip-link-fix/`; a synthetic page displacement checks the paint boundary but does not claim to reproduce native iOS elastic scrolling.
+
+Focused checks cover 27 cases in Chromium, WebKit and Firefox: hidden paint when the page is displaced, visible keyboard focus, activation, hiding after activation, client navigation, phone/desktop widths and no JavaScript. WebKit uses its Option-Tab link-navigation shortcut. The native phone gesture itself remains outside these automated checks.
+
+The font check found the same loaded fonts on Home, Talks and Projects, including after client navigation: Fraunces headings and Space Grotesk body text. Home's title uses weight 600; interior titles use 500. The Home introduction is also larger. These style differences explain the visual change; no font or typography rule was changed in this follow-up.
 
 ## Evidence and final validation
 
@@ -88,7 +98,7 @@ The shell script is now one fingerprinted module. The Stars HTML limit stays at 
 ## What remains outside local proof
 
 - A08 and A19 have author approval. Other copy and proposed illustrations remain subject to author review; passing tests do not give that approval.
-- A physical phone, installed Safari, a screen reader and native text zoom still need manual checks. Playwright WebKit is not a claim about an iPhone or the installed Safari app.
+- A02/A04 are closed from the author's phone report. A05 still needs a screen-reader check. Other devices, native text zoom and installed browser versions are not covered by that acceptance or by Playwright.
 - One recorded YouTube playback check succeeded. This does not prove every provider or recording will always play.
 - GitHub Actions remains disabled by explicit request. No remote CI result is claimed.
 - PR 38 is stacked on PR 37. Neither merge nor deployment is authorized. Production cache headers must be checked after an authorized release.
