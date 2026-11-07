@@ -2,6 +2,41 @@
 
 final result: passed
 
+## Talks and About follow-up — 6 November 2026
+
+The author requested these pages in the same approved style, with the shared navbar and footer unchanged. This pass carries the selected 404/Radar direction into the existing page layouts. It keeps the globe, portrait, biography, talk records, resources and metadata. The result is local implementation and a draft PR update; merge and deployment remain outside scope.
+
+### Visual references and evidence
+
+- Style references: the selected `output/interior-headers/option-1.png`, the accepted Home capture in `artifacts/site-review/2026-11-06T23-52-04.240Z-1cc8c23c/candidate/home-1440.png`, and `output/interior-headers/compiled/chromium-radar-1440.png`.
+- Source captures: `output/talks-about/before-{talks,about}-{390,768,1440}.png`, from the built candidate `5f01f82863452a4e6819d4c9e3da404dcd1a5d0b`.
+- Revised captures: `output/talks-about/dev/chromium-{talks,about}-{390,768,1440}.png`. Matched before/after comparisons use `compare-{talks,about}-{390,768,1440}.png`, with the source on the left. The phone comparisons show the portrait, title, biography and links at readable size.
+- `style-comparison.png` contains Home and Radar above revised Talks and About. This checks the shared visual language; the four pages do not have identical content or structure.
+- CSS viewports are 390 × 900, 768 × 900 and 1440 × 900, device scale factor 1, pale theme, initial loaded state and reduced motion. Full-page heights vary with content. Desktop panels are downsampled to 720 pixels; other panels retain their capture width. `comparison-dimensions.json` records exact source/output sizes. Final built captures use the same checks and comparison under `output/talks-about/compiled/`.
+
+### Findings and corrections
+
+- Resolved P2: Talks placed the newest year beside the globe and older years across the full page, so the reading column jumped left. All years now share one left column, with the globe on the right. Dates, titles, events and native city anchors are preserved.
+- Resolved P2: About separated the portrait from its introduction and used a tall portrait block before the phone biography. The desktop portrait now begins beside the heading. The phone portrait is a small framed image beside the short heading; the biography uses the full width below it.
+- Resolved P2 during verification: the first new Talks layout used a sticky globe. A jump to an older talk reached the sticky container boundary and clipped the globe. The final globe uses normal document flow. All city targets receive focus and remain visible. `first-pass/` retains the initial captures; `dev/` records the correction.
+- The initial source-capture script waited for a hidden, lazy globe fallback image that is not painted while WebGL is active. The capture now decodes only displayed images and separately waits for the lazy harbour. No product loading behavior was changed.
+- No actionable P0, P1 or P2 findings remain in the inspected states.
+
+### Fidelity, content and interaction
+
+- Typography and spacing: existing Fraunces headings, Space Grotesk body, compact sizes, open rows and thin timeline separators remain. Both year headings have the same left edge at every checked width. Long titles and event names wrap without horizontal overflow.
+- Color and surfaces: the existing pale blue, navy ink, blue links, cream portrait frame, subtle shadow and restrained focus/hover styles remain. No new card system, scenery, footer art or illustration asset was introduced.
+- Images and icons: the same polar globe, geographic assets, labels, flags and portrait are reused. Paris, Hong Kong and Salt Lake City remain visible initially. Label-background bounds pass. Existing Phosphor icons and the real portrait remain; no generated person or approximate image substitute was added.
+- Copy: the original About headline moves to the description beneath “About me”. All three biography paragraphs are unchanged. The project row becomes “Side projects” with “Software I build outside work.”, matching the author's broader project scope. A short globe instruction explains the existing city links. Talk copy, event records, URLs, dates, languages, structured data and the approved A08/A19 text remain unchanged.
+- Function: city links work with keyboard focus on the matching talk. The complete globe can be brought into view on a short screen by scrolling. Résumé and project links work by keyboard. Native links remain without JavaScript. No new client script or Astro island is added.
+- Motion: the About biography becomes visible with normal motion. The existing portrait straightens when a link receives focus. At reduced motion, it has no transform or transition. Tests cover 390 and 1440 pixels.
+
+### Checks and limits
+
+`output/talks-about/dev/checks.json` records 30 views: Chromium at 320, 390, 600, 700, 701, 768, 850, 851, 916, 1440 and 2560 pixels; WebKit and Firefox at 390 and 1440. They pass heading order, single H1, no horizontal overflow, displayed local images, no page errors, globe labels and aligned years. Ten additional flows cover city anchors, a short viewport, About actions, no JavaScript and synthetic 200% text. `motion.json` adds four normal/reduced-motion states. At phone widths, the biography begins before 360 CSS pixels.
+
+The combined review records final-source validation separately. Its exact revisions, hash, clean-commit binding and final built-page checks are attached to the PR. Physical touch, installed Safari, native zoom, screen-reader output and production behavior remain outside this evidence. A02, A04, A05 and A14 stay open; Actions stays disabled. This pass does not change checks, publication rules, workflow permissions, shared shell files or author-content files.
+
 ## Selected 404 and Radar headers — 6 November 2026
 
 The author selected the first displayed option and explicitly kept the shared navbar and footer. This pass changes the 404 introduction and opts Radar into a larger illustration layout. Existing page typography, the homepage, navigation, harbour artwork, article copy and saved bookmark data are protected. Completion requires the local visual review, the combined site checks and a draft PR update. Merge and deployment are outside this task.

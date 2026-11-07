@@ -17,10 +17,11 @@ const firstInPlace = new Map(talkPlaces.map(place => [place.id, talks.find(talk 
   </header>
   <div class="journey-globe">
     <TalkGlobe journey talks={talks.map(talk => ({ id: talk.id, title: talk.data.displayTitle ?? talk.data.title, location: talk.data.location, event: talk.data.event }))} />
+    <p class="journey-map-note">Choose a city to find a talk.</p>
   </div>
   <div id="by-year" class="journey-years">
-    {years.map((year, yearIndex) => (
-      <section class:list={["journey-year", { latest: yearIndex === 0 }]} aria-labelledby={`year-${year}`} data-reveal data-reveal-group>
+    {years.map((year) => (
+      <section class="journey-year" aria-labelledby={`year-${year}`} data-reveal data-reveal-group>
         <h2 id={`year-${year}`}>{year}</h2>
         <ol>
           {talks.filter(talk => talk.data.date.startsWith(year)).map(talk => {
@@ -41,14 +42,15 @@ const firstInPlace = new Map(talkPlaces.map(place => [place.id, talks.find(talk 
 </div>
 <style>
 /* Keep the page within the same content grid and type scale as Home. */
-.talk-journey {position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);column-gap:40px;margin-top:var(--page-start);}
-.journey-intro {grid-column:2;grid-row:1;align-self:start;padding-top:20px;}
+.talk-journey {position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);column-gap:48px;margin-top:var(--page-start);}
+.journey-intro {grid-column:1;grid-row:1;align-self:start;}
 .journey-intro h1 {margin:0;line-height:1.08;letter-spacing:-.035em;}
 .journey-intro p {margin-top:12px;max-width:42ch;font-size:1rem;line-height:1.6;color:hsl(var(--muted-foreground));}
-.journey-globe {position:relative;grid-column:1;grid-row:1 / span 2;align-self:start;width:100%;max-width:480px;margin:0 auto;}
-.journey-years {display:contents;}
-.journey-year {grid-column:1 / -1;margin:40px 0 0;}
-.journey-year.latest {grid-column:2;grid-row:2;margin:28px 0 0;}
+.journey-globe {position:relative;grid-column:2;grid-row:1 / span 3;align-self:start;width:100%;max-width:480px;margin:0 auto;}
+.journey-map-note {margin:12px 0 0;text-align:center;color:hsl(var(--muted-foreground));font-size:.75rem;line-height:1.6;}
+.journey-years {grid-column:1;grid-row:2;min-width:0;}
+.journey-year {margin:36px 0 0;}
+.journey-year:first-child {margin-top:28px;}
 .journey-year h2 {display:flex;align-items:center;gap:20px;font-size:1.5rem;font-weight:500;line-height:1.25;margin:0 0 20px;}
 .journey-year h2::after {content:"";height:1px;background:hsl(var(--border));flex:1;}
 .journey-year ol {list-style:none;padding:0 0 0 20px;margin:0 0 0 4px;border-left:1px solid hsl(var(--border));}
@@ -63,13 +65,13 @@ const firstInPlace = new Map(talkPlaces.map(place => [place.id, talks.find(talk 
 .journey-year h3 a {color:hsl(var(--primary));text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color 180ms ease;}
 .journey-year h3 a:hover,.journey-year h3 a:focus-visible {text-decoration-color:currentColor;}
 .journey-year h3 a:focus-visible,.journey-year article:focus-visible {outline:2px solid hsl(var(--ring));outline-offset:5px;}
-.journey-resources {grid-column:1 / -1;position:relative;margin:28px 0 0;max-width:45em;font-size:.8125rem;line-height:1.6;color:hsl(var(--muted-foreground));}
+.journey-resources {grid-column:1;grid-row:3;position:relative;margin:28px 0 0;max-width:45em;font-size:.8125rem;line-height:1.6;color:hsl(var(--muted-foreground));}
 .journey-resources a {color:hsl(var(--primary));white-space:nowrap;text-decoration:underline;text-underline-offset:3px;}
 @media(max-width:850px){
   .talk-journey{display:block;}
   .journey-intro{padding:0;}
   .journey-globe{width:min(100%,340px);margin:12px auto 20px;}
-  .journey-year,.journey-year.latest{margin:28px 0 0;}
+  .journey-year,.journey-year:first-child{margin:28px 0 0;}
 }
 @media(max-width:600px){
   .journey-intro h1{font-size:clamp(2rem,7.6vw,2.75rem);}
