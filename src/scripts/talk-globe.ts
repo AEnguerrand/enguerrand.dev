@@ -13,6 +13,22 @@ class TalkGlobe extends HTMLElement {
     const abort = new AbortController();
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const journey = this.hasAttribute("data-journey");
+    const timeline = journey ? this.closest(".talk-journey")?.querySelector<HTMLElement>(".journey-years") : null;
+    const syncSelectedTalk = () => {
+      if (!timeline) return;
+      const destination = document.getElementById(location.hash.slice(1));
+      const selected = timeline.querySelector<HTMLElement>("[data-talk-selected]");
+      if (selected === destination) return;
+      selected?.removeAttribute("data-talk-selected");
+      if (destination?.matches("article[id]") && timeline.contains(destination)) destination.setAttribute("data-talk-selected", "");
+    };
+    if (timeline) {
+      // WebKit can retain the previous :target after same-page history navigation.
+      timeline.setAttribute("data-highlight-ready", "");
+      syncSelectedTalk();
+      window.addEventListener("hashchange", syncSelectedTalk, { signal: abort.signal });
+      window.addEventListener("popstate", syncSelectedTalk, { signal: abort.signal });
+    }
     let paused = journey;
     let visible = false;
     let hovering = false;
@@ -36,10 +52,23 @@ class TalkGlobe extends HTMLElement {
         node.setAttribute("tabindex", marker.visible ? "0" : "-1");
         node.setAttribute("aria-hidden", String(!marker.visible));
         node.setAttribute("transform", `translate(${marker.x} ${marker.y})`);
-        node.querySelector("rect")?.setAttribute("x", marker.x > 235 ? String(-(marker.label.length * 4.7 + 29)) : "10");
         const label = node.querySelector("text");
         label?.setAttribute("x", marker.x > 235 ? "-13" : "13");
         label?.setAttribute("text-anchor", marker.x > 235 ? "end" : "start");
+        const backplate = node.querySelector("rect");
+        if (label && backplate) {
+          // Measure the rendered font and flag, not the number of letters.
+          label.setAttribute("y", "4");
+          const bounds = label.getBBox();
+          if (bounds.width > 0 && bounds.height > 0) {
+            label.setAttribute("y", String(4 - bounds.y - bounds.height / 2));
+            backplate.setAttribute("x", String(bounds.x - 5));
+            backplate.setAttribute("y", String(-bounds.height / 2 - 3));
+            backplate.setAttribute("width", String(bounds.width + 10));
+            backplate.setAttribute("height", String(bounds.height + 6));
+            node.setAttribute("data-label-ready", "");
+          }
+        }
       }
     };
     const canRun = () => visible && !document.hidden && !reduced.matches && (target !== null || (!paused && !hovering && !focused));
@@ -111,7 +140,15 @@ class TalkGlobe extends HTMLElement {
       marker.addEventListener("click", event => {
         if (suppressClick && event.detail !== 0) { event.preventDefault(); return; }
         const id = marker.getAttribute("href")?.slice(1);
-        if (id) document.getElementById(id)?.focus({ preventScroll: true });
+        const destination = id ? document.getElementById(id) : null;
+        destination?.focus({ preventScroll: true });
+        // Replay the cue when the same city is selected again.
+        for (const animation of destination?.getAnimations() ?? []) {
+          if (animation instanceof CSSAnimation && animation.animationName.startsWith("talk-arrival")) {
+            animation.currentTime = 0;
+            animation.play();
+          }
+        }
       }, { signal: abort.signal });
     });
     const sphere = this.querySelector("svg")!;
@@ -148,9 +185,20 @@ class TalkGlobe extends HTMLElement {
     }, { signal: abort.signal });
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); });
     observer.observe(sphere);
+    const resizeObserver = new ResizeObserver(render);
+    resizeObserver.observe(sphere);
+    document.fonts.addEventListener("loadingdone", render, { signal: abort.signal });
+    void document.fonts.ready.then(() => { if (!abort.signal.aborted) render(); });
     render();
     sync();
-    this.cleanup = () => { cancelAnimationFrame(raf); observer.disconnect(); abort.abort(); };
+    this.cleanup = () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      resizeObserver.disconnect();
+      abort.abort();
+      timeline?.removeAttribute("data-highlight-ready");
+      timeline?.querySelector("[data-talk-selected]")?.removeAttribute("data-talk-selected");
+    };
   }
 
   disconnectedCallback() { this.cleanup?.(); }

@@ -14,8 +14,9 @@
     "stars:sync": "uv run scripts/sync_starred_lists.py",
     "stars:refresh": "npm run stars:import-ui && npm run stars:sync",
     "check:site": "astro sync && tsc -p tsconfig.site.json",
-    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs scripts/geographic-globe.test.mjs scripts/harbour-motion.test.mjs scripts/forest-layers.test.mjs",
-    "review:site": "node scripts/review-site.mjs"
+    "test:site": "node --test scripts/posts.test.mjs scripts/site-output.test.mjs scripts/globe-drag.test.mjs scripts/publication.test.mjs scripts/review-evidence.test.mjs scripts/geographic-globe.test.mjs scripts/harbour-motion.test.mjs scripts/forest-layers.test.mjs scripts/topics.test.mjs scripts/review-workflow.test.mjs scripts/asset-delivery.test.mjs",
+    "review:site": "node scripts/review-site.mjs",
+    "assets:prepare": "node scripts/prepare-responsive-assets.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.1",
@@ -51,11 +52,15 @@
     "parse5": "^7.3.0",
     "playwright": "1.64.1",
     "postcss": "^8.4.47",
+    "satori": "0.63.2",
     "sharp": "0.35.5",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "postcss-selector-parser": "6.1.5"
+    "postcss-selector-parser": "6.1.5",
+    "satori": {
+      "fflate": "0.7.5"
+    }
   }
 }

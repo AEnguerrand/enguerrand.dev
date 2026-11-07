@@ -110,10 +110,11 @@ export async function captureBrowser(dist, output, candidate) {
             const box = node.getBoundingClientRect();
             return { tag: node.tagName, label: node.getAttribute("aria-label"), href: node.getAttribute("href"), visible: style.visibility !== "hidden" && box.width > 0 && box.height > 0 && box.top >= 0 && box.bottom > 0 && box.left >= 0, outline: style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0 };
           });
-          // Home hides the brand, so the first control is the phone menu or Talks link.
-          // Other pages keep the name as the home link; retain the baseline skip-link check.
-          const expectsSkip = !candidate && await page.locator('a[href="#main-content"]').count() > 0;
-          const homeWithoutBrand = candidate && route === "/";
+          // The proposal exposes a focus-visible skip link before the shared navbar.
+          // Older baselines can still start with a visible brand or navigation control.
+          const expectsSkip = await page.locator('a[href="#main-content"]').count() > 0;
+          if (candidate && !expectsSkip) errors.push("Shared skip link is missing");
+          const homeWithoutBrand = !expectsSkip && route === "/";
           const expectedFirstLink = expectsSkip ? "#main-content" : homeWithoutBrand ? "/talks/" : "/";
           const correctControl = homeWithoutBrand && width < 768
             ? skip.tag === "BUTTON" && skip.label === "Open navigation"

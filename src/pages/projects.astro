@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ProjectList from "@/components/ProjectList.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { getEntry } from "astro:content";
 
 const homePage = await getEntry("pages", "home");
@@ -10,8 +11,8 @@ const structuredData = {
   "@type": "CollectionPage",
   "@id": "https://enguerrand.dev/projects/#collection",
   url: "https://enguerrand.dev/projects/",
-  name: "Projects by Enguerrand Allamel",
-  description: "Independent projects for paper archives and weather observations.",
+  name: "Side projects by Enguerrand Allamel",
+  description: "Side projects by Enguerrand Allamel: software for scanning documents, managing paper archives, and recording local weather.",
   isPartOf: { "@id": "https://enguerrand.dev/#website" },
   mainEntity: {
     "@type": "ItemList",
@@ -27,16 +28,14 @@ const structuredData = {
 ---
 
 <BaseLayout
-  title="Projects"
-  description="Independent projects by Enguerrand Allamel for paper archives and weather observations."
+  title="Side projects"
+  description="Side projects by Enguerrand Allamel: software for scanning documents, managing paper archives, and recording local weather."
   structuredData={structuredData}
 >
-  <header class="site-page-header" data-reveal>
-    <h1 class="site-page-title">Projects</h1>
-  </header>
+  <PageIntro title="Side projects" />
 
   <section class="project-index" aria-labelledby="project-list-heading" data-reveal data-reveal-group>
     <h2 id="project-list-heading" class="sr-only">Project list</h2>
-    <ProjectList projects={projects} heading="h2" eager />
+    <ProjectList projects={projects} heading="h2" eager illustrated />
   </section>
 </BaseLayout>

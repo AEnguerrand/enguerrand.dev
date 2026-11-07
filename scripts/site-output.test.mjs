@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import { createHash } from "node:crypto";
+import sharp from "sharp";
 import { parse } from "parse5";
 
 const output = new URL("../dist/", import.meta.url);
@@ -70,8 +72,8 @@ test("Home shows talks first, clear titles, and real content states", () => {
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://github.com/AEnguerrand/foliobruma-scanner" && text(n) === "View source"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "https://foliobruma.com" && text(n) === "Website"));
   assert.ok(walk(projects).some((n) => n.tagName === "a" && attrs(n).href === "/projects/"));
-  assert.match(text(selected), /Notes.*French/s);
-  assert.match(text(selected), /Video.*Slides.*Lab.*English/s);
+  assert.match(text(selected), /Notes in English.*Talk in French/s);
+  assert.match(text(selected), /Video.*Slides.*Lab.*Talk in English/s);
   const homeText = text(home.nodes[0]);
   for (const filler of [
     "Selected talks, notes, recordings, and practical examples.",
@@ -79,15 +81,15 @@ test("Home shows talks first, clear titles, and real content states", () => {
     "Topics I'm spending time on lately.",
   ]) assert.ok(!homeText.includes(filler), `Home must omit filler subtitle: ${filler}`);
   for (const value of [
-    "AI-first development security",
-    "Building guardrails for agentic workflows, LLM tooling, and developer AI assistants without slowing teams down.",
+    "AI development security",
+    "Guardrails for AI coding tools and agent workflows that help teams ship safely.",
     "Security automation in delivery platforms",
-    "Embedding practical controls across CI/CD pipelines, cloud infrastructure, and Kubernetes platforms so secure defaults are part of the path to production.",
+    "Security checks in CI/CD, cloud infrastructure, and Kubernetes.",
     "Detection and response",
-    "Improving cloud-native detection, SIEM coverage, and response workflows so incidents are easier to understand and faster to contain.",
+    "Clearer cloud alerts and response workflows, with better SIEM coverage.",
     "Secure-by-default platform patterns",
-    "Shaping architecture reviews, threat modeling, and platform guardrails that help engineering teams move quickly without accumulating security debt.",
-  ]) assert.ok(homeText.includes(value), `Home must preserve exploration copy: ${value}`);
+    "Architecture reviews, threat models, and secure platform defaults.",
+  ]) assert.ok(homeText.includes(value), `Home must render the authorized exploration copy: ${value}`);
   const exploration = home.nodes.find(n => n.tagName === "exploration-list");
   const explorationItems = walk(exploration).filter(n => n.tagName === "article");
   assert.equal(explorationItems.length, 4);
@@ -165,9 +167,12 @@ test("Talk keeps source resources, full structured title, and a stable calendar 
       assert.ok(!attrs(link).class.split(" ").includes("whitespace-nowrap"), "Resource label must wrap on phones");
     }
   }
-  const video = attrs(talk.nodes.find((n) => n.tagName === "iframe"));
-  assert.equal(video.loading, "lazy");
-  assert.equal(video.src, "https://www.youtube.com/embed/0w_dBmvu5l8");
+  assert.equal(talk.nodes.filter((n) => n.tagName === "iframe").length, 0, "The player must not load before activation");
+  const video = talk.nodes.find((n) => n.tagName === "talk-video");
+  assert.equal(attrs(video)["data-embed-url"], "https://www.youtube.com/embed/0w_dBmvu5l8");
+  const button = walk(video).find((n) => "data-video-load" in attrs(n));
+  assert.ok("hidden" in attrs(button), "Without JavaScript use the native video link");
+  assert.ok(walk(video).some((n) => n.tagName === "a" && attrs(n).href === "https://www.youtube.com/watch?v=0w_dBmvu5l8"));
 });
 
 test("Stars and Radar use the checked-in dataset in production output", async () => {
@@ -257,9 +262,11 @@ test("Command-K opens a site-wide modal instead of leaving the page", async () =
     assert.equal(attrs(input)["aria-controls"], "command-dialog-results");
     assert.ok(walk(dialog).some((node) => node.tagName === "ul" && attrs(node).role === "listbox"));
   }
-  const homeHtml = await load("index.html");
-  assert.match(homeHtml, /site-command:open/);
-  assert.doesNotMatch(homeHtml, /searchParams\.set\("focus", "1"\)/);
+  const shell = home.nodes.find((node) => node.tagName === "script" && "data-site-shell" in attrs(node));
+  assert.match(attrs(shell).src, /^\/_astro\/site-shell\.[\w-]+\.js$/);
+  const shellScript = await load(attrs(shell).src.slice(1));
+  assert.match(shellScript, /site-command:open/);
+  assert.doesNotMatch(shellScript, /searchParams\.set\("focus", "1"\)/);
 });
 
 test("Shared shell keeps route width stable and uses client navigation", async () => {
@@ -325,7 +332,10 @@ test("SEO: every indexed page has unique metadata, a matching canonical, and a s
     assert.ok(title && description, `${file}: missing metadata`);
     const url = canonical(nodes);
     const expectedPath = file === "404.html" ? "/404/" : file === "index.html" ? "/" : `/${file.replace(/index\.html$/, "")}`;
-    assert.equal(url, `https://enguerrand.dev${expectedPath}`, file);
+    const expectedCanonical = expectedPath === "/topics/supply-chain/" ? "/topics/software-supply-chain-security/" : expectedPath;
+    assert.equal(url, `https://enguerrand.dev${expectedCanonical}`, file);
+    if (expectedPath !== expectedCanonical)
+      assert.ok(!sitemapUrls.includes(`https://enguerrand.dev${expectedPath}`), `${file}: alias in sitemap`);
     assert.equal(meta(nodes, "og:url"), url, file);
     assert.equal(meta(nodes, "og:title"), title, file);
     assert.equal(meta(nodes, "twitter:description"), description, file);
@@ -341,6 +351,57 @@ test("SEO: every indexed page has unique metadata, a matching canonical, and a s
   }
   for (const url of sitemapUrls)
     assert.ok(builtPages.some(({ nodes }) => canonical(nodes) === url), `Sitemap URL has no page: ${url}`);
+});
+
+test("SEO: the empty blog stays out of search until a published post exists", async () => {
+  const { nodes } = await page("blog/index.html");
+  assert.equal(meta(nodes, "robots").includes("noindex"), !hasPosts);
+  const sitemap = await load("sitemap-0.xml");
+  assert.equal(sitemap.includes("<loc>https://enguerrand.dev/blog/</loc>"), hasPosts);
+});
+
+test("SEO: profile metadata identifies the current employer and the projects description is useful", async () => {
+  for (const { file, nodes } of builtPages) {
+    const person = graph(nodes).find((node) => node["@type"] === "Person");
+    assert.equal(person.jobTitle, "Senior Platform Security Engineer", file);
+    assert.deepEqual(person.worksFor, { "@type": "Organization", name: "Procurify" }, file);
+  }
+  for (const file of ["index.html", "about/index.html"])
+    assert.match(meta((await page(file)).nodes, "description"), /Senior Platform Security Engineer at Procurify/);
+  assert.match(meta(projectsPage.nodes, "description"), /scanning documents, managing paper archives, and recording local weather/);
+});
+
+test("SEO: each canonical page has a distinct, valid landscape sharing image", async () => {
+  const images = new Map();
+  const hashes = new Set();
+  for (const { file, nodes } of builtPages) {
+    const imageUrl = meta(nodes, "og:image");
+    const image = new URL(imageUrl);
+    assert.equal(image.origin, "https://enguerrand.dev", file);
+    const path = new URL(canonical(nodes)).pathname;
+    assert.equal(image.pathname, `/og${path}${path.endsWith("/") ? "index" : ""}.png`, file);
+    assert.equal(meta(nodes, "og:image:width"), "1200", file);
+    assert.equal(meta(nodes, "og:image:height"), "630", file);
+    assert.equal(meta(nodes, "twitter:image"), imageUrl, file);
+    assert.equal(meta(nodes, "twitter:image:alt"), meta(nodes, "og:image:alt"), file);
+    assert.ok(meta(nodes, "og:image:alt").includes(meta(nodes, "og:title")), file);
+    const webpage = graph(nodes).find((node) => node["@id"] === `${canonical(nodes)}#webpage`);
+    assert.equal(webpage.primaryImageOfPage.url, imageUrl, file);
+    if (images.has(imageUrl)) {
+      assert.equal(canonical(nodes), images.get(imageUrl), `${file}: shared image for unrelated pages`);
+      continue;
+    }
+    const buffer = await readFile(new URL(`.${decodeURIComponent(image.pathname)}`, output));
+    const info = await sharp(buffer).metadata();
+    assert.equal(info.format, "png", file);
+    assert.equal(info.width, 1200, file);
+    assert.equal(info.height, 630, file);
+    const hash = createHash("sha256").update(buffer).digest("hex");
+    assert.ok(!hashes.has(hash), `${file}: duplicate card contents`);
+    hashes.add(hash);
+    images.set(imageUrl, canonical(nodes));
+  }
+  assert.equal(images.size, builtPages.length - 1, "Only the known topic alias shares an image");
 });
 
 test("SEO: page, profile, and article structured data agree with public URLs", () => {
@@ -388,8 +449,8 @@ test("SEO: search can be crawled to read noindex and internal links use canonica
     const image = new URL(meta(nodes, "og:image"));
     assert.equal(image.origin, "https://enguerrand.dev");
     assert.ok(builtFiles.includes(image.pathname.slice(1)), `${file}: missing social image`);
-    assert.equal(meta(nodes, "og:image:width"), "1536");
-    assert.equal(meta(nodes, "og:image:height"), "1536");
+    assert.equal(meta(nodes, "og:image:width"), "1200");
+    assert.equal(meta(nodes, "og:image:height"), "630");
   }
 });
 
@@ -436,7 +497,7 @@ test("All generated pages keep ordered headings, unique IDs, valid fragments, an
 });
 
 test("Review fixes keep the concise Home introduction, talks list, and search state", async () => {
-  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer based in Vancouver. Here I share talks, notes, and the software I'm building./);
+  assert.match(text(home.nodes[0]), /I'm a Senior Platform Security Engineer at Procurify, based in Vancouver\. Here I share talks, notes, and side projects\./);
   const archive = await page("talks/index.html");
   assert.equal(archive.nodes.filter(n => n.tagName === "h3").length, 5);
   for (const heading of archive.nodes.filter(n => n.tagName === "h3"))

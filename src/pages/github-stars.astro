@@ -1,13 +1,12 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageIntro from "@/components/PageIntro.astro";
 import { GitHubStars } from "@/components/sections/GitHubStars";
 import { starsDataset, starsGroups, starsDate } from "@/lib/stars";
 ---
-<BaseLayout title="Repository topics" description="Selected technical resources organized by topic.">
-  <header class="site-page-header">
-    <p class="site-eyebrow">Technical radar</p>
-    <h1 class="site-page-title">Repository topics</h1>
+<BaseLayout title="Repository topics" description="GitHub bookmarks organized by topic.">
+  <PageIntro title="Repository topics" eyebrow="Bookmark library" description="GitHub bookmarks saved for reference, grouped by topic. Radar highlights a few selected projects.">
     <p class="site-page-meta">{starsGroups.length} topics · {starsDataset.total_repos} repositories · Updated {starsDate(starsDataset.generated_at)}</p>
-  </header>
+  </PageIntro>
   <GitHubStars dataset={starsDataset} />
 </BaseLayout>

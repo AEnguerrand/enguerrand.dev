@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import { socialImagePath } from "./seo";
 import { topicTitle } from "./topics";
 
 export function getTalkPresentation(
@@ -12,7 +13,17 @@ export function getTalkPresentation(
     timeZone: "UTC",
   });
 
-  const resources = talk.data.resources ?? [];
+  const resources = (talk.data.resources ?? []).map((resource) => ({
+    ...resource,
+    displayLabel: resource.translation === "automatic"
+      ? `${resource.label} (automatic translation)`
+      : resource.label,
+  }));
+  const slidesLanguages = Array.from(new Set(resources
+    .filter((resource) => /slides|presentation/i.test(resource.label) && resource.language)
+    .map((resource) => resource.translation === "automatic"
+      ? `${resource.language} (automatic translation)`
+      : resource.language))).join(", ");
 
   const videoResource = resources.find((resource) => {
     const label = resource.label.toLowerCase();
@@ -79,7 +90,9 @@ export function getTalkPresentation(
   const talkMetadata = [
     { label: "Event", value: talk.data.event },
     { label: "Location", value: talk.data.location },
-    { label: "Language", value: talk.data.language?.join(", ") },
+    { label: "Session language", value: talk.data.sessionLanguages?.join(", ") },
+    { label: "Notes language", value: talk.data.notesLanguages?.join(", ") },
+    { label: "Slides language", value: slidesLanguages },
     { label: "Format", value: talk.data.sessionType },
   ].filter((item) => Boolean(item.value));
 
@@ -101,7 +114,7 @@ export function getTalkPresentation(
       url: talkUrl,
       author: { "@type": "Person", "@id": new URL("/#person", site).toString(), name: "Enguerrand Allamel", url: site.toString() },
       publisher: { "@id": "https://enguerrand.dev/#person" },
-      image: new URL("/og-image.jpg", site).toString(),
+      image: new URL(socialImagePath(talkUrl), site).toString(),
       keywords: talk.data.tags?.join(", "),
       about: (talk.data.tags ?? []).map((tag) => ({
         "@type": "Thing",

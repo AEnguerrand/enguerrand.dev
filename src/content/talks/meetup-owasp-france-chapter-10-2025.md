@@ -7,8 +7,10 @@ date: "2025-10-13"
 event: "OWASP France Chapter Meetup (October 2025)"
 location: "Paris, France"
 language: ["French"]
+sessionLanguages: ["French"]
+notesLanguages: ["English"]
 sessionType: "Meetup talk"
-summary: "A timeline-driven incident analysis of the September 2025 npm compromise waves and practical controls for safer JavaScript pipelines."
+summary: "The September 2025 npm attacks, how they spread, and controls for safer JavaScript pipelines."
 tags:
   [
     "npm",
@@ -31,11 +33,9 @@ resources:
     url: "https://medium.com/pavesoft/package-lock-json-the-complete-guide-2ae40175ebdd"
 ---
 
-## Description
+## Talk overview
 
-During the OWASP Chapter France meetup on 13 October 2025, I walked through the multi-stage supply chain attacks that struck npm in September. This talk breaks down how popular package maintainers were compromised, how the attacks evolved over several days, and what builders can do to harden their JavaScript pipelines.
-
----
+At the OWASP France meetup on 13 October 2025, I covered the npm supply chain attacks from the previous month. These notes follow the compromised maintainer accounts, the later attack waves, and ways to protect JavaScript pipelines.
 
 ## The target: npmjs.com
 
@@ -43,15 +43,13 @@ During the OWASP Chapter France meetup on 13 October 2025, I walked through the 
 - Owned by GitHub since 2020, hosting more than 3 million public packages
 - A platform created in 2010 with limited recent improvements to token management and 2FA enforcement, leaving room for abuse
 
----
-
 ## Timeline of the attacks
 
 ### 8 September 2025 — First wave “Qix maintainer”
 
-- Highly realistic phishing email posing as support (`npmjs.help`) that urged a 2FA reset
+- Phishing email posing as npm support (`npmjs.help`) that urged a 2FA reset
 - Maintainer Josh Junon (aka **Qix**) entered credentials, handing full control to the attacker
-- Attacker pushed booby-trapped releases of widely used packages (2–3 billion downloads per week)
+- Attacker pushed malicious releases of widely used packages (2–3 billion downloads per week)
 - Payload: obfuscated *wallet drainer* malware hidden inside the packages
 - Exposure window: roughly two hours before npm’s security team pulled the malicious versions
 - Affected packages:
@@ -72,12 +70,10 @@ wrap-ansi@9.0.1 • supports-hyperlinks@4.1.1 • strip-ansi@7.1.1
 
 ### 16 September 2025 — Shai-Hulud worm
 
-- Automated propagation leveraging stolen npm/GitHub tokens plus targeted phishing
-- Aims: publish compromised releases, exfiltrate secrets, and establish persistence through GitHub Actions
-- Demonstrated chained compromises of maintainers and repository poisoning
-- Deep dive by Wiz on the Shai-Hulud npm supply chain attack
-
----
+- Automated spread using stolen npm and GitHub tokens, plus targeted phishing
+- Goals: publish compromised releases, steal secrets, and keep access through GitHub Actions
+- Linked maintainer compromises to malicious changes in repositories
+- Wiz analysis of the Shai-Hulud npm supply chain attack
 
 ## GitHub response (9 October 2025)
 
@@ -87,12 +83,10 @@ wrap-ansi@9.0.1 • supports-hyperlinks@4.1.1 • strip-ansi@7.1.1
 - Expansion of **Trusted Publishing** via OIDC to sign releases automatically
 - Public roadmap for a more secure npm supply chain
 
----
-
 ## How to protect your pipelines
 
-- **Lockfiles everywhere**: commit `package-lock.json` / `pnpm-lock.yaml` to pin dependencies
-- **Smarter CLIs**: prefer `pnpm` or other tooling capable of blocking post-install scripts
-- **Dedicated monitoring**: integrate services like Socket.dev, JFrog Xray, or Snyk for anomaly detection
-- **OIDC by default**: move publishing and CI/CD authentication to OIDC-based workflows
-- **Secret hygiene**: keep token lifetimes short, review permissions often, and log every credential use
+- **Commit lockfiles**: commit `package-lock.json` / `pnpm-lock.yaml` to pin dependencies
+- **Control install scripts**: prefer `pnpm` or other tooling capable of blocking post-install scripts
+- **Monitor dependencies**: integrate services like Socket.dev, JFrog Xray, or Snyk for anomaly detection
+- **Use OIDC**: move publishing and CI/CD authentication to OIDC-based workflows
+- **Limit credentials**: keep token lifetimes short, review permissions often, and log every credential use

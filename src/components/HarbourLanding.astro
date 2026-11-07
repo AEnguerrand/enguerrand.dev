@@ -6,6 +6,7 @@ const projection = groundProjection('harbour');
 const planes = [0,1].map(id => harbourMotion(id, projection));
 ---
 <div class="harbour-landing" data-motion-story aria-hidden="true" style={`--projection:${projection}`}>
+  <link rel="stylesheet" data-motion-href="/styles/harbour-motion.css" />
   <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">
     {planes.map((plane, i) => <g class="flight" style={`--flight-duration:${plane.duration}s;--flight-delay:${plane.delay}s;animation-name:${plane.name}-move`}>
       <g class="projection">
@@ -23,9 +24,9 @@ const planes = [0,1].map(id => harbourMotion(id, projection));
     </g>)}
   </svg>
 </div>
-<link rel="stylesheet" href="/styles/harbour-motion.css" />
 <style>
 .harbour-landing {position:absolute;inset:0;pointer-events:none;}
+.harbour-landing:not([data-motion-ready]) {visibility:hidden;}
 svg {display:block;width:100%;height:100%;overflow:hidden;}
 .projection {transform:scaleY(var(--projection));}
 /* Keep the wake attached to the floats as its length changes. */

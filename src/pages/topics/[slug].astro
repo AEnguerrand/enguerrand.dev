@@ -1,34 +1,31 @@
 ---
+import { canonicalUrl } from "@/lib/seo";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { topicDescription, topicHref, topicSlug, topicTitle } from "@/lib/topics";
+import PageIntro from "@/components/PageIntro.astro";
+import { canonicalTopic, canonicalTopics, countTopics, topicDescription, topicHref, topicKind, topicRoutes, topicSlug, topicTitle } from "@/lib/topics";
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const talks = await getCollection("talks");
-  const topicNames = Array.from(new Set(talks.flatMap((talk) => talk.data.tags ?? [])));
-
-  return topicNames.map((topic) => ({ params: { slug: topicSlug(topic) }, props: { topic } }));
+  return topicRoutes(talks.flatMap((talk) => talk.data.tags ?? []))
+    .map(({ slug, topic }) => ({ params: { slug }, props: { topic } }));
 }
 
 const { topic } = Astro.props as { topic: string };
+const canonical = canonicalTopic(topic);
+const isAlias = canonical !== topic;
 const allTalks = await getCollection("talks");
 const talks = allTalks
-  .filter((talk) => (talk.data.tags ?? []).includes(topic))
+  .filter((talk) => canonicalTopics(talk.data.tags ?? []).includes(canonical))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-const relatedTopicCounts = new Map<string, number>();
-for (const talk of talks) {
-  for (const tag of talk.data.tags ?? []) {
-    if (tag !== topic) relatedTopicCounts.set(tag, (relatedTopicCounts.get(tag) ?? 0) + 1);
-  }
-}
-const relatedTopics = Array.from(relatedTopicCounts, ([name, count]) => ({ name, count }))
-  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+const relatedTopics = countTopics(talks)
+  .filter((related) => related.name !== canonical && topicKind(related.name) === "subject")
   .slice(0, 4);
 
 const name = topicTitle(topic);
 const description = topicDescription(topic);
-const topicUrl = new URL(topicHref(topic), Astro.site).toString();
+const topicUrl = canonicalUrl(`/topics/${topicSlug(topic)}/`, Astro.site ?? new URL("https://enguerrand.dev"));
 const structuredData = [
   {
     "@type": "CollectionPage",
@@ -71,37 +68,30 @@ const structuredData = [
     </ol>
   </nav>
 
-  <header class="site-page-header">
-    <h1 class="site-page-title">{name}</h1>
-    <p class="site-lead">{description}</p>
-  </header>
+  <PageIntro title={name} description={description} />
+  {isAlias && <p class="topic-alias">This subject is also listed under <a href={topicHref(canonical)} class="site-text-link">{topicTitle(canonical)}</a>. Both pages include the same talks.</p>}
 
-  <section class="site-section-divider" aria-labelledby="talks-heading">
-    <h2 id="talks-heading" class="text-3xl font-semibold tracking-tight">Talks about {name}</h2>
-    <div class="site-list">
+  <section aria-labelledby="talks-heading">
+    <h2 id="talks-heading" class="site-section-title">Talks</h2>
+    <div class="topic-talks">
       {talks.map((talk) => (
-        <article class="site-list-row grid gap-4 py-6 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-10">
+        <article class="site-list-row topic-talk">
           <div>
-            <p class="text-xs font-semibold tabular-nums text-muted-foreground">
+            <p class="text-xs tabular-nums text-muted-foreground">
               {new Date(talk.data.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })}
               {talk.data.event && ` · ${talk.data.event}`}
             </p>
-            <h3 class="text-2xl font-semibold leading-snug tracking-tight">
-              <a class="hover:text-primary" href={`/talks/${talk.id}/`}>{talk.data.displayTitle ?? talk.data.title}</a>
+            <h3 class="topic-talk-title">
+              <a href={`/talks/${talk.id}/`}>{talk.data.displayTitle ?? talk.data.title}</a>
             </h3>
-            {talk.data.summary && <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{talk.data.summary}</p>}
+            {talk.data.summary && <p class="mt-3 max-w-3xl text-base leading-relaxed text-muted-foreground">{talk.data.summary}</p>}
           </div>
-          <div class="space-y-4 lg:pt-1">
-            <div class="flex flex-wrap gap-x-4 gap-y-2">
-              {(talk.data.tags ?? []).filter((tag) => tag !== topic).slice(0, 5).map((tag) => (
-                <a class="text-xs font-semibold text-primary hover:underline" href={topicHref(tag)}>
-                  {topicTitle(tag)}
-                </a>
-              ))}
-            </div>
-            <a class="site-text-link text-sm font-semibold" href={`/talks/${talk.id}/`}>
-              Read talk details →
-            </a>
+          <div class="topic-talk-tags">
+            {canonicalTopics(talk.data.tags ?? []).filter((tag) => tag !== canonical && topicKind(tag) === "subject").slice(0, 5).map((tag) => (
+              <a href={topicHref(tag)}>
+                {topicTitle(tag)}
+              </a>
+            ))}
           </div>
         </article>
       ))}
@@ -109,12 +99,12 @@ const structuredData = [
   </section>
 
   {relatedTopics.length > 0 && (
-    <section aria-labelledby="related-heading" class="site-section-divider mt-10">
-      <h2 id="related-heading" class="text-2xl font-semibold tracking-tight">Related topics</h2>
-      <ul class="site-list">
+    <section aria-labelledby="related-heading" class="mt-10">
+      <h2 id="related-heading" class="site-section-title">Related subjects</h2>
+      <ul class="related-topics">
         {relatedTopics.map((related) => (
           <li class="site-list-row">
-            <a class="flex min-h-14 items-center justify-between gap-4 py-2 text-sm font-semibold hover:text-primary" href={topicHref(related.name)}>
+            <a class="related-topic" href={topicHref(related.name)}>
               <span>{topicTitle(related.name)}</span>
               <span class="text-xs tabular-nums text-muted-foreground">{related.count}</span>
             </a>
@@ -124,3 +114,17 @@ const structuredData = [
     </section>
   )}
 </BaseLayout>
+
+<style>
+  .topic-alias {margin-bottom:28px;color:hsl(var(--muted-foreground));font-size:14px;line-height:1.6;}
+  .topic-talks {margin-top:8px;}
+  .topic-talk {padding:24px 0;}
+  .topic-talk-title {margin-top:8px;color:hsl(var(--primary));font-size:20px;font-weight:500;line-height:1.4;}
+  .topic-talk-title a:hover {text-decoration:underline;text-underline-offset:4px;}
+  .topic-talk-tags {display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:16px;}
+  .topic-talk-tags a {min-height:28px;color:hsl(var(--muted-foreground));font-size:12px;text-decoration:underline;text-decoration-color:hsl(var(--border));text-underline-offset:4px;}
+  .topic-talk-tags a:hover {color:hsl(var(--primary));text-decoration-color:currentColor;}
+  .related-topics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;margin-top:16px;}
+  .related-topic {display:flex;min-height:64px;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;color:hsl(var(--primary));font-size:16px;}
+  @media(max-width:600px){.topic-talk {padding:20px 0;}.related-topics {grid-template-columns:1fr;}}
+</style>
