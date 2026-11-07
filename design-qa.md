@@ -43,7 +43,7 @@ The author selected the first displayed option and explicitly kept the shared na
 
 ### Visual target and capture conditions
 
-- Selected source: `output/interior-headers/option-1.png`, copied from `/Users/enguerrandallamel/.codex/generated_images/01a1af32-8cfe-71b1-bd1b-c62576149af9/exec-7e01b70a-7233-4761-a2ff-9f75cdfff318.png`.
+- Selected source: `output/interior-headers/option-1.png`, retained as a local review reference.
 - The source is 1374 × 1145 pixels with two content-only excerpts. It has no browser frame, navbar or footer. Its design-board captions are not website content.
 - Implementation: `output/interior-headers/dev/chromium-404-1440.png` and `chromium-radar-1440.png`, captured at a 1440 × 900 CSS viewport and device scale factor 1. Full-page heights differ with route content.
 - Full-view comparison: `output/interior-headers/dev/comparison-board.png`. Focused comparisons: `compare-404-header.png` and `compare-radar-header.png`. Each puts source on the left and implementation on the right.
@@ -61,7 +61,7 @@ The author selected the first displayed option and explicitly kept the shared na
 - Typography: existing Fraunces headings, Space Grotesk body, font weights and compact type sizes remain. Text is live HTML. The phone title and description use the full content width.
 - Layout: open two-column introductions match the selected direction. On phones, the small illustration sits beside the eyebrow above the title. It does not narrow the description or recovery links. Radar keeps all three signals and the complete bookmark library below the intro.
 - Colors and surfaces: existing pale background, navy ink, blue links, button shape and focus styles remain. No new cards, borders, shadows or scenic background were added.
-- Artwork: `public/images/illustrations/off-course.webp` is a 1024 × 640 transparent WebP (97,344 bytes). The built-in image generator recreated the selected paper boat, folded map, small mountains, dashed route and blue watercolor pool, with no text or UI. Alpha edges were inspected on the pale background. Original generated file: `/Users/enguerrandallamel/.codex/generated_images/01a1b33e-3b42-7463-a1a9-932db9de7d52/exec-a11687ac-e102-499f-9c4c-b2b7addb118a.png`. Radar reuses the checked-in field guide; the shared harbour source is unchanged.
+- Artwork: `public/images/illustrations/off-course.webp` is a 1024 × 640 transparent WebP (97,344 bytes). The built-in image generator recreated the selected paper boat, folded map, small mountains, dashed route and blue watercolor pool, with no text or UI. Alpha edges were inspected on the pale background. The original generated file is retained in local review evidence. Radar reuses the checked-in field guide; the shared harbour source is unchanged.
 - Icons: existing Phosphor icons remain. The 404 signpost is replaced by the selected raster illustration. Decorative images have empty alt text; no CSS or SVG art substitutes were introduced.
 - Content: the 404 heading is “A little off course.”, with the existing error explanation, Home action and a new native Search link. Page metadata, `noindex`, and the Error 404 eyebrow remain. Radar labels, notes, counts, dates, links and metadata are unchanged.
 - Interaction: Home and Search recovery links work; keyboard focus is visible. Radar search opens, finds the KubeCon SLSA talk and closes with Escape. Both pages keep native links without JavaScript. No new hydration or browser script is needed.
@@ -84,7 +84,7 @@ The following sections record the earlier redesign and audit passes. Their evide
 This is a working design proposal. The accepted homepage is the visual reference. The Projects and Radar concepts set the illustration direction; they are not pixel-exact page specifications. The user requested smaller text and the existing shared navbar and harbour footer. Those requirements take priority over the larger concept type and cropped mockups.
 
 Source captures are in the prior review worktree:
-`/Users/enguerrandallamel/.codex/worktrees/site-four-fixes/aenguerrand.github.io/output/design-deep-review/`.
+`output/design-deep-review/`.
 
 - `analysis/01-home-desktop.png`: accepted homepage.
 - `analysis/02-talks-desktop.png`: existing Talks page and accurate globe.
